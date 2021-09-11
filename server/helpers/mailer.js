@@ -17,16 +17,17 @@ exports.send = (from, to, subject, html)=>{
     console.log("from to subject html");
     console.log(from, to, subject, html);
 
-    try{
-        return transporter.sendMail({
+    return transporter.sendMail({
             from : from,
             to : to,
             subject : subject,
             html : html, 
-        });
-    }
-    catch(err){
-        console.log(err);
-    }
+        })
+        .then((result) =>{
+            console.log(result);
+        })
+        .catch((err)=>{
+            console.log(err);
+        })
 
 };
