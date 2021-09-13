@@ -8,11 +8,6 @@ const route = require("./routes/index.js");
 app.use(express.json());
 app.use("/", route);
 
-app.get('/',(req,res)=>{
-	res.send('<h1>Helloooo</h1>');
-	
-});
-
 app.listen(process.env.PORT, () =>{
 	console.log("Server is running");
 });
