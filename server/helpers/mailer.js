@@ -14,9 +14,6 @@ let transporter = nodemailer.createTransport({
 });
 
 exports.send = (from, to, subject, html)=>{
-    console.log("from to subject html");
-    console.log(from, to, subject, html);
-
     return transporter.sendMail({
             from : from,
             to : to,
