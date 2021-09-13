@@ -1,14 +1,38 @@
 require("dotenv").config();
-const express = require('express');
+const express = require("express");
 const db = require("./db.js");
 const app = express();
+const passport = require("passport");
+const morgan = require("morgan");
+const cors = require("cors");
+const session = require("express-session");
 
 const route = require("./routes/index.js");
 
+app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan("dev"));
+
+// Passport Configuration
+require("./config/passport")(passport);
+
+app.use(
+  session({
+    secret: "randomString",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use("/", route);
 
-app.listen(process.env.PORT, () =>{
-	console.log("Server is running");
+app.get("/", (req, res) => {
+  res.send("<h1>Helloooo</h1>");
 });
 
+app.listen(process.env.PORT, () => {
+  console.log(`Server is running at localhost:${process.env.PORT}`);
+});
