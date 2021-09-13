@@ -28,7 +28,7 @@ module.exports = (passport) => {
                 message: "Password incorrect",
               });
             }
-          });
+          }).catch((err)=>{done(err);});
 
           return done(null, user);
         });

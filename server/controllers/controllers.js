@@ -5,6 +5,8 @@ const passport = require("passport");
 const mailer = require("../helpers/mailer");
 const User = require("../models/user");
 const mongoose = require("mongoose");
+const session = require("express-session");
+const jwt = require("jsonwebtoken");
 
 const otp = require("../helpers/otp");
 const OTP = require("../models/otp");
@@ -80,7 +82,7 @@ exports.registerUser = (req, res) => {
               })
               .catch((err) => {
                 res.status(500).json({
-                  message: `User Registeration Fails`,
+                  message: `User Registeration Fails2`,
                   error: `${err}`,
                 });
               });
@@ -92,17 +94,52 @@ exports.registerUser = (req, res) => {
     })
     .catch((err) => {
       res.status(500).json({
-        message: `User Registeration Fails`,
+        message: `User Registeration Fails1`,
         error: `${err}`,
       });
     });
 };
 
 exports.loginUser = (req, res, next) => {
-  passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/",
+  passport.authenticate("local", (err,user,info)=>{
+    if(err){
+		res.status(500).json({
+        message: info.message,
+        error: `${err}`,
+        });
+	}
+	if(!user){
+		res.status(500).json({
+		message: info.message,
+		});
+	}
+	
+	req.session.user = user;
+	const username = user.username;
+	const token = jwt.sign({username},process.env.SECRET,{
+		expiresIn: process.env.LIFESPAN,
+	});
+	res.session.token=token;
+	// res.status(200).json({auth:true, token:req.session.token, message:`Done!!`});
+	res.status(200).json({message:`Done!!`,token:token});
   })(req, res, next);
+};
+
+exports.verifyJWT = (req,res) => {
+   const token = req.session.token;
+   if(!token){
+	   res.send("Token Not Found...Pls Login First!!!");
+   }else{
+	   jwt.verify(token, process.env.SECRET, (err,decoded)=>{
+		   if(err){
+			   res.send("Invalid Token!!!Pls login with correct credentials");
+		   } else {
+			   req.session.user.userName = decoded;
+			   res.send("Done!! ",decoded);
+			   // replace res.send with next() when used in other APIs;
+		   }
+	   })
+   }
 };
 
 // controller to generate new otp for particular user

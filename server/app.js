@@ -6,6 +6,7 @@ const passport = require("passport");
 const morgan = require("morgan");
 const cors = require("cors");
 const session = require("express-session");
+const jwt = require("jsonwebtoken");
 
 const route = require("./routes/index.js");
 
@@ -19,9 +20,12 @@ require("./config/passport")(passport);
 
 app.use(
   session({
-    secret: "randomString",
+    secret: process.env.SECRET,
     resave: true,
     saveUninitialized: true,
+	cookie:{
+		expires: process.env.LIFESPAN,
+	}
   })
 );
 app.use(passport.initialize());
