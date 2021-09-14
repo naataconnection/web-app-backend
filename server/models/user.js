@@ -40,7 +40,3 @@ const userSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("user", userSchema, "users");
-
-// Employee: Driver, Delivery, Manager, etc.
-// Company Employee Category Code: distinguish category of employees
-// Match employee code with company code for safety.

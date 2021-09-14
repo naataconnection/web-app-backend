@@ -4,11 +4,12 @@ const db = require("./db.js");
 const app = express();
 const passport = require("passport");
 const morgan = require("morgan");
-const cors = require("cors");
-const jwt = require('express-jwt');
-const jsonwebtoken = require("jsonwebtoken");
+const cors = require("cors"); 
 
-const route = require("./routes/index.js");
+const userAuthRoutes = require("./routes/userAuthRoutes.js");
+const otpRoutes = require("./routes/otpRoutes.js");
+const verificationEmailRoutes = require("./routes/verificationEmailRoutes.js");
+const { authRequired, forwardAuthenticated } = require("./middlewares/authMiddlewares.js");
 
 app.use(cors());
 app.use(express.json());
@@ -21,11 +22,16 @@ require("./config/passport")(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use("/", route);
-
 app.get("/", (req, res) => {
   res.send("<h1>Helloooo</h1>");
 });
+app.get("/secret", authRequired, (req, res) => {
+  res.send("Secret Found");
+});
+
+app.use("/user",userAuthRoutes);
+app.use("/otp",otpRoutes);
+app.use("/email",verificationEmailRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is running at localhost:${process.env.PORT}`);
