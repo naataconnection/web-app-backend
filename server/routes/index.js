@@ -13,6 +13,7 @@ router.get("/", (req, res) => {
 router.post("/responseEmail", controllers.responseEmail);
 router.post("/user/register", controllers.registerUser);
 router.post("/user/login", forwardAuthenticated, controllers.loginUser);
+router.post("/user/logout", controllers.logoutUser);
 router.get("/secret", authRequired, (req, res) => {
   res.send("Secret Found");
 });

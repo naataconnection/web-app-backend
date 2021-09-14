@@ -5,36 +5,37 @@ const User = require("../models/user");
 
 module.exports = (passport) => {
   passport.use(
-    new LocalStrategy(
-      { usernameField: "emailId" },
-      (emailId, password, done) => {
-        // Match User
-        User.findOne({
-          emailId: emailId,
-        }).then((user) => {
-          if (!user) {
-            return done(null, false, {
-              message: "The email is not registered",
-            });
-          }
+    new LocalStrategy({ usernameField: "emailId" },
+					  (emailId, password, done) => {
+														// Match User
+														User.findOne({
+														  emailId: emailId,
+														})
+														.then((user) => {
+															  if (!user) {
+																return done(null, false, {
+																  message: "The email is not registered",
+																});
+															  }
 
-          // Match Password (uncomment if using bcrypt for saving password)
-          bcrypt.compare(password, user.password, (err, isMatch) => {
-            if (err) throw err;
-            if (isMatch) {
-              return done(null, user);
-            } else {
-              return done(null, false, {
-                message: "Password incorrect",
-              });
-            }
-          }).catch((err)=>{done(err);});
-
-          return done(null, user);
-        });
-      }
-    )
-  );
+															  // Match Password (uncomment if using bcrypt for saving password)
+															  bcrypt.compare(password, user.password, (err, isMatch) => {
+																if (err) throw err;
+																if (isMatch) {
+																  return done(null, user,{message:"Login Sucessfully Done"});
+																} else {
+																  return done(null, false, {
+																	message: "Password incorrect",
+																  });
+																}
+															  });
+														})
+														.catch((err)=>{
+															 return done(err,{message:"Error Caught"});
+														});
+													}
+	                     ) 
+             )
 
   passport.serializeUser((user, done) => {
     done(null, user.id);

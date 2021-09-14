@@ -6,7 +6,9 @@ const mailer = require("../helpers/mailer");
 const User = require("../models/user");
 const mongoose = require("mongoose");
 const session = require("express-session");
-const jwt = require("jsonwebtoken");
+const jsonwebtoken = require("jsonwebtoken");
+const express_jwt=require("express-jwt");
+const cookie_parser=require("cookie-parser");
 
 const otp = require("../helpers/otp");
 const OTP = require("../models/otp");
@@ -41,7 +43,7 @@ exports.registerUser = (req, res) => {
   var { firstName, middleName, lastName, password, emailId, companyCode} = req.body;
   console.log(req.body);
   if (!firstName || !emailId || !password || !companyCode) {
-    res.status(409).json({
+    return res.status(409).json({
       message: "Required fields are not present.",
     });
   }
@@ -50,7 +52,7 @@ exports.registerUser = (req, res) => {
 //   console.log(`CC is ${companyCode} and ${companyCode.slice(0,1)}`)
 
   if(companyCode.slice(0,2)!="NC"){
-    res.status(500).json({
+    return res.status(500).json({
         message: "Invalid Company Code"
     })
   }
@@ -60,7 +62,7 @@ exports.registerUser = (req, res) => {
       console.log(result.length);
 
       if (result.length != 0) {
-        res.status(409).json({
+        return res.status(409).json({
           message: `Email already exits.`,
         });
       } else {
@@ -76,14 +78,14 @@ exports.registerUser = (req, res) => {
         bcrypt.genSalt(10, (err, salt) => {
           if (err) {
             console.log(err);
-            res.status(500).json({
+            return res.status(500).json({
               message: `${err}`,
             });
           }
           bcrypt.hash(user.password, salt, (err, hash) => {
             if (err) {
               console.log(err);
-              res.status(500).json({
+              return res.status(500).json({
                 message: `${err}`,
               });
             }
@@ -91,12 +93,12 @@ exports.registerUser = (req, res) => {
             user
               .save()
               .then((result) => {
-                res.status(200).json({
+                return res.status(200).json({
                   message: `User Registraion Successful`,
                 });
               })
               .catch((err) => {
-                res.status(500).json({
+                return res.status(500).json({
                   message: `User Registeration Fails2`,
                   error: `${err}`,
                 });
@@ -108,7 +110,7 @@ exports.registerUser = (req, res) => {
       }
     })
     .catch((err) => {
-      res.status(500).json({
+      return res.status(500).json({
         message: `User Registeration Fails1`,
         error: `${err}`,
       });
@@ -118,39 +120,54 @@ exports.registerUser = (req, res) => {
 exports.loginUser = (req, res, next) => {
   passport.authenticate("local", (err,user,info)=>{
     if(err){
-		res.status(500).json({
+		console.log(info.message);
+		return res.status(500).json({
         message: info.message,
         error: `${err}`,
         });
 	}
-	if(!user){
-		res.status(500).json({
+	else if(!user){
+		return res.status(500).json({
 		message: info.message,
 		});
+	}else{
+		const username = user.firstName;
+		const token = jsonwebtoken.sign({ user: username, maxAge: parseInt(process.env.MAX_AGE) }, process.env.SECRET);
+		res.cookie('token', token, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
+		res.cookie('username',username, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
+		return res.status(200).json({message:info.message});
 	}
-	
-	req.session.user = user;
-	const username = user.username;
-	const token = jwt.sign({username},process.env.SECRET,{
-		expiresIn: process.env.LIFESPAN,
-	});
-	res.session.token=token;
-	// res.status(200).json({auth:true, token:req.session.token, message:`Done!!`});
-	res.status(200).json({message:`Done!!`,token:token});
   })(req, res, next);
 };
 
+exports.logoutUser = (req,res,next) => {
+	if(req.cookies){
+	   if( req.cookies.username){
+		const username = req.cookies.username;
+	    // res.clearCookie('token');
+	    res.clearCookie('username');	
+		res.status(200).json({username:username, message:"User logged out sucessfully"});
+	   }	
+	}else {
+		res.status(500).json({message:"Token not found!!"});
+	}
+	
+	// res.cookie('token', token, { httpOnly: true, maxAge: 0, secure: true });
+	// res.cookie('username',username, { httpOnly: true, maxAge: 0, secure: true });
+		// res.status(200).json({username:CircularJSON.stringify(req.cookies)});
+};
+
 exports.verifyJWT = (req,res) => {
-   const token = req.session.token;
+   const token = req.cookie.token;
    if(!token){
-	   res.send("Token Not Found...Pls Login First!!!");
+	   return res.status(400).json({message:"Token Not Found...Pls Login First!!!"});
    }else{
 	   jwt.verify(token, process.env.SECRET, (err,decoded)=>{
 		   if(err){
-			   res.send("Invalid Token!!!Pls login with correct credentials");
+			   return  res.status(400).json({message:"Invalid Token!!!Pls login with correct credentials"});
 		   } else {
-			   req.session.user.userName = decoded;
-			   res.send("Done!! ",decoded);
+			   res.cookie('username',decoded);
+			   return res.status(200).json({message:"Done",username:decoded});
 			   // replace res.send with next() when used in other APIs;
 		   }
 	   })
