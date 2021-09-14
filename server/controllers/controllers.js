@@ -47,20 +47,20 @@ exports.responseEmail = (req, res) => {
 };
 
 exports.registerUser = (req, res) => {
-  var { firstName, middleName, lastName, password, emailId, companyCode} = req.body;
-  console.log(req.body);
-  if (!firstName || !emailId || !password || !companyCode) {
+  var { firstName, middleName, lastName, password, emailId, contact, employeeCode} = req.body;
+
+  if (!firstName || !emailId || !password || !employeeCode) {
     res.status(409).json({
       message: "Required fields are not present.",
     });
   }
 
-  companyCode = companyCode.toUpperCase();
+  employeeCode = employeeCode.toUpperCase();
 //   console.log(`CC is ${companyCode} and ${companyCode.slice(0,1)}`)
 
-  if(companyCode.slice(0,2)!="NC"){
+  if(employeeCode.slice(0,2)!="NC"){
     res.status(500).json({
-        message: "Invalid Company Code"
+        message: "Invalid Employee Code"
     })
   }
 
@@ -79,7 +79,8 @@ exports.registerUser = (req, res) => {
           lastName,
           password,
           emailId,
-          companyCode
+          contact,
+          employeeCode
         });
 
         bcrypt.genSalt(10, (err, salt) => {
@@ -169,7 +170,6 @@ exports.verifyJWT = (req,res) => {
 // controller to generate new otp for particular user
 exports.generateOTP = (req, res) => {
     const contact = req.body.contact;
-    
 
     User.findOne({contact: contact}, (err, user) => {
         if (err) {
@@ -314,7 +314,7 @@ exports.verifyVerificationEmail = (req, res) => {
             const otpFromDatabase = result.otp;
 
             if(otpFromDatabase==otpFromUrl){
-                user.verified = true;
+                user.emailVerified = true;
                 user.save();
 
                 res
