@@ -24,11 +24,15 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: true
   },
-  companyCode:{
+  employeeCode:{
     type: String,
     required: true
   },
-  verified: {
+  emailVerified: {
+    type: Boolean,
+    default: false
+  },
+  contactVerified: {
     type: Boolean,
     default: false
   }

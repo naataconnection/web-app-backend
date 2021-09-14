@@ -31,29 +31,41 @@ exports.responseEmail = (req, res) => {
       `<h1>This is Test Mail</h1>`
     )
     .then((result) => {
-      console.log(`Result from NodeMailer API is:${result}`);
+      res
+      .status(200)
+      .json({
+          message: `Verification Mail Sent`
+      })
     })
     .catch((err) => {
-      console.log(`Result from NodeMailer API is:${err}`);
+      res
+      .status(500)
+      .json({
+          message: `Error in NodeMailer API`,
+          error : `${err}`
+      })
     });
   res.send("Email Sent");
 };
 
 exports.registerUser = (req, res) => {
-  var { firstName, middleName, lastName, password, emailId, companyCode} = req.body;
-  console.log(req.body);
-  if (!firstName || !emailId || !password || !companyCode) {
-    return res.status(409).json({
+var { firstName, middleName, lastName, password, emailId, contact, employeeCode} = req.body;
+
+  if (!firstName || !emailId || !password || !employeeCode) {
+    res.status(409).json({
       message: "Required fields are not present.",
     });
   }
 
-  companyCode = companyCode.toUpperCase();
+  employeeCode = employeeCode.toUpperCase();
 //   console.log(`CC is ${companyCode} and ${companyCode.slice(0,1)}`)
 
-  if(companyCode.slice(0,2)!="NC"){
-    return res.status(500).json({
-        message: "Invalid Company Code"
+employeeCode = employeeCode.toUpperCase();
+//   console.log(`CC is ${companyCode} and ${companyCode.slice(0,1)}`)
+
+  if(employeeCode.slice(0,2)!="NC"){
+    res.status(500).json({
+        message: "Invalid Employee Code"
     })
   }
 
@@ -72,7 +84,8 @@ exports.registerUser = (req, res) => {
           lastName,
           password,
           emailId,
-          companyCode
+          contact,
+          employeeCode
         });
 
         bcrypt.genSalt(10, (err, salt) => {
@@ -97,9 +110,9 @@ exports.registerUser = (req, res) => {
                   message: `User Registraion Successful`,
                 });
               })
-              .catch((err) => {
-                return res.status(500).json({
-                  message: `User Registeration Fails2`,
+             .catch((err) => {
+                res.status(500).json({
+                  message: `Incorrect Data Provided`,
                   error: `${err}`,
                 });
               });
@@ -110,12 +123,13 @@ exports.registerUser = (req, res) => {
       }
     })
     .catch((err) => {
-      return res.status(500).json({
-        message: `User Registeration Fails1`,
+      res.status(404).json({
+        message: `No User found with this emailId`,
         error: `${err}`,
       });
     });
 };
+
 
 exports.loginUser = (req, res, next) => {
   passport.authenticate("local", (err,user,info)=>{
@@ -177,7 +191,6 @@ exports.verifyJWT = (req,res) => {
 // controller to generate new otp for particular user
 exports.generateOTP = (req, res) => {
     const contact = req.body.contact;
-    
 
     User.findOne({contact: contact}, (err, user) => {
         if (err) {
@@ -244,6 +257,8 @@ exports.generateOTPnoUser = (req, res) => {
 exports.sendVerificationEmail = (req, res) => {
     const emailId = req.body.emailId;
 
+    console.log(`${emailId} is the emailid from body`)
+
     User.findOne({emailId: emailId})
     .then((result) =>{
         const user = result;
@@ -264,8 +279,6 @@ exports.sendVerificationEmail = (req, res) => {
         });
 
         newOTP.save();
-
-        OTP.createIndexes({lastModifiedDate:-1}, {expireAfterSeconds: 1, partialFilterExpression: { pending: true }})
 
         const host = req.get('host');
         const link = req.protocol + '://' + host + "/email/verify?emailId=" + emailId + "&OTP=" + randm;
@@ -311,7 +324,7 @@ exports.verifyVerificationEmail = (req, res) => {
     const emailId = url_parts.query.emailId;
     const otpFromUrl = url_parts.query.OTP;
 
-    console.log(`${emailId}`)
+    console.log(`${emailId}`);
 
     User.findOne({emailId: emailId})
     .then((result) =>{
@@ -322,7 +335,7 @@ exports.verifyVerificationEmail = (req, res) => {
             const otpFromDatabase = result.otp;
 
             if(otpFromDatabase==otpFromUrl){
-                user.verified = true;
+                user.emailVerified = true;
                 user.save();
 
                 res
