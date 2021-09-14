@@ -29,10 +29,19 @@ exports.responseEmail = (req, res) => {
       `<h1>This is Test Mail</h1>`
     )
     .then((result) => {
-      console.log(`Result from NodeMailer API is:${result}`);
+      res
+      .status(200)
+      .json({
+          message: `Verification Mail Sent`
+      })
     })
     .catch((err) => {
-      console.log(`Result from NodeMailer API is:${err}`);
+      res
+      .status(500)
+      .json({
+          message: `Error in NodeMailer API`,
+          error : `${err}`
+      })
     });
   res.send("Email Sent");
 };
@@ -97,7 +106,7 @@ exports.registerUser = (req, res) => {
               })
               .catch((err) => {
                 res.status(500).json({
-                  message: `User Registeration Fails2`,
+                  message: `Incorrect Data Provided`,
                   error: `${err}`,
                 });
               });
@@ -108,8 +117,8 @@ exports.registerUser = (req, res) => {
       }
     })
     .catch((err) => {
-      res.status(500).json({
-        message: `User Registeration Fails1`,
+      res.status(404).json({
+        message: `No User found with this emailId`,
         error: `${err}`,
       });
     });
