@@ -26,7 +26,8 @@ const userSchema = new mongoose.Schema({
   },
   employeeCode:{
     type: String,
-    required: true
+    required: true,
+	unique: true
   },
   emailVerified: {
     type: Boolean,

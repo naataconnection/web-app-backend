@@ -145,10 +145,10 @@ exports.loginUser = (req, res, next) => {
 		message: info.message,
 		});
 	}else{
-		const username = user.firstName;
-		const token = jsonwebtoken.sign({ user: username, maxAge: parseInt(process.env.MAX_AGE) }, process.env.SECRET);
+		const employeeCode = user.employeeCode;
+		const token = jsonwebtoken.sign({ user: employeeCode, maxAge: parseInt(process.env.MAX_AGE) }, process.env.SECRET);
 		res.cookie('token', token, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
-		res.cookie('username',username, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
+		res.cookie('employeeCode',employeeCodep, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
 		return res.status(200).json({message:info.message});
 	}
   })(req, res, next);
@@ -158,17 +158,12 @@ exports.logoutUser = (req,res,next) => {
 	if(req.cookies){
 	   if( req.cookies.username){
 		const username = req.cookies.username;
-	    // res.clearCookie('token');
 	    res.clearCookie('username');	
 		res.status(200).json({username:username, message:"User logged out sucessfully"});
 	   }	
 	}else {
 		res.status(500).json({message:"Token not found!!"});
 	}
-	
-	// res.cookie('token', token, { httpOnly: true, maxAge: 0, secure: true });
-	// res.cookie('username',username, { httpOnly: true, maxAge: 0, secure: true });
-		// res.status(200).json({username:CircularJSON.stringify(req.cookies)});
 };
 
 exports.verifyJWT = (req,res) => {
@@ -180,7 +175,7 @@ exports.verifyJWT = (req,res) => {
 		   if(err){
 			   return  res.status(400).json({message:"Invalid Token!!!Pls login with correct credentials"});
 		   } else {
-			   res.cookie('username',decoded);
+			   res.cookie('employeeCode',decoded);
 			   return res.status(200).json({message:"Done",username:decoded});
 			   // replace res.send with next() when used in other APIs;
 		   }
