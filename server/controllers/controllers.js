@@ -148,7 +148,7 @@ exports.loginUser = (req, res, next) => {
 		const employeeCode = user.employeeCode;
 		const token = jsonwebtoken.sign({ user: employeeCode, maxAge: parseInt(process.env.MAX_AGE) }, process.env.SECRET);
 		res.cookie('token', token, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
-		res.cookie('employeeCode',employeeCodep, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
+		res.cookie('employeeCode',employeeCode, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
 		return res.status(200).json({message:info.message});
 	}
   })(req, res, next);
