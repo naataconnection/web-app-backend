@@ -227,6 +227,8 @@ exports.generateOTPnoUser = (req, res) => {
 exports.sendVerificationEmail = (req, res) => {
     const emailId = req.body.emailId;
 
+    console.log(`${emailId} is the emailid from body`)
+
     User.findOne({emailId: emailId})
     .then((result) =>{
         const user = result;
@@ -247,8 +249,6 @@ exports.sendVerificationEmail = (req, res) => {
         });
 
         newOTP.save();
-
-        OTP.createIndexes({lastModifiedDate:-1}, {expireAfterSeconds: 1, partialFilterExpression: { pending: true }})
 
         const host = req.get('host');
         const link = req.protocol + '://' + host + "/email/verify?emailId=" + emailId + "&OTP=" + randm;
@@ -294,7 +294,7 @@ exports.verifyVerificationEmail = (req, res) => {
     const emailId = url_parts.query.emailId;
     const otpFromUrl = url_parts.query.OTP;
 
-    console.log(`${emailId}`)
+    console.log(`${emailId}`);
 
     User.findOne({emailId: emailId})
     .then((result) =>{

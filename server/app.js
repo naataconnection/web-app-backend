@@ -24,7 +24,7 @@ app.use(
     resave: true,
     saveUninitialized: true,
 	cookie:{
-		expires: process.env.LIFESPAN,
+		expires: 60*60*24,
 	}
   })
 );
