@@ -1,10 +1,8 @@
 const express = require("express");
+const vendorContactCnt = require("../controllers/vendorContactController.js");
 const router = express.Router();
 
-const vendorContactCnt = require("../controllers/vendorContact.js");
-
-
+// Main path - "/vendorContact"
 router.post("/create", vendorContactCnt.createOne);
-
 
 module.exports = router;
