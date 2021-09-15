@@ -1,5 +1,5 @@
 const express = require("express");
-const verificationEmailControllers = require("../controllers/verificationEmailControllers");
+const verificationEmailControllers = require("../controllers/verificationEmailController");
 const router = express.Router();
 
 // Main path - "/email"

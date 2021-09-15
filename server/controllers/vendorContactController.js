@@ -11,7 +11,7 @@ const getId = async () => {
 
 getId();
 
-module.exports.createOne = async(req, res) => {
+exports.createOne = async(req, res) => {
     try{
         globalId++;
         const vendorId = globalId;

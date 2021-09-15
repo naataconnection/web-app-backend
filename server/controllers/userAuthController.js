@@ -4,7 +4,6 @@ const passport = require("passport");
 const jsonwebtoken = require("jsonwebtoken");
 const User = require("../models/user");
 
-
 // Controller to register a user.
 exports.registerUser = (req, res) => {
 var { firstName, middleName, lastName, password, emailId, contact, employeeCode} = req.body;
@@ -29,7 +28,7 @@ employeeCode = employeeCode.toUpperCase();
 
   User.find({ emailId: emailId })
     .then((result) => {
-      console.log(result.length);
+      // console.log(result.length);
 
       if (result.length != 0) {
         return res.status(409).json({
@@ -48,14 +47,14 @@ employeeCode = employeeCode.toUpperCase();
 
         bcrypt.genSalt(10, (err, salt) => {
           if (err) {
-            console.log(err);
+            // console.log(err);
             return res.status(500).json({
               message: `${err}`,
             });
           }
           bcrypt.hash(user.password, salt, (err, hash) => {
             if (err) {
-              console.log(err);
+              // console.log(err);
               return res.status(500).json({
                 message: `${err}`,
               });
@@ -92,21 +91,20 @@ employeeCode = employeeCode.toUpperCase();
 exports.loginUser = (req, res, next) => {
   passport.authenticate("local", (err,user,info)=>{
     if(err){
-		console.log(info.message);
-		return res.status(500).json({
+		// console.log(info.message);
+		return res.status(400).json({
         message: info.message,
         error: `${err}`,
         });
 	}
 	else if(!user){
-		return res.status(500).json({
+		return res.status(400).json({
 		message: info.message,
 		});
 	}else{
 		const employeeCode = user.employeeCode;
 		const token = jsonwebtoken.sign({ user: employeeCode, maxAge: parseInt(process.env.MAX_AGE) }, process.env.SECRET);
 		res.cookie('token', token, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
-		res.cookie('employeeCode',employeeCode, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
 		return res.status(200).json({message:info.message});
 	}
   })(req, res, next);
@@ -114,31 +112,36 @@ exports.loginUser = (req, res, next) => {
 
 // Controller to logout the user.
 exports.logoutUser = (req,res,next) => {
-	if(req.cookies){
-	   if( req.cookies.username){
-		const username = req.cookies.username;
-	    res.clearCookie('username');	
-		res.status(200).json({username:username, message:"User logged out sucessfully"});
-	   }	
+	const token = req.cookies.token;
+	if(token){
+		jsonwebtoken.verify(token,process.env.SECRET,(err,code)=>{
+			if(err){
+			   return  res.status(400).json({message:"Invalid Token!!!Pls login with correct credentials"});
+		   } else {
+			  res.clearCookie('token');
+			  res.clearCookie('employeeCode');
+			  const message = "User with employee code "+code.user+" is logged out successfullly";
+			  res.status(200).json({message:message});
+		   }	
+		});
 	}else {
-		res.status(500).json({message:"Token not found!!"});
+		res.status(400).json({message:"Token Not Found...Pls Login First!!!"});
 	}
 };
 
-// Controller to verify the authentication in any API.
-exports.verifyJWT = (req,res) => {
-   const token = req.cookie.token;
-   if(!token){
-	   return res.status(400).json({message:"Token Not Found...Pls Login First!!!"});
-   }else{
-	   jwt.verify(token, process.env.SECRET, (err,decoded)=>{
-		   if(err){
+// Controller to verify the jwt tokens of user in any API.
+exports.verifyUser = (req,res) => {
+   const token = req.cookies.token;
+	if(token){
+		jsonwebtoken.verify(token,process.env.SECRET,(err,code)=>{
+			if(err){
 			   return  res.status(400).json({message:"Invalid Token!!!Pls login with correct credentials"});
 		   } else {
-			   res.cookie('employeeCode',decoded);
-			   return res.status(200).json({message:"Done",username:decoded});
-			   // replace res.send with next() when used in other APIs;
-		   }
-	   })
-   }
+			  const message = "Authorization of user with employee code "+code.user+" is verified";
+			  res.status(200).json({message:message});
+		   }	
+		});
+	}else {
+		res.status(400).json({message:"Token Not Found...Pls Login First!!!"});
+	}
 };
