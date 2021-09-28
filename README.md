@@ -1,47 +1,68 @@
-```
-┌───────────────────────────────────────────────┐
-                                       _       
-     __ _  ___   ___  _ __ _ __ ___   (_) ___  
-    / _` |/ _ \ / _ \| '__| '_ ` _ \  | |/ _ \ 
-   | (_| | (_) | (_) | |  | | | | | |_| | (_) |
-    \__, |\___/ \___/|_|  |_| |_| |_(_)_|\___/ 
-    |___/                                      
-			     🌩 𝘼𝙣𝙮𝙤𝙣𝙚 𝙘𝙖𝙣 𝙙𝙚𝙫𝙚𝙡𝙤𝙥!
-└───────────────────────────────────────────────┘
-```
+# Naata Connection Web App
 
-# goormIDE
-Welcome to goormIDE!
+### Table of Content
 
-goormIDE is a powerful cloud IDE service to maximize productivity for developers and teams.  
-**DEVELOP WITH EXCELLENCE**  
+- [Naata Connection Web App](#naata-connection-web-app)
+    - [Table of Content](#table-of-content)
+  - [About](#about)
+  - [Technology Used](#technology-used)
+  - [Prerequisites](#prerequisites)
+  - [Usage](#usage)
+  - [Requests](#requests)
 
-`Happy coding! The goormIDE team`
+## About
 
+## Technology Used
+1. [Node.js](https://nodejs.org/en/) - v16.6.0
+2. [MongoDB](https://www.mongodb.com/) - v5.0.1
 
-## 🔧 Tip & Guide
+## Prerequisites
+1. npm
+   ```bash
+    npm install npm@latest -g
+   ```
+2. nodemon
+   ```bash
+    npm install nodemon -g
+   ```
 
-* Command feature
-	* You can simply run your script using the shortcut icons on the top right.
-	* Check out `PROJECT > Common/Build/Run/Test/Find Command` in the top menu.
-	
-* Get URL and Port
-	* Click `PROJECT > URL/PORT` in top menu bar.
-	* You can get default URL/Port and add URL/Port in the top menu.
+## Usage
+1. Clone the repository
+   ```bash
+    git clone https://github.com/naataconnection/web-app-backend.git
+   ```
 
-* Useful shortcut
-	
-| Shortcuts name     | Command (Mac) | Command (Window) |
-| ------------------ | :-----------: | :--------------: |
-| Copy in Terminal   | ⌘ + C         | Ctrl + Shift + C |
-| Paste in Terminal  | ⌘ + V         | Ctrl + Shift + V |
-| Search File        | ⌥ + ⇧ + F     | Alt + Shift + F  |
-| Terminal Toggle    | ⌥ + ⇧ + B     | Alt + Shift + B  |
-| New Terminal       | ⌥ + ⇧ + T     | Alt + Shift + T  |
-| Code Formatting    | ⌥ + ⇧ + P     | Alt + Shift + P  |
-| Show All Shortcuts | ⌘ + H         | Ctrl + H         |
+2. Change the directory
+   ```bash
+    cd web-app-backend
+   ```
 
-## 💬 Support & Documentation
+3. Install Package
+   ```bash
+    npm install
+   ```
 
-Visit [https://ide.goorm.io](https://ide.goorm.io) to support and learn more about using goormIDE.  
-To watch some usage guides, visit [https://help.goorm.io/en/goormide](https://help.goorm.io/en/goormide)
+4. Running the server
+   ```bash
+    npm start
+   ```
+
+## Requests
+
+- /user
+    - /register - Send user info to register. Body should contain firstName, middleName, lastName, password, emailId, contact & employeeCode.
+    - /login - Send user through JWT.
+    - /logout - User will be logged out
+    - /verify - Verify user and token.
+- /otp
+  - / - Get will give list of all opts
+  - /noUser - Generate a new OTP without connecting it with user
+  - /generate - Generate a new OTP with connecting it with a user through user contact in request body.
+- /email
+  - /response - Will Send a verification email to recieverEmail in body.
+  - /send - Will send verification email with OTP to email id in request body
+  - /verify - Will verify Email ID and OTP of user
+- /genericContact
+  - /create
+- /vendorContact
+  - /create 
