@@ -89,28 +89,53 @@ employeeCode = employeeCode.toUpperCase();
 
 // Controller to ckeck if user has registered.
 exports.loginUser_checkUser = (req,res,next) => {
-	const emailId = req.body.emailId;
-	User.findOne({
-		  emailId: emailId,
+	const emailIdOrContact = req.body.emailIdOrContact;
+	
+	// Regular Expression to detect a email id.
+	const emailId_regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+	// If user entered the email id
+	if(emailIdOrContact.match(emailId_regex)){
+		User.findOne({
+		  emailId: emailIdOrContact,
 		})
 		.then((user) => {
 			  if (!user) {
-				return done(null, false, {
-				  message: "The email is not registered",
-				});
+				return res.status(400).json({
+          			message: "This email is not registered",
+        		});
 			  }
 		      next();
 		})
 		.catch((err)=>{
-			 return done(err,{message:"Error Caught"});
+			 return res.status(500).json({
+          			message: "An error caught while finding the user",
+        		});
 		});
+	}else{
+		User.findOne({
+		  contact: emailIdOrContact,
+		})
+		.then((user) => {
+			  if (!user) {
+				return res.status(400).json({
+          			message: "This contact number is not registered",
+        		});
+			  }
+		      next();
+		})
+		.catch((err)=>{
+			  return res.status(500).json({
+          			message: "An error caught while finding the user",
+        		});
+		});
+	}
 };
 
 // Controller to verify otp and login user.
 exports.loginUser_verifyOtp = (req, res,next) => {
   passport.authenticate("local", (err,user,info)=>{
     if(err){
-		// console.log(info.message);
 		return res.status(400).json({
         message: info.message,
         error: `${err}`,
