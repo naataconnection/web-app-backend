@@ -87,8 +87,27 @@ employeeCode = employeeCode.toUpperCase();
     });
 };
 
-// Controller to login the user.
-exports.loginUser = (req, res, next) => {
+// Controller to ckeck if user has registered.
+exports.loginUser_checkUser = (req,res,next) => {
+	const emailId = req.body.emailId;
+	User.findOne({
+		  emailId: emailId,
+		})
+		.then((user) => {
+			  if (!user) {
+				return done(null, false, {
+				  message: "The email is not registered",
+				});
+			  }
+		      next();
+		})
+		.catch((err)=>{
+			 return done(err,{message:"Error Caught"});
+		});
+};
+
+// Controller to verify otp and login user.
+exports.loginUser_verifyOtp = (req, res,next) => {
   passport.authenticate("local", (err,user,info)=>{
     if(err){
 		// console.log(info.message);
@@ -107,7 +126,7 @@ exports.loginUser = (req, res, next) => {
 		res.cookie('token', token, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
 		return res.status(200).json({message:info.message});
 	}
-  })(req, res, next);
+  })(req, res,next);
 };
 
 // Controller to logout the user.
