@@ -3,157 +3,106 @@ const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const jsonwebtoken = require("jsonwebtoken");
 const User = require("../models/user");
-const Driver = require("../models/driver");
-const Manager = require("../models/manager");
-const DeliveryBoy = require("../models/deliveryBoy");
-
 
 // Controller to register a user.
 exports.registerUser = (req, res) => {
-var { firstName, middleName, lastName, emailId, contact, employeeCode} = req.body;
-
-  if (!firstName || !emailId || !employeeCode || !contact) {
-    res.status(409).json({
-      message: "Required fields are not present.",
-    });
-  }
-
-  employeeCode = employeeCode.toUpperCase();
-
-  if(employeeCode.slice(0,2)!="NC"){
-    res.status(500).json({
-        message: "Invalid Employee Code"
-    })
-  }
-
-  if(employeeCode.slice(2,4)!="TP"){
-    res.status(500).json({
-        message: "Not an Employee Code"
-    })
-  }
-
-
-  User.find({ emailId: emailId })
-    .then((result) => {
-      // console.log(result.length);
-
-      if (result.length != 0) {
-        return res.status(409).json({
-          message: `Email already exits.`,
-        });
-      } else {
-        const user = new User({
-          firstName,
-          middleName,
-          lastName,
-          emailId,
-          contact,
-          employeeCode
-        });
-
-        user.save()
-        .then((result) => {
-          return res.status(200).json({
-            message: `User Registraion Successful`,
-          });
-        })
-       .catch((err) => {
-          res.status(500).json({
-            message: `Incorrect Data Provided`,
-            error: `${err}`,
-          });
-        });
-
-        // bcrypt.genSalt(10, (err, salt) => {
-        //   if (err) {
-        //     // console.log(err);
-        //     return res.status(500).json({
-        //       message: `${err}`,
-        //     });
-        //   }
-        //   bcrypt.hash(user.password, salt, (err, hash) => {
-        //     if (err) {
-        //       // console.log(err);
-        //       return res.status(500).json({
-        //         message: `${err}`,
-        //       });
-        //     }
-        //     user.password = hash;
-        //     user
-        //       .save()
-        //       .then((result) => {
-        //         return res.status(200).json({
-        //           message: `User Registraion Successful`,
-        //         });
-        //       })
-        //      .catch((err) => {
-        //         res.status(500).json({
-        //           message: `Incorrect Data Provided`,
-        //           error: `${err}`,
-        //         });
-        //       });
-        //   });
-        // });
-
-        console.log(user);
-      }
-    })
-    .catch((err) => {
-      res.status(404).json({
-        message: `No User found with this emailId`,
-        error: `${err}`,
+  var { firstName, middleName, lastName, emailId, contact, employeeCode} = req.body;
+  
+    if (!firstName || !emailId || !employeeCode || !contact) {
+      res.status(409).json({
+        message: "Required fields are not present.",
       });
-    });
+    }
+  
+    employeeCode = employeeCode.toUpperCase();
+  
+    if(employeeCode.slice(0,2)!="NC"){
+      res.status(500).json({
+          message: "Invalid Employee Code"
+      })
+    }
+  
+    if(employeeCode.slice(2,4)!="TP"){
+      res.status(500).json({
+          message: "Not an Employee Code"
+      })
+    }
+  
+  
+    User.find({ emailId: emailId })
+      .then((result) => {
+        // console.log(result.length);
+  
+        if (result.length != 0) {
+          return res.status(409).json({
+            message: `Email already exits.`,
+          });
+        } else {
+          const user = new User({
+            firstName,
+            middleName,
+            lastName,
+            emailId,
+            contact,
+            employeeCode
+          });
+  
+          user.save()
+          .then((result) => {
+            return res.status(200).json({
+              message: `User Registraion Successful`,
+            });
+          })
+         .catch((err) => {
+            res.status(500).json({
+              message: `Incorrect Data Provided`,
+              error: `${err}`,
+            });
+          });
+  
+          // bcrypt.genSalt(10, (err, salt) => {
+          //   if (err) {
+          //     // console.log(err);
+          //     return res.status(500).json({
+          //       message: `${err}`,
+          //     });
+          //   }
+          //   bcrypt.hash(user.password, salt, (err, hash) => {
+          //     if (err) {
+          //       // console.log(err);
+          //       return res.status(500).json({
+          //         message: `${err}`,
+          //       });
+          //     }
+          //     user.password = hash;
+          //     user
+          //       .save()
+          //       .then((result) => {
+          //         return res.status(200).json({
+          //           message: `User Registraion Successful`,
+          //         });
+          //       })
+          //      .catch((err) => {
+          //         res.status(500).json({
+          //           message: `Incorrect Data Provided`,
+          //           error: `${err}`,
+          //         });
+          //       });
+          //   });
+          // });
+  
+          console.log(user);
+        }
+      })
+      .catch((err) => {
+        res.status(404).json({
+          message: `No User found with this emailId`,
+          error: `${err}`,
+        });
+      });
 };
 
-// Controller to ckeck if user has registered.
-exports.loginUser_checkUser = (req,res,next) => {
-	const emailIdOrContact = req.body.emailIdOrContact;
-	
-	// Regular Expression to detect a email id.
-	const emailId_regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-	// If user entered the email id
-	if(emailIdOrContact.match(emailId_regex)){
-		User.findOne({
-		  emailId: emailIdOrContact,
-		})
-		.then((user) => {
-			  if (!user) {
-				return res.status(400).json({
-          			message: "This email is not registered",
-        		});
-			  }
-		      next();
-		})
-		.catch((err)=>{
-			 return res.status(500).json({
-          			message: "An error caught while finding the user",
-        		});
-		});
-	}else{
-		User.findOne({
-		  contact: emailIdOrContact,
-		})
-		.then((user) => {
-			  if (!user) {
-				return res.status(400).json({
-          			message: "This contact number is not registered",
-        		});
-			  }
-		      next();
-		})
-		.catch((err)=>{
-			  return res.status(500).json({
-          			message: "An error caught while finding the user",
-        		});
-		});
-	}
-};
-
-// Controller to verify otp and login user.
-exports.loginUser_verifyOtp = (req, res,next) => {
-//
 exports.registerDriver = (req, res) => {
   console.log(User.count({}))
 
@@ -234,8 +183,8 @@ exports.registerDriver = (req, res) => {
       });
     });
 };
-
-
+  
+  
 exports.registerManager = (req, res)=>{
   var {joinDate, secondaryContact, emergencyContact, bloodGroup, employeeCode} = req.body;
 
@@ -308,8 +257,8 @@ exports.registerManager = (req, res)=>{
   })
   
 };
-
-
+  
+  
 exports.registerDeliveryBoy = (req, res)=>{
   var {address, city, state, age, secondaryContact, emergencyContact, bloodGroup, employeeCode} = req.body;
 
@@ -387,8 +336,53 @@ exports.registerDeliveryBoy = (req, res)=>{
   });
 };
 
-// Controller to login the user.
-exports.loginUser = (req, res, next) => {
+// Controller to ckeck if user has registered.
+exports.loginUser_checkUser = (req,res,next) => {
+	const emailIdOrContact = req.body.emailIdOrContact;
+	
+	// Regular Expression to detect a email id.
+	const emailId_regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+	// If user entered the email id
+	if(emailIdOrContact.match(emailId_regex)){
+		User.findOne({
+		  emailId: emailIdOrContact,
+		})
+		.then((user) => {
+			  if (!user) {
+				return res.status(400).json({
+          			message: "This email is not registered",
+        		});
+			  }
+		      next();
+		})
+		.catch((err)=>{
+			 return res.status(500).json({
+          			message: "An error caught while finding the user",
+        		});
+		});
+	}else{
+		User.findOne({
+		  contact: emailIdOrContact,
+		})
+		.then((user) => {
+			  if (!user) {
+				return res.status(400).json({
+          			message: "This contact number is not registered",
+        		});
+			  }
+		      next();
+		})
+		.catch((err)=>{
+			  return res.status(500).json({
+          			message: "An error caught while finding the user",
+        		});
+		});
+	}
+};
+
+// Controller to verify otp and login user.
+exports.loginUser_verifyOtp = (req, res,next) => {
   passport.authenticate("local", (err,user,info)=>{
     if(err){
 		return res.status(400).json({
