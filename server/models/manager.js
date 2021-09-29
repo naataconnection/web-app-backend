@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const SupervisorSchema = new mongoose.Schema({
+const ManagerSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
@@ -26,4 +26,4 @@ const SupervisorSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("supervisor", SupervisorSchema);
+module.exports = mongoose.model("manager", ManagerSchema);

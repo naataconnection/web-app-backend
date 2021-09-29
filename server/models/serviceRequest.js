@@ -14,7 +14,7 @@ const ServiceRequestSchema = new mongoose.Schema({
     type: Number,
     required: true,
     default: 0,
-    // 0 -> Unapproved, 1 -> Approved, 2 -> Returned for changes.
+    // 0 -> Unapproved, 1 -> Approved, 2 -> Pending.
   },
   admin: {
     type: mongoose.Schema.Types.ObjectId,
@@ -32,24 +32,18 @@ const ServiceRequestSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
   },
-  vehicle: [
-    {
+  vehicle: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "vehicle",
-    },
-  ],
-  driver: [
-    {
+  },
+  driver: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
-    },
-  ],
-  deliveryBoy: [
-    {
+  },
+  deliveryBoy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
-    },
-  ],
+  },
   status: {
     type: Number,
     default: 0,

@@ -12,10 +12,10 @@ const userSchema = new mongoose.Schema({
   lastName: {
     type: String,
   },
-  password: {
-    type: String,
-    required: true,
-  },
+  // password: {
+  //   type: String,
+  //   required: true,
+  // },
   emailId: {
     type: String,
     unique: true
@@ -24,18 +24,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: true
   },
-  employeeCode:{
+  userCode:{
     type: String,
     required: true,
-	unique: true
+	  unique: true
   },
-  emailVerified: {
-    type: Boolean,
-    default: false
-  },
-  contactVerified: {
-    type: Boolean,
-    default: false
+  role:{
+    type:String,
+    required: true
   }
 });
 

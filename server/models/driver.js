@@ -17,29 +17,29 @@ const DriverSchema = new mongoose.Schema({
   age: {
     type: String,
   },
-  // Photo Upload
-  //   drivingLicense: {
-  //     type: String,
-  //   },
+  // drivingLicense: {
+  //   type: Buffer,
+  //   contentType: String
+  // },
   drivingLicenseType: {
     type: String,
   },
   drivingLicenseExpiryDate: {
     type: Date,
   },
-  //   Photo Upload
-  //   kyc: [
-  //     {
-  //       type: String,
-  //     },
-  //   ],
+  // kyc: [
+  //   {
+  //     type: Buffer,
+  //     contentType: String
+  //   },
+  // ],
   secondaryContact: {
     type: String,
   },
-  // Photo
-  //   idCard: {
-  //     type: String,
-  //   },
+  // idCard: {
+  //   type: Buffer,
+  //   contentType: String
+  // },
   emergencyContact: {
     type: String,
   },

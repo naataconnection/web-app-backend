@@ -8,6 +8,10 @@ const router = express.Router();
 router.post("/register", userAuthControllers.registerUser);
 router.post("/login_checkUserAndSendOtp", userAuthControllers.loginUser_checkUser, otpControllers.generateAndSendOTP);
 router.post("/login_verifyOtp",forwardAuthenticated, userAuthControllers.loginUser_verifyOtp);
+router.post("/registerDriver", userAuthControllers.registerDriver);
+router.post("/registerManager", userAuthControllers.registerManager);
+router.post("/registerDeliveryBoy", userAuthControllers.registerDeliveryBoy);
+router.post("/login", forwardAuthenticated, userAuthControllers.loginUser);
 router.post("/logout", userAuthControllers.logoutUser);
 router.post("/verify", userAuthControllers.verifyUser);
 
