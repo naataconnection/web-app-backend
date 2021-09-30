@@ -21,7 +21,7 @@ const ManagerSchema = new mongoose.Schema({
   bloodGroup: {
     type: String,
   },
-  employeeID: {
+  userCode: {
     type: String,
   },
 });
