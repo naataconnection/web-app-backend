@@ -21,6 +21,11 @@ exports.loginUser_checkUser = (req,res,next) => {
           			message: "This email is not registered",
         		});
 			  }
+			  if(!user.active) {
+				return res.status(400).json({
+          			message: "This user is blocked.",
+        		});
+			  }
 		      next();
 		})
 		.catch((err)=>{
@@ -36,6 +41,11 @@ exports.loginUser_checkUser = (req,res,next) => {
 			  if (!user) {
 				return res.status(400).json({
           			message: "This contact number is not registered",
+        		});
+			  }
+			  if(!user.active) {
+				return res.status(400).json({
+          			message: "This user is blocked.",
         		});
 			  }
 		      next();

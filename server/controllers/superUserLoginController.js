@@ -21,6 +21,11 @@ exports.loginSuperUser_checkSuperUser = (req,res,next) => {
           			message: "This email is not registered",
         		});
 			  }
+			  if(!superUser.active) {
+				return res.status(400).json({
+          			message: "This super user is blocked.",
+        		});
+			  }
 		      next();
 		})
 		.catch((err)=>{
@@ -36,6 +41,11 @@ exports.loginSuperUser_checkSuperUser = (req,res,next) => {
 			  if (!superUser) {
 				return res.status(400).json({
           			message: "This contact number is not registered",
+        		});
+			  }
+			 if(!superUser.active) {
+				return res.status(400).json({
+          			message: "This super user is blocked.",
         		});
 			  }
 		      next();
