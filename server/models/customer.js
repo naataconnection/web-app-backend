@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const VendorSchema = mongoose.Schema({
+const CustomerSchema = mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
@@ -20,13 +20,10 @@ const VendorSchema = mongoose.Schema({
   state: {
     type: String,
   },
-  phone: {
+  secondaryContact: {
     type: String,
   },
-  email: {
-    type: String,
-  },
-  vendorID: {
+  userCode: {
     type: String,
   },
   gst: {
@@ -34,4 +31,4 @@ const VendorSchema = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("vendor", VendorSchema);
+module.exports = mongoose.model("customer", CustomerSchema);

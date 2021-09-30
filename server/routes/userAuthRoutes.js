@@ -1,18 +1,29 @@
 const express = require("express");
-const userAuthControllers = require("../controllers/userAuthController.js");
+const userLoginControllers = require("../controllers/userLoginController.js");
+const userRegistrationControllers = require("../controllers/userRegistrationController.js");
+const superUserRegistrationControllers = require("../controllers/superUserRegistrationController.js");
 const otpControllers = require("../controllers/otpController.js");
 const { authRequired, forwardAuthenticated } = require("../middlewares/authMiddleware.js");
 const router = express.Router();
 
 // Main path - "/user"
-router.post("/register", userAuthControllers.registerUser);
-router.post("/login_checkUserAndSendOtp", userAuthControllers.loginUser_checkUser, otpControllers.generateAndSendOTP);
-router.post("/login_verifyOtp",forwardAuthenticated, userAuthControllers.loginUser_verifyOtp);
-router.post("/registerDriver", userAuthControllers.registerDriver);
-router.post("/registerManager", userAuthControllers.registerManager);
-router.post("/registerDeliveryBoy", userAuthControllers.registerDeliveryBoy);
+
+//userLoginController
+router.post("/login_checkUserAndSendOtp", userLoginControllers.loginUser_checkUser, otpControllers.generateAndSendOTP);
+router.post("/login_verifyOtp",forwardAuthenticated, userLoginControllers.loginUser_verifyOtp);
+router.post("/logout", userLoginControllers.logoutUser);
+router.post("/verify", userLoginControllers.verifyUser);
+
+//userRegistrationController
+router.post("/register", userRegistrationControllers.registerUser);
+router.post("/registerDriver", userRegistrationControllers.registerDriver);
+router.post("/registerManager", userRegistrationControllers.registerManager);
+router.post("/registerDeliveryBoy", userRegistrationControllers.registerDeliveryBoy);
+router.post("/registerCustomer", userRegistrationControllers.registerCustomer);
 // router.post("/login", forwardAuthenticated, userAuthControllers.loginUser);
-router.post("/logout", userAuthControllers.logoutUser);
-router.post("/verify", userAuthControllers.verifyUser);
+
+//superUserRegistrationController
+router.post("/registerSuperUser", superUserRegistrationControllers.registerSuperUser);
+
 
 module.exports = router;
