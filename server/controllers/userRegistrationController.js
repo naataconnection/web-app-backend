@@ -145,7 +145,6 @@ exports.registerUser = (req, res) => {
       });
 };
 
-
 exports.registerDriver = (req, res) => {
   var {userCode, address, city, state, age, drivingLicenseType, drivingLicenseExpireDate, secondaryContact, bloodGroup} = req.body;
 
@@ -178,7 +177,6 @@ exports.registerDriver = (req, res) => {
   
 };
   
-  
 exports.registerManager = (req, res)=>{
   var {userCode, joinDate, secondaryContact, emergencyContact, bloodGroup} = req.body;
 
@@ -205,7 +203,6 @@ exports.registerManager = (req, res)=>{
     })
   });
 };
-  
   
 exports.registerDeliveryBoy = (req, res)=>{
   var {emailId, address, city, state, age, secondaryContact, emergencyContact, bloodGroup} = req.body;

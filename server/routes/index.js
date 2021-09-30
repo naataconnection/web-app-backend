@@ -1,5 +1,6 @@
 const express = require("express");
 const userAuthRoutes = require("./userAuthRoutes.js");
+const superUserAuthRoutes = require("./superUserAuthRoutes.js");
 const otpRoutes = require("./otpRoutes.js");
 const verificationEmailRoutes = require("./verificationEmailRoutes.js");
 const genericContactRoutes = require("./genericContactRoutes.js");
@@ -8,6 +9,7 @@ const { authRequired, forwardAuthenticated } = require("../middlewares/authMiddl
 const router = express.Router();
 
 router.use("/user",userAuthRoutes);
+router.use("/superUser",superUserAuthRoutes);
 router.use("/otp",otpRoutes);
 router.use("/email",verificationEmailRoutes);
 router.use("/genericContact", genericContactRoutes);
