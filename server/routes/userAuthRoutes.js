@@ -11,7 +11,6 @@ router.post("/login_verifyOtp",forwardAuthenticated, userAuthControllers.loginUs
 router.post("/registerDriver", userAuthControllers.registerDriver);
 router.post("/registerManager", userAuthControllers.registerManager);
 router.post("/registerDeliveryBoy", userAuthControllers.registerDeliveryBoy);
-router.post("/login", forwardAuthenticated, userAuthControllers.loginUser);
 router.post("/logout", userAuthControllers.logoutUser);
 router.post("/verify", userAuthControllers.verifyUser);
 
