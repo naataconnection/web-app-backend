@@ -34,15 +34,9 @@ const userSchema = new mongoose.Schema({
     required: true
   },
   active:{
-<<<<<<< Updated upstream
 	  type: Boolean, 
 	  default: true
   },
-=======
-    type: Boolean,
-    default:true
-  }
->>>>>>> Stashed changes
 });
 
 module.exports = mongoose.model("user", userSchema, "users");
