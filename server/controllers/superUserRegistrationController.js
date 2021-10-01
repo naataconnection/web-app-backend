@@ -2,7 +2,7 @@ require("dotenv").config();
 const SuperUser = require("../models/superUser");
 
 exports.registerSuperUser = (req, res) => {
-    var {firstName, middleName, lastName, emailId, contact, role} = req.body();
+    var {firstName, middleName, lastName, emailId, contact, role} = req.body;
 
     if(!firstName || !emailId || !contact || !role){
         res.status(500).json({
@@ -12,38 +12,92 @@ exports.registerSuperUser = (req, res) => {
 
     role = role.toUpperCase();
 
-    SuperUser.findOne({emailId})
-    .then((result)=>{
-        if(result!=null){
-            res.status(500).json({
-                message:"User already exists with emailId"
-            });
-        }
+    var userCode;
 
-        const superUser = new SuperUser({
-            firstName,
-            middleName,
-            lastName,
-            emailId,
-            contact,
-            role
-        });
-
-        superUser.save()
+    if(role=="OWNER"){
+        SuperUser.countDocuments({role:"OWNER"})
         .then((result)=>{
-            res.status(200).json({
-                message:"Super User successfully created"
+            result+=1;
+            userCode="NCOWNER"+result.toString();
+            const superUser = new SuperUser({
+                firstName,
+                middleName,
+                lastName,
+                emailId,
+                contact,
+                role,
+                userCode
             });
+
+            superUser.save()
+            .then((result)=>{
+                mailer.send(
+                    `${process.env.EMAIL_SMTP_USERNAME}`,
+                    emailId,
+                    "User Registered",
+                    `<p>
+                      ${superUser.firstName} ${superUser.lastName} has been registered on website with email - ${superUser.emailId}, phone number - ${superUser.contact} and UserCode - ${superUser.userCode}  
+                    <p>`
+                  );
+
+
+                res.status(200).json({
+                    message:"Super User successfully created"
+                });
+            })
+            .catch((err)=>{
+                res.status(500).json({
+                    error:`${err}`
+                })
+            })
         })
         .catch((err)=>{
             res.status(500).json({
-                error:`${err}`
+                err:`${err}`
             })
         })
-    })
-    .catch((err)=>{
-        res.status(500).json({
-            error:`${err}`
+    }
+    else if(role=="ADMIN"){
+        SuperUser.countDocuments({role:"ADMIN"})
+        .then((result)=>{
+            result+=1;
+            userCode="NCADMIN"+result.toString();
+            const superUser = new SuperUser({
+                firstName,
+                middleName,
+                lastName,
+                emailId,
+                contact,
+                role,
+                userCode
+            });
+
+            superUser.save()
+            .then((result)=>{
+
+                mailer.send(
+                    `${process.env.EMAIL_SMTP_USERNAME}`,
+                    emailId,
+                    "User Registered",
+                    `<p>
+                      ${superUser.firstName} ${superUser.lastName} has been registered on website with email - ${superUser.emailId}, phone number - ${superUser.contact} and UserCode - ${superUser.userCode}  
+                    <p>`
+                  );
+
+                res.status(200).json({
+                    message:"Super User successfully created"
+                });
+            })
+            .catch((err)=>{
+                res.status(500).json({
+                    error:`${err}`
+                })
+            })
         })
-    })
+        .catch((err)=>{
+            res.status(500).json({
+                err:`${err}`
+            })
+        })
+    };
 } 
