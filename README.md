@@ -63,6 +63,6 @@
   - /send - Will send verification email with OTP to email id in request body
   - /verify - Will verify Email ID and OTP of user
 - /genericContact
-  - /create
+  - /create 
 - /vendorContact
   - /create 
