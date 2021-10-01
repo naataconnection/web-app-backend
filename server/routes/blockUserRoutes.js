@@ -4,3 +4,5 @@ const router = require("./userAuthRoutes.js");
 
 router.post("/user", blockUserControllers.userBlock);
 router.post("/superUser", blockUserControllers.superUserBlock);
+
+module.exports = router;
