@@ -174,12 +174,6 @@ exports.registerDriver = (req, res) => {
     }
   );
 };
-<<<<<<< Updated upstream
-  
-exports.registerManager = (req, res)=>{
-  var {userCode, joinDate, secondaryContact, emergencyContact, bloodGroup} = req.body;
-=======
->>>>>>> Stashed changes
 
 exports.registerManager = (req, res) => {
   var { userCode, joinDate, secondaryContact, emergencyContact, bloodGroup } =
@@ -212,12 +206,6 @@ exports.registerManager = (req, res) => {
     }
   );
 };
-<<<<<<< Updated upstream
-  
-exports.registerDeliveryBoy = (req, res)=>{
-  var {emailId, address, city, state, age, secondaryContact, emergencyContact, bloodGroup} = req.body;
-=======
->>>>>>> Stashed changes
 
 exports.registerDeliveryBoy = (req, res) => {
   var {
