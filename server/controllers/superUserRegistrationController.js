@@ -1,5 +1,7 @@
 require("dotenv").config();
+const { paddingZero } = require("../helpers/paddingZeros");
 const SuperUser = require("../models/superUser");
+const mailer = require("../helpers/mailer")
 
 exports.registerSuperUser = (req, res) => {
     var {firstName, middleName, lastName, emailId, contact, role} = req.body;
@@ -18,7 +20,8 @@ exports.registerSuperUser = (req, res) => {
         SuperUser.countDocuments({role:"OWNER"})
         .then((result)=>{
             result+=1;
-            userCode="NCOWNER"+result.toString();
+            result = paddingZero(result, 4);
+            userCode="NCOWNER"+result;
             const superUser = new SuperUser({
                 firstName,
                 middleName,
@@ -61,7 +64,8 @@ exports.registerSuperUser = (req, res) => {
         SuperUser.countDocuments({role:"ADMIN"})
         .then((result)=>{
             result+=1;
-            userCode="NCADMIN"+result.toString();
+            result = paddingZero(result, 4);
+            userCode="NCADMIN"+result;
             const superUser = new SuperUser({
                 firstName,
                 middleName,

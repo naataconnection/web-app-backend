@@ -14,11 +14,13 @@ const superUserSchema = new mongoose.Schema({
     },
     emailId:{
         type:String,
-        required:true
+        required:true,
+        unique:true
     },
     contact:{
         type:String,
-        required:true
+        required:true,
+        unique:true
     },
     userCode:{
         type:String,
