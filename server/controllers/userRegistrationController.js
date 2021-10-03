@@ -5,6 +5,7 @@ const DeliveryBoy = require("../models/deliveryBoy");
 const Manager = require("../models/manager");
 const Customer = require("../models/customer");
 const mailer = require("../helpers/mailer");
+const {paddingZero} = require("../helpers/paddingZeros");
 
 // Controller to register a user.
 exports.registerUser = (req, res) => {
@@ -35,7 +36,8 @@ exports.registerUser = (req, res) => {
           .then((result) => {
             console.log(`Number of documents:`, result);
             result += 1;
-            companyCode = "NCTP02" + result.toString();
+            result = paddingZero(result, 4);
+            companyCode = "NCTP02" + result;
             console.log(`Unique Code : ${companyCode}`);
             const driver = new Driver({
               user,
@@ -54,7 +56,9 @@ exports.registerUser = (req, res) => {
         Manager.countDocuments()
           .then((result) => {
             console.log(`Number of documents:`, result);
-            companyCode = "NCTP01" + toString(result + 1);
+            result+=1;
+            result = paddingZero(result, 4);
+            companyCode = "NCTP01" + result;
           })
           .catch((error) => {
             console.log(`Error from count function: ${error}`);
@@ -73,7 +77,9 @@ exports.registerUser = (req, res) => {
         DeliveryBoy.countDocuments()
           .then((result) => {
             console.log(`Number of documents:`, result);
-            companyCode = "NCTP03" + toString(result);
+            result+=1;
+            result = paddingZero(result, 4);
+            companyCode = "NCTP03" + result;
           })
           .catch((error) => {
             console.log(`Error from count function: ${error}`);
@@ -92,7 +98,9 @@ exports.registerUser = (req, res) => {
         Customer.countDocuments()
           .then((result) => {
             console.log(`Number of documents:`, result);
-            companyCode = "NCPR01" + toString(result);
+            result+=1;
+            result = paddingZero(result, 4);
+            companyCode = "NCPR01" + result;
           })
           .catch((error) => {
             console.log(`Error from count function: ${error}`);
