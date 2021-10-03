@@ -18,10 +18,12 @@ const DeliveryBoySchema = new mongoose.Schema({
     type: String,
   },
   dateOfJoining: {
-    type: String
+    type: String,
+    default: null
   },
   dateOfTermination: {
-    type: String
+    type: String,
+    default: null
   },
   //   Photo Upload
   //   kyc: [

@@ -6,10 +6,12 @@ const ManagerSchema = new mongoose.Schema({
     ref: "user",
   },
   dateOfJoining: {
-    type: String
+    type: String,
+    default: null
   },
   dateOfTermination: {
-    type: String
+    type: String,
+    default: null
   },
   secondaryContact: {
     type: String,

@@ -46,13 +46,12 @@ module.exports.getAttendanceReportByDateAndUserCode = async (req, res) => {
             })
         } 
 
-        console.log(req.body.userCode[5]);
-        var dateOfJoinig, dateOfTermination; 
+        var dateOfJoining, dateOfTermination; 
         if(req.body.userCode[5] == "1"){
-            const output = await manager.find({userCode: req.body.userCode}).select({dateOfJoining: "1", dateOfTermination: "1"});
+            const output = await manager.find({userCode: req.body.userCode}).select({"dateOfJoining": 1, "dateOfTermination": 1});
             if(output){
-                dateOfJoinig = output.dateOfJoinig;
-                dateOfTermination = output.dateOfTermination;
+                dateOfJoining = output[0].dateOfJoining;
+                dateOfTermination = output[0].dateOfTermination;
             }else{
                 return res.status(404).json({
                     status:'failure',
@@ -60,10 +59,10 @@ module.exports.getAttendanceReportByDateAndUserCode = async (req, res) => {
                 })
             }
         }else if(req.body.userCode[5] == "2"){
-            const output = await driver.find({userCode: req.body.userCode}).select({dateOfJoining: "1", dateOfTermination: "1"});
+            const output = await driver.find({userCode: req.body.userCode}).select({"dateOfJoining": 1, "dateOfTermination": 1});
             if(output){
-                dateOfJoinig = output.dateOfJoinig;
-                dateOfTermination = output.dateOfTermination;
+                dateOfJoining = output[0].dateOfJoining;
+                dateOfTermination = output[0].dateOfTermination;
             }else{
                 return res.status(404).json({
                     status:'failure',
@@ -71,10 +70,10 @@ module.exports.getAttendanceReportByDateAndUserCode = async (req, res) => {
                 })
             }
         }else if(req.body.userCode[5] == "3"){
-            const output = await deliveryBoy.find({userCode: req.body.userCode}).select({dateOfJoining: "1", dateOfTermination: "1"});
+            const output = await deliveryBoy.find({userCode: req.body.userCode}).select({"dateOfJoining": 1, "dateOfTermination": 1});
             if(output){
-                dateOfJoinig = output.dateOfJoinig;
-                dateOfTermination = output.dateOfTermination;
+                dateOfJoining = output[0].dateOfJoining;
+                dateOfTermination = output[0].dateOfTermination;
             }else{
                 return res.status(404).json({
                     status:'failure',
@@ -89,7 +88,7 @@ module.exports.getAttendanceReportByDateAndUserCode = async (req, res) => {
         }
 
          // add userCode in dummy table called userStat
-         await userStat.create({userCode: req.body.userCode, dateOfJoinig: dateOfJoinig, dateOfTermination: dateOfTermination});
+         await userStat.create({userCode: req.body.userCode, dateOfJoining: dateOfJoining, dateOfTermination: dateOfTermination});
 
         // For Present status
         var present = 0, workingSunday = 0, totalSunday = 0;
@@ -114,7 +113,7 @@ module.exports.getAttendanceReportByDateAndUserCode = async (req, res) => {
             totalSunday: totalSunday,
             workingSunday: workingSunday,
             totalDays: totalDays,
-            dateOfJoinig: dateOfJoinig,
+            dateOfJoining: dateOfJoining,
             dateOfTermination: dateOfTermination,
             data: result,
         }); 
@@ -133,7 +132,7 @@ module.exports.getAttendanceReportByDate = async (req, res) => {
         const userList = await userStat.find({});
         for(var i = 0;i < userList.length; i++){
             var userCode = userList[i].userCode;
-            var dateOfJoinig = userList[i].dateOfJoinig;
+            var dateOfJoining = userList[i].dateOfJoining;
             var dateOfTermination = userList[i].dateOfTermination;
             var startDate = req.body.startDate;
             var endDate = req.body.endDate;
@@ -178,7 +177,7 @@ module.exports.getAttendanceReportByDate = async (req, res) => {
                 }
             }
 
-            final[userCode] = {present, totalSunday, workingSunday, totalDays, dateOfJoinig, dateOfTermination, result};
+            final[userCode] = {present, totalSunday, workingSunday, totalDays, dateOfJoining, dateOfTermination, result};
         }
 
         res.status(200).json({

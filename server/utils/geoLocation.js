@@ -1,6 +1,5 @@
 const request = require('request');
 require("dotenv").config();
-
 function getoptions({ip} = {}){
   return {
     method: 'GET',
