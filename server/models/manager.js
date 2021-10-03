@@ -5,8 +5,11 @@ const ManagerSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
   },
-  joinDate: {
-    type: Date,
+  dateOfJoining: {
+    type: String
+  },
+  dateOfTermination: {
+    type: String
   },
   secondaryContact: {
     type: String,
