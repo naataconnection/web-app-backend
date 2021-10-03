@@ -8,7 +8,7 @@ const mailer = require("../helpers/mailer");
 const {paddingZero} = require("../helpers/paddingZeros");
 
 // Controller to register a user.
-exports.registerUser = (req, res) => {
+exports.registerUser = async (req, res) => {
   var { firstName, middleName, lastName, emailId, contact, role } = req.body;
 
   if (!firstName || !emailId || !contact) {
@@ -44,10 +44,10 @@ exports.registerUser = (req, res) => {
               userCode: companyCode,
             });
 
-            driver.save();
+            await driver.save();
 
             user.userCode = driver.userCode;
-            user.save();
+            await user.save();
           })
           .catch((error) => {
             console.log(`Error from count function: ${error}`);
@@ -69,10 +69,10 @@ exports.registerUser = (req, res) => {
           user,
         });
 
-        manager.save();
+        await manager.save();
 
         user.userCode = manager.userCode;
-        user.save();
+        await user.save();
       } else if (role == "DELIVERY BOY") {
         DeliveryBoy.countDocuments()
           .then((result) => {
@@ -90,10 +90,10 @@ exports.registerUser = (req, res) => {
           user,
         });
 
-        deliveryBoy.save();
+        await deliveryBoy.save();
 
         user.userCode = deliveryBoy.userCode();
-        deliveryBoy.save();
+        await deliveryBoy.save();
       } else if (role == "CUSTOMER") {
         Customer.countDocuments()
           .then((result) => {
@@ -111,10 +111,10 @@ exports.registerUser = (req, res) => {
           user,
         });
 
-        customer.save();
+        await customer.save();
 
         user.userCode = customer.userCode();
-        customer.save();
+        await customer.save();
       }
 
       mailer.send(

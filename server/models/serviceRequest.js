@@ -1,24 +1,24 @@
 const mongoose = require("mongoose");
 
 const ServiceRequestSchema = new mongoose.Schema({
-  requestID: {
-    type: Number,
+  requestCode: {
+    type: String,
     required: true,
     unique: true,
   },
-  vendor: {
+  customer: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
+    ref: "customer",
   },
-  isApproved: {
-    type: Number,
-    required: true,
-    default: 0,
-    // 0 -> Unapproved, 1 -> Approved, 2 -> Pending.
-  },
-  admin: {
+  // isApproved: {
+  //   type: Number,
+  //   required: true,
+  //   default: 0,
+  //   // 0 -> Unapproved, 1 -> Pending, 2 -> Approved.
+  // },
+  superUser: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
+    ref: "superUser",
   },
   isRecurring: {
     type: Boolean,
@@ -28,34 +28,41 @@ const ServiceRequestSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  supervisor: {
+  manager: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
+    ref: "manager",
   },
-  vehicle: {
+  vehicles: [
+    {
       type: mongoose.Schema.Types.ObjectId,
       ref: "vehicle",
-  },
-  driver: {
+    }
+  ],
+  drivers: [
+    {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
-  },
-  deliveryBoy: {
+      ref: "driver",
+    }
+  ],
+  deliveryBoys: [
+    {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
-  },
+      ref: "deliveryBoy",
+    }
+  ],
   status: {
     type: Number,
     default: 0,
     // 0 -> Unapproved
-    // 1 -> Approved
-    // 2 -> Assigned Manager
-    // 3 -> Assigned Driver
-    // 4 -> Assigned Delivery Boy
-    // 5 -> Dispatched with Driver
-    // 6 -> Delivered by Driver
-    // 9 -> Dispatched with Delivery Boy
-    // 10-> Delivered by Delivery Boy
+    // 1 -> Pending
+    // 2 -> Approved
+    // 3 -> Assigned Manager
+    // 4 -> Assigned Driver
+    // 5 -> Assigned Delivery Boy
+    // 6 -> Dispatched with Driver
+    // 7 -> Delivered by Driver
+    // 8 -> Dispatched with Delivery Boy
+    // 9 ->  Delivered by Delivery Boy
   },
 
   // The below code won't be required as we will search in order database for service request.

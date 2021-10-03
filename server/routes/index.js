@@ -7,6 +7,7 @@ const genericContactRoutes = require("./genericContactRoutes.js");
 const vendorContactRoutes = require("./vendorContactRoutes.js");
 const { authRequired, forwardAuthenticated } = require("../middlewares/authMiddleware.js");
 const blockUserRoutes = require("./blockUserRoutes.js");
+const serviceRequestRoutes = require("../routes/serviceRequestRoutes.js");
 const router = express.Router();
 
 router.use("/user",userAuthRoutes);
@@ -16,6 +17,7 @@ router.use("/email",verificationEmailRoutes);
 router.use("/genericContact", genericContactRoutes);
 router.use("/vendorContact", vendorContactRoutes);
 router.use("/block", blockUserRoutes);
+router.use("/service", serviceRequestRoutes);
 router.get("/secret", authRequired, (req, res) => {
   res.send("Secret Found");
 });

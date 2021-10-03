@@ -10,6 +10,16 @@ const OrderSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "serviceRequest",
   },
+  totalParcels:{
+    type:Number,
+    required:true
+  },
+  invoices:[
+    {
+      numberParcels: Number,
+      parcelType: String
+    }
+  ]
 });
 
 module.exports = mongoose.model("order", OrderSchema);
