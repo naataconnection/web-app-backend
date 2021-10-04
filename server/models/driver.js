@@ -17,6 +17,14 @@ const DriverSchema = new mongoose.Schema({
   age: {
     type: String,
   },
+  dateOfJoining: {
+    type: String,
+    default: null
+  },
+  dateOfTermination: {
+    type: String,
+    default: null
+  },
   // drivingLicense: {
   //   type: Buffer,
   //   contentType: String
