@@ -10,6 +10,7 @@ const blockUserRoutes = require("./blockUserRoutes.js");
 const serviceRequestRoutes = require("./serviceRequestRoutes.js");
 const attendanceRoutes = require("./attendanceRoutes");
 const getUseRoutes = require("./getUserRoutes");
+const vehicleRoutes = require("./vehicleRoutes");
 const router = express.Router();
 
 router.use("/user",userAuthRoutes);
@@ -20,8 +21,9 @@ router.use("/genericContact", genericContactRoutes);
 router.use("/vendorContact", vendorContactRoutes);
 router.use("/attendance", attendanceRoutes);
 router.use("/block", blockUserRoutes);
-router.use("/service", serviceRequestRoutes);
+router.use("/serviceRequest", serviceRequestRoutes);
 router.use("/users", getUseRoutes);
+router.use("/vehicle", vehicleRoutes);
 
 router.get("/secret", authRequired, (req, res) => {
   res.send("Secret Found");

@@ -58,9 +58,9 @@ const ServiceRequestSchema = new mongoose.Schema({
     // 2 -> Approved
     // 3 -> Assigned Manager
     // 4 -> Assigned Driver
-    // 5 -> Assigned Delivery Boy
-    // 6 -> Dispatched with Driver
-    // 7 -> Delivered by Driver
+    // 5 -> Dispatched with Driver
+    // 6 -> Delivered by Driver
+    // 7 -> Assigned with Delivery Boy
     // 8 -> Dispatched with Delivery Boy
     // 9 ->  Delivered by Delivery Boy
   },
