@@ -11,7 +11,6 @@ router.patch("/markPresent", attendanceCnt.markAttendance);
 router.patch("/endtheDay", attendanceCnt.endDay);
 
 // Dashboard routes
-router.get("/userList", attendanceDashboardCnt.getUsersList);
 router.post("/getReportByDateAndUserCode", attendanceDashboardCnt.getAttendanceReportByDateAndUserCode);
 router.post("/getReportByDate", attendanceDashboardCnt.getAttendanceReportByDate);
 router.delete("/clearDashboard", attendanceDashboardCnt.deleteUserStats);

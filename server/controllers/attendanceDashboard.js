@@ -1,20 +1,9 @@
 const attendance = require("../models/attendance");
-const users = require("../models/user");
 const userStat = require("../models/userStat");
 const manager = require("../models/manager");
 const driver = require("../models/driver");
 const deliveryBoy = require("../models/deliveryBoy");
 
-
-module.exports.getUsersList = async (req, res) => {
-    try {
-        const userList = await users.find({}).select({ "firstName": 1, "lastName": 1, "middleName": 1, "userCode": 1 });
-        res.status(200).json({ success: "true", data: userList });
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({ success: "false", error: `${error}` });
-    }
-}
 
 // on adding user by add user
 module.exports.getAttendanceReportByDateAndUserCode = async (req, res) => {
