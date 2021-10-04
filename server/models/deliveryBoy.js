@@ -17,6 +17,14 @@ const DeliveryBoySchema = new mongoose.Schema({
   age: {
     type: String,
   },
+  dateOfJoining: {
+    type: String,
+    default: null
+  },
+  dateOfTermination: {
+    type: String,
+    default: null
+  },
   //   Photo Upload
   //   kyc: [
   //     {
