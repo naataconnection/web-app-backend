@@ -50,10 +50,14 @@
 ## Requests
 
 - /user
-    - /register - Send user info to register. Body should contain firstName, middleName, lastName, password, emailId, contact & employeeCode.
-    - /login - Send user through JWT.
+    - /register - Send user info to register. Body should contain firstName, middleName, lastName, emailId, contact & role.
+    - /registerDriver - Will register driver with their details which is visible in the dashbaord.
+    - /registerManager - Will register manager with their details which is visible in the dashbaord.
+    - /registerDeliveryBoy - Will register deliveryBoy with their details which is visible in the dashbaord.
+    - /registerCustomer - Will register customer with their details which is visible in the dashbaord.
+    - /login_checkUserAndSendOtp - Will check if user has registered and generate a new OTP for a particular user and send it to the email id or contact number.
+    - /login_verifyOtp - Will verify otp and login user.
     - /logout - User will be logged out
-    - /verify - Verify user and token.
 - /otp
   - / - Get will give list of all opts
   - /noUser - Generate a new OTP without connecting it with user
@@ -66,3 +70,20 @@
   - /create 
 - /vendorContact
   - /create 
+- /attendance
+  - /addUserList - Will populate the attendance database from userList
+  - /markPresent - Will mark the respective user present with updating the locaion, startTime
+  - /endtheDay - Will update the end time of the user
+  - /getReportByDateAndUserCode - Will give the data for range of date of particular user
+  - /getReportByDate - Will give data for range of date which will added in the dashbard
+  - /clearDashboard - Will clean the dashbaord
+- /superUser
+  - /registerSuperUser - Send superUser info to register. Body should contain firstName, middleName, lastName, emailId, contact & role.
+  - /login_checkSuperUserAndSendOtp - Will check if super user has registered and to generate a new OTP for a particular super user and send it to the email id or contact number.
+  - /login_verifyOtp - Will verify otp and login super user
+  - /logout - superUser will be logged out
+- /block
+  - /user - Will block the user
+  - /superUser - Will block the SuperUser
+- /users
+  - /userList - Will get the user firstName, middleName, lastName and userCode
