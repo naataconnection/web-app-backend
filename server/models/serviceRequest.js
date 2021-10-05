@@ -57,12 +57,9 @@ const ServiceRequestSchema = new mongoose.Schema({
     // 1 -> Pending
     // 2 -> Approved
     // 3 -> Assigned Manager
-    // 4 -> Assigned Driver
+    // 4 -> Assigned Driver and Delivery Boy
     // 5 -> Dispatched with Driver
     // 6 -> Delivered by Driver
-    // 7 -> Assigned with Delivery Boy
-    // 8 -> Dispatched with Delivery Boy
-    // 9 ->  Delivered by Delivery Boy
   },
 
   // The below code won't be required as we will search in order database for service request.

@@ -16,8 +16,8 @@ const OrderSchema = new mongoose.Schema({
   },
   invoices:[
     {
-      numberParcels: Number,
-      parcelType: String
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "invoice",
     }
   ]
 });

@@ -4,10 +4,11 @@ const Customer = require("../models/customer");
 const SuperUser = require("../models/superUser");
 const Order = require("../models/order");
 const Manager = require("../models/manager");
+const Invoice = require("../models/invoice");
 
 
 exports.createRequest = async (req, res)=>{
-    var {customerCode, isApproved, superUserCode, isRecurring, frequency, remark, totalParcels, invoices} = req.body;
+    var {customerCode, isApproved, superUserCode, isRecurring, frequency, remark, totalParcels, invoicesData} = req.body;
 
     var customer;
     try{
@@ -68,6 +69,28 @@ exports.createRequest = async (req, res)=>{
             error:`${err}`
         })
     }
+
+    var n = invoicesData.length;
+    var invoices;
+    for(var i=0;i<n;i++){
+        var invoice = new Invoice({
+            invoiceCode: invoicesData[i].invoiceCode,
+            numberParcels: invoicesData[i].numberParcels,
+            parcelType: invoicesData[i].parcelType,
+        });
+
+        try{
+            await invoice.save();
+        }
+        catch(err){
+            res.status(400).json({
+                error:`${err}`
+            })
+        }
+
+        invoices.push(invoice);
+    }
+
 
     const order = new Order({
         orderCode,
@@ -150,7 +173,7 @@ exports.approveRequest = async (req, res) =>{
 };
 
 exports.assignManager = async (req, res)=>{
-    const {requestCode, managerCode} = req.body;
+    const {requestCode, managerCode, superUserCode} = req.body;
 
     var serviceRequest;
 
@@ -172,6 +195,29 @@ exports.assignManager = async (req, res)=>{
     if(serviceRequest.status==0||serviceRequest.status==1){
         res.status(400).json({
             message:"Service Reuqest is unapporved or pending"
+        })
+    }
+
+    var superUser;
+
+    try{
+        superUser = await SuperUser.findOne({userCode:superUserCode});
+
+        if(superUser==null){
+            res.status(400).json({
+                message:`No SuperUser found for this superuser code`
+            })
+        }
+    }
+    catch(err){
+        res.status(400).json({
+            error:`${err}`
+        })
+    }
+
+    if(serviceRequest.superUser!=superUser){
+        res.status(401).json({
+            message:`Given superUser is not authorized for this service request`
         })
     }
 
@@ -210,8 +256,8 @@ exports.assignManager = async (req, res)=>{
 
 };
 
-exports.assignDrivers = async (req, res)=>{
-    var {driverCodes, vehicleCodes, requestCode} = req.body;
+exports.assignDriversAndDB = async (req, res)=>{
+    var {driverCodes, vehicleCodes, requestCode, deliveryBoyCodes} = req.body;
 
     var serviceRequest;
 
@@ -233,6 +279,7 @@ exports.assignDrivers = async (req, res)=>{
     var n = driverCodes.size();
     var drivers = [];
     var vehicles = [];
+    var deliveryBoys = [];
 
     for(var i=0;i<n;i++){
         var driver;
@@ -269,14 +316,34 @@ exports.assignDrivers = async (req, res)=>{
             })
         }
 
-        vehicle.driver = driver;
+        var deliveryBoy;
+
+        try{
+            deliveryBoy = await deliveryBoy.findOne({userCode: deliveryBoyCodes[i]});
+
+            if(deliveryBoy==null){
+                res.status(400).json({
+                    message:`No delivery boy found for this delivery boy code - ${deliveryBoyCodes[i]}`
+                })
+            }
+        }
+        catch(err){
+            res.status(400).json({
+                error:`${err}`
+            })
+        }
+
+        driver.vehicle = vehicle;
+        driver.deliveryBoy = deliveryBoy;
 
         drivers.push(driver);
         vehicles.push(vehicle);
+        deliveryBoys.push(deliveryBoy);
     }
 
     serviceRequest.drivers = drivers;
     serviceRequest.vehicles = vehicles;
+    serviceRequest.deliveryBoys = deliveryBoys;
     serviceRequest.status = 4;
 
     try{
@@ -289,21 +356,20 @@ exports.assignDrivers = async (req, res)=>{
     }
 
     res.status(200).json({
-        message:"Drivers and Vehicles assigned to Service Request"
+        message:"Drivers, Delivery Boys and Vehicles assigned to Service Request"
     })
 };
 
-exports.assignDeliveryBoys = async (req, res)=>{
-    var {deliveryBoyCodes, requestCode} = req.body;
+exports.assignDriverToInvoice = async (req, res)=>{
+    var {driverCode, invoiceCode} = req.body;
 
-    var serviceRequest;
-
+    var driver;
     try{
-        serviceRequest = await ServiceRequest.findOne({requestCode});
+        driver = await Driver.findOne({userCode: driverCode});
 
-        if(serviceRequest==null){
+        if(driverCode==null){
             res.status(400).json({
-                message:`No service request found for this request code`
+                message:`No driver found for this driver code`
             })
         }
     }
@@ -313,34 +379,26 @@ exports.assignDeliveryBoys = async (req, res)=>{
         })
     }
 
-    var n = deliveryBoysCodes.length;
-    var deliveryBoys = [];
+    var invoice;
+    try{
+        invoice = await Invoice.findOne({invoiceCode: invoiceCode});
 
-    for(var i=0;i<n;i++){
-        var deliveryBoy;
-
-        try{
-            deliveryBoy = await deliveryBoy.findOne({userCode:deliveryBoyCodes[i]});
-
-            if(deliveryBoy==null){
-                res.status.json({
-                    message:`No delivery boy found for this userCode - ${deliveryBoyCodes[i]}`
-                })
-            }
-        }
-        catch(err){
+        if(invoice==null){
             res.status(400).json({
-                error:`${err}`
+                message:`No Invoice found for this invoiceCode`
             })
         }
-        deliveryBoys.push(deliveryBoy);
+    }
+    catch(err){
+        res.status(400).json({
+            error:`${err}`
+        })
     }
 
-    serviceRequest.deliveryBoys = deliveryBoys;
-    serviceRequest.status = 7;
+    invoice.driver = driver;
 
     try{
-        await serviceRequest.save();
+        await invoice.save();
     }
     catch(err){
         res.status(400).json({
@@ -349,6 +407,174 @@ exports.assignDeliveryBoys = async (req, res)=>{
     }
 
     res.status(200).json({
-        message:`Delivery Boys Assigned to service request`
+        message:`Invoice Updated to dispatched`
+    })
+};
+
+exports.dispatchedDriver  = async(req, res)=>{
+    var {driverCode, invoiceCode, orderCode} = req.body;
+
+    var driver;
+    try{
+        driver = await Driver.findOne({userCode:driverCode});
+
+        if(driver==null){
+            res.status(400).json({
+                message: `No driver found wih this driver code`
+            })
+        }
+    }
+    catch(err){
+        res.status(400).json({
+            error:`${err}`
+        })
+    }
+
+    var invoice;
+    try{
+        invoice = await Invoice.findOne({invoiceCode: invoiceCode});
+
+        if(invoice==null){
+            res.status(400).json({
+                message:`No invoice found for this invoice code`
+            })
+        }
+    }
+    catch(err){
+        res.status(400).json({
+            error:`${err}`
+        })
+    }
+
+    if(invoice.driver!=driver){
+        res.status(400).json({
+            message:`Driver with code - ${driverCode} is not assigned to this invoice`
+        })
+    }
+
+    invoice.dispatched = true;
+
+
+
+    var order;
+    try{
+        order = await Order.findOne({orderCode:orderCode});
+    }
+    catch(err){
+        res.status(400).json({
+            error:`${err}`
+        })
+    }
+
+    var invoices = order.invoices;
+    var n = invoices.length;
+    var allDispatched = true;
+
+    for(var i=0;i<n;i++){
+        if(invoices[i].driver==null){
+            allDispatched = false;
+            break;
+        }
+    }
+
+    if(allDispatched==true){
+        order.status = 5;
+    }
+
+    try{
+        await order.save();
+    }
+    catch(err){
+        res.status(400).json({
+            error:`${err}`
+        })
+    }
+
+    res.status(200).json({
+        message:`Invoice updated to dispatch for invoice Code - ${invoiceCode}`
+    })
+};
+
+exports.deliveredDriver  = async(req, res)=>{
+    var {driverCode, invoiceCode, orderCode} = req.body;
+
+    var driver;
+    try{
+        driver = await Driver.findOne({userCode:driverCode});
+
+        if(driver==null){
+            res.status(400).json({
+                message: `No driver found wih this driver code`
+            })
+        }
+    }
+    catch(err){
+        res.status(400).json({
+            error:`${err}`
+        })
+    }
+
+    var invoice;
+    try{
+        invoice = await Invoice.findOne({invoiceCode: invoiceCode});
+
+        if(invoice==null){
+            res.status(400).json({
+                message:`No invoice found for this invoice code`
+            })
+        }
+    }
+    catch(err){
+        res.status(400).json({
+            error:`${err}`
+        })
+    }
+
+    if(invoice.driver!=driver){
+        res.status(400).json({
+            message:`Driver with code - ${driverCode} is not assigned to this invoice`
+        })
+    }
+
+    invoice.dispatched = true;
+
+
+
+    var order;
+    try{
+        order = await Order.findOne({orderCode:orderCode});
+    }
+    catch(err){
+        res.status(400).json({
+            error:`${err}`
+        })
+    }
+
+    var invoices = order.invoices;
+    var n = invoices.length;
+    var allDelivered = true;
+
+    for(var i=0;i<n;i++){
+        if(invoices[i].driver==null){
+            allDelivered = false;
+            break;
+        }
+    }
+
+    if(allDelivered==true){
+        order.status = 5;
+    }
+
+    try{
+        await order.save();
+    }
+    catch(err){
+        res.status(400).json({
+            error:`${err}`
+        })
+    }
+
+    res.status(200).json({
+        message:`Invoice updated to dispatch for invoice Code - ${invoiceCode}`
     })
 };

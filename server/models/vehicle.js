@@ -58,11 +58,6 @@ const VehicleSchema = new mongoose.Schema({
   //   insurance: {
   //       type: String
   //   }
-
-  driver: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
-  },
   dailyRent: {
     type: Number,
     default: 0,
