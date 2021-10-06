@@ -3,9 +3,11 @@ const userStat = require("../models/userStat");
 const manager = require("../models/manager");
 const driver = require("../models/driver");
 const deliveryBoy = require("../models/deliveryBoy");
+const dateTime = require("../utils/dateTimeFormat").dateDayTime;
+const geolocation = require("../utils/geoLocation");
 
 
-// on adding user by add user
+// on adding user by add user button
 module.exports.getAttendanceReportByDateAndUserCode = async (req, res) => {
     try {
         var startDate = req.body.startDate;
@@ -20,83 +22,118 @@ module.exports.getAttendanceReportByDateAndUserCode = async (req, res) => {
             })
         }
 
-        const result = await attendance.find({ 
+        const result = await attendance.find({
             date: {
-                  $gte: startDate,
-                  $lte: endDate
-            }, 
+                $gte: startDate,
+                $lte: endDate
+            },
             userCode: req.body.userCode,
-            }).sort({ date: 'asc'})
-   
-        if(!result) {
-            return res.status(404).json({
-             status:'failure',
-             message:'Data doesn\'t exist'
-            })
-        } 
+        }).sort({ date: 'asc' })
 
-        var dateOfJoining, dateOfTermination; 
-        if(req.body.userCode[5] == "1"){
-            const output = await manager.find({userCode: req.body.userCode}).select({"dateOfJoining": 1, "dateOfTermination": 1});
-            if(output){
-                dateOfJoining = output[0].dateOfJoining;
-                dateOfTermination = output[0].dateOfTermination;
-            }else{
-                return res.status(404).json({
-                    status:'failure',
-                    message:'User doesn\'t exist'
-                })
-            }
-        }else if(req.body.userCode[5] == "2"){
-            const output = await driver.find({userCode: req.body.userCode}).select({"dateOfJoining": 1, "dateOfTermination": 1});
-            if(output){
-                dateOfJoining = output[0].dateOfJoining;
-                dateOfTermination = output[0].dateOfTermination;
-            }else{
-                return res.status(404).json({
-                    status:'failure',
-                    message:'User doesn\'t exist'
-                })
-            }
-        }else if(req.body.userCode[5] == "3"){
-            const output = await deliveryBoy.find({userCode: req.body.userCode}).select({"dateOfJoining": 1, "dateOfTermination": 1});
-            if(output){
-                dateOfJoining = output[0].dateOfJoining;
-                dateOfTermination = output[0].dateOfTermination;
-            }else{
-                return res.status(404).json({
-                    status:'failure',
-                    message:'User doesn\'t exist'
-                })
-            }
-        }else{
+        if (!result) {
             return res.status(404).json({
-                status:'failure',
-                message:'User Code doesn\'t defined'
+                status: 'failure',
+                message: 'Data doesn\'t exist'
             })
         }
 
-         // add userCode in dummy table called userStat
-         await userStat.create({userCode: req.body.userCode, dateOfJoining: dateOfJoining, dateOfTermination: dateOfTermination});
+        var dateOfJoining, dateOfTermination;
+        if (req.body.userCode[5] == "1") {
+            const output = await manager.find({ userCode: req.body.userCode }).select({ "dateOfJoining": 1, "dateOfTermination": 1 });
+            if (output) {
+                dateOfJoining = output[0].dateOfJoining;
+                dateOfTermination = output[0].dateOfTermination;
+            } else {
+                return res.status(404).json({
+                    status: 'failure',
+                    message: 'User doesn\'t exist'
+                })
+            }
+        } else if (req.body.userCode[5] == "2") {
+            const output = await driver.find({ userCode: req.body.userCode }).select({ "dateOfJoining": 1, "dateOfTermination": 1 });
+            if (output) {
+                dateOfJoining = output[0].dateOfJoining;
+                dateOfTermination = output[0].dateOfTermination;
+            } else {
+                return res.status(404).json({
+                    status: 'failure',
+                    message: 'User doesn\'t exist'
+                })
+            }
+        } else if (req.body.userCode[5] == "3") {
+            const output = await deliveryBoy.find({ userCode: req.body.userCode }).select({ "dateOfJoining": 1, "dateOfTermination": 1 });
+            if (output) {
+                dateOfJoining = output[0].dateOfJoining;
+                dateOfTermination = output[0].dateOfTermination;
+            } else {
+                return res.status(404).json({
+                    status: 'failure',
+                    message: 'User doesn\'t exist'
+                })
+            }
+        } else {
+            return res.status(404).json({
+                status: 'failure',
+                message: 'User Code doesn\'t defined'
+            })
+        }
+
+        // add user in dummy table called userStat
+        var currDate = dateTime()[0];
+        const user = await attendance.find({ date: currDate, userCode: req.body.userCode });
+        const location = await geolocation.location({ ip: req.body.ip });
+        //req.headers.host
+        if (user[0].startTime !== null) {
+            if (user[0].endTime === null) {
+                await userStat.create({ 
+                    userCode: req.body.userCode,
+                    dateOfJoining: dateOfJoining,
+                    dateOfTermination: dateOfTermination,  
+                    // ipAddress: req.headers.host, 
+                    ipAddress: req.body.ip, 
+                    currLatitude: location.body.latitude,
+                    currLongitude: location.body.longitude
+                });
+
+            } else {
+                await userStat.create({ 
+                    userCode: req.body.userCode, 
+                    dateOfJoining: dateOfJoining, 
+                    dateOfTermination: dateOfTermination,
+                    // ipAddress: req.headers.host, 
+                    ipAddress: req.body.ip, 
+                });
+                return res.status(404).json({ success: "failure", message: "User have ended his day." });
+            }
+        } else {
+            await userStat.create({ 
+                userCode: req.body.userCode, 
+                dateOfJoining: dateOfJoining, 
+                dateOfTermination: dateOfTermination,
+                // ipAddress: req.headers.host, 
+                ipAddress: req.body.ip, 
+            });
+            return res.status(404).json({ success: "failure", message: "User is not present." });
+        }
 
         // For Present status
         var present = 0, workingSunday = 0, totalSunday = 0;
         var differenceInTime = new Date(endDate).getTime() - new Date(startDate).getTime();
-        var totalDays = differenceInTime/(1000*3600*24);
+        var totalDays = differenceInTime / (1000 * 3600 * 24);
         totalDays++;
-        for(var i = 0;i < result.length; i++){
-            if(result[i].attendance_status == 1){
+        for (var i = 0; i < result.length; i++) {
+            if (result[i].attendance_status == 1) {
                 present++;
             }
-            if(result[i].day == "Sunday"){
+            if (result[i].day == "Sunday") {
                 totalSunday++;
-                if(result[i].attendance_status == 1){
+                if (result[i].attendance_status == 1) {
                     workingSunday++;
                 }
             }
         }
         res.status(200).json({
-            status:'success',
+            status: 'success',
             present: present,
             absent: totalDays - present,
             totalSunday: totalSunday,
@@ -105,21 +142,21 @@ module.exports.getAttendanceReportByDateAndUserCode = async (req, res) => {
             dateOfJoining: dateOfJoining,
             dateOfTermination: dateOfTermination,
             data: result,
-        }); 
+        });
     } catch (error) {
         console.log(error);
-        if(error.code == 11000){
-            res.status(400).json({success: "false", error: `User already added in the attendance dashboard`});
+        if (error.code == 11000) {
+            res.status(400).json({ success: "false", error: `User already added in the attendance dashboard` });
         }
         res.status(400).json({ success: "false", error: `${error}` });
     }
 }
 
 module.exports.getAttendanceReportByDate = async (req, res) => {
-    try{
+    try {
         var final = [];
         const userList = await userStat.find({});
-        for(var i = 0;i < userList.length; i++){
+        for (var i = 0; i < userList.length; i++) {
             var userCode = userList[i].userCode;
             var dateOfJoining = userList[i].dateOfJoining;
             var dateOfTermination = userList[i].dateOfTermination;
@@ -135,55 +172,63 @@ module.exports.getAttendanceReportByDate = async (req, res) => {
                 })
             }
 
-            const result = await attendance.find({ 
+            const result = await attendance.find({
                 date: {
                     $gte: startDate,
                     $lte: endDate
-                }, 
+                },
                 userCode: userCode,
-                }).sort({ date: 'asc'})  
-   
-            if(!result) {
+            }).sort({ date: 'asc' })
+
+            if (!result) {
                 return res.status(404).json({
-                status:'failure',
-                message:'Data doesn\'t exist'
+                    status: 'failure',
+                    message: 'Data doesn\'t exist'
                 })
-            } 
-          
+            }
+
             var present = 0, workingSunday = 0, totalSunday = 0;
             var differenceInTime = new Date(endDate).getTime() - new Date(startDate).getTime();
-            var totalDays = differenceInTime/(1000*3600*24);
+            var totalDays = differenceInTime / (1000 * 3600 * 24);
             totalDays++;
-            for(var i = 0;i < result.length; i++){
-                if(result[i].attendance_status == 1){
+            for (var i = 0; i < result.length; i++) {
+                if (result[i].attendance_status == 1) {
                     present++;
                 }
-                if(result[i].day == "Sunday"){
+                if (result[i].day == "Sunday") {
                     totalSunday++;
-                    if(result[i].attendance_status == 1){
+                    if (result[i].attendance_status == 1) {
                         workingSunday++;
                     }
                 }
             }
 
-            final[userCode] = {present, totalSunday, workingSunday, totalDays, dateOfJoining, dateOfTermination, result};
+            final[userCode] = { 
+                present, 
+                totalSunday, 
+                workingSunday, 
+                totalDays, 
+                dateOfJoining, 
+                dateOfTermination, 
+                result 
+            };
         }
 
         res.status(200).json({
-            status:'success',
+            status: 'success',
             data: Object.assign({}, final)
-        }); 
-    }catch(error){
+        });
+    } catch (error) {
         console.log(error);
         res.status(400).json({ success: "false", error: `${error}` });
     }
 }
 
 module.exports.deleteUserStats = async (req, res) => {
-    try{
+    try {
         await userStat.deleteMany({});
-        res.status(200).json({status: "true", message:"Dashboard Clean Up"});
-    }catch(error){
+        res.status(200).json({ status: "true", message: "Dashboard Clean Up" });
+    } catch (error) {
         console.log(error);
         res.status(400).json({ success: "false", error: `${error}` });
     }

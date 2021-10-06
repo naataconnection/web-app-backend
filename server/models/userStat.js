@@ -11,6 +11,17 @@ const userStatSchema = new mongoose.Schema({
     dateOfTermination: {
         type: String
     },
+    currLatitude: {
+        type: String,
+        default: null
+    },
+    currLongitude: {
+        type: String,
+        default: null
+    },
+    ipAddress: {
+        type: String,
+    }
 });
 
 module.exports = mongoose.model('UserStat', userStatSchema);

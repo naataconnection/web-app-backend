@@ -3,7 +3,7 @@ const passport = require("passport");
 const jsonwebtoken = require("jsonwebtoken");
 const SuperUser = require("../models/superUser");
 
-// Controller to ckeck if super user has registered.
+// Controller to check if super user has registered.
 exports.loginSuperUser_checkSuperUser = (req,res,next) => {
 	const emailIdOrContact = req.body.emailIdOrContact;
 	
