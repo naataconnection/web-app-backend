@@ -87,3 +87,6 @@
   - /superUser - Will block the SuperUser
 - /users
   - /userList - Will get the user firstName, middleName, lastName and userCode
+- /user/edit
+  - /sendOtp - Will take the new email id or new contact number and sends otp to that new email id or contact number.
+  - /verifyOtpAndUpdateField - Will take the otp as input and updates given email id or contact, if the otp entered is correct.
