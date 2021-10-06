@@ -30,5 +30,4 @@ router.get("/",(req,res)=>{
 	res.send('<h1>Helloooo</h1>');
 
 });
-
 module.exports = router;
