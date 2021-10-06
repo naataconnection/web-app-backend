@@ -9,8 +9,10 @@ const { authRequired, forwardAuthenticated } = require("../middlewares/authMiddl
 const blockUserRoutes = require("./blockUserRoutes.js");
 const attendanceRoutes = require("./attendanceRoutes");
 const getUseRoutes = require("./getUserRoutes");
+const editUserProfileFieldsRoutes = require("./editUserProfileFieldsRoutes.js");
 const router = express.Router();
 
+router.use("/user/edit",editUserProfileFieldsRoutes);
 router.use("/user",userAuthRoutes);
 router.use("/superUser",superUserAuthRoutes);
 router.use("/otp",otpRoutes);
