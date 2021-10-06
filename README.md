@@ -58,6 +58,9 @@
     - /login_checkUserAndSendOtp - Will check if user has registered and generate a new OTP for a particular user and send it to the email id or contact number.
     - /login_verifyOtp - Will verify otp and login user.
     - /logout - User will be logged out
+- /user/edit
+    - /sendOtp - Will take the new email id or new contact number and sends otp to that new email id or contact number.
+    - /verifyOtpAndUpdateField - Will take the otp as input and updates given email id or contact, if the otp entered is correct.
 - /otp
   - / - Get will give list of all opts
   - /noUser - Generate a new OTP without connecting it with user
@@ -87,6 +90,3 @@
   - /superUser - Will block the SuperUser
 - /users
   - /userList - Will get the user firstName, middleName, lastName and userCode
-- /user/edit
-  - /sendOtp - Will take the new email id or new contact number and sends otp to that new email id or contact number.
-  - /verifyOtpAndUpdateField - Will take the otp as input and updates given email id or contact, if the otp entered is correct.
