@@ -14,6 +14,7 @@ router.patch("/endtheDay", attendanceCnt.endDay);
 router.post("/getReportByDateAndUserCode", attendanceDashboardCnt.getAttendanceReportByDateAndUserCode);
 router.post("/getReportByDate", attendanceDashboardCnt.getAttendanceReportByDate);
 router.delete("/clearDashboard", attendanceDashboardCnt.deleteUserStats);
+router.delete("/deleteUser", attendanceDashboardCnt.deleteUser);
 
 
 module.exports = router

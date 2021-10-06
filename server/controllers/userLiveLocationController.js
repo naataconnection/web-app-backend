@@ -1,31 +1,37 @@
 const userStat = require("../models/userStat");
 const geolocation = require("../utils/geoLocation");
+const dateTime = require("../utils/dateTimeFormat").dateDayTime;
+const attendance = require("../models/attendance");
 
+// get live location when admin click on track user
 module.exports.updateLiveLocation = async (req, res) => {
     try{
-        var final = [];
-        const result = await userStat.find({});
-        for(var i = 0;i < result.length; i++){
-            if(result[i].currLatitude !== null && result[i].currLongitude !== null){
-                const location = await geolocation.location({ ip: result[i].ipAddress});
+        var currDate = dateTime()[0];
+        const user = await attendance.find({ date: currDate, userCode: req.body.userCode });
+        if (user[0].startTime !== null) {
+            if (user[0].endTime === null) {
+                const result = await userStat.find({userCode: req.body.userCode});
+                const location = await geolocation.location({ ip: result[0].ipAddress});
                 const doc = await userStat.findOneAndUpdate(
-                    {ipAddress: result[i].ipAddress }, 
+                    {userCode: req.body.userCode}, 
                     {currLatitude: location.body.latitude, 
-                    currLongitude: location.body.longitude},
+                     currLongitude: location.body.longitude},
                     {new: true}
                 );
-                const latitude = doc.currLatitude;
-                const longitude = doc.currLongitude;
-                final[result[i].userCode] = {latitude, longitude};
-            }else{
-                console.log("Archana");
-                final[result[i].userCode] = {};
+                
+                return res.status(200).json({
+                    status: 'success',
+                    data: {
+                        latitude: doc.currLatitude,
+                        longitude: doc.currLongitude,
+                    }
+                });
+            } else {
+                return res.status(404).json({ success: "failure", message: "User have ended his day." });
             }
+        } else {
+            return res.status(404).json({ success: "failure", message: "User is not present." });
         }
-        res.status(200).json({
-            status: 'success',
-            data: Object.assign({}, final)
-        });
     }catch(error){
         console.log(error);
         res.status(400).json({ success: "false", error: `${error}` });

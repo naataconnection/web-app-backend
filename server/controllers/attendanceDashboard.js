@@ -3,9 +3,6 @@ const userStat = require("../models/userStat");
 const manager = require("../models/manager");
 const driver = require("../models/driver");
 const deliveryBoy = require("../models/deliveryBoy");
-const dateTime = require("../utils/dateTimeFormat").dateDayTime;
-const geolocation = require("../utils/geoLocation");
-
 
 // on adding user by add user button
 module.exports.getAttendanceReportByDateAndUserCode = async (req, res) => {
@@ -79,42 +76,13 @@ module.exports.getAttendanceReportByDateAndUserCode = async (req, res) => {
         }
 
         // add user in dummy table called userStat
-        var currDate = dateTime()[0];
-        const user = await attendance.find({ date: currDate, userCode: req.body.userCode });
-        const location = await geolocation.location({ ip: req.body.ip });
-        //req.headers.host
-        if (user[0].startTime !== null) {
-            if (user[0].endTime === null) {
-                await userStat.create({ 
-                    userCode: req.body.userCode,
-                    dateOfJoining: dateOfJoining,
-                    dateOfTermination: dateOfTermination,  
-                    // ipAddress: req.headers.host, 
-                    ipAddress: req.body.ip, 
-                    currLatitude: location.body.latitude,
-                    currLongitude: location.body.longitude
-                });
-
-            } else {
-                await userStat.create({ 
-                    userCode: req.body.userCode, 
-                    dateOfJoining: dateOfJoining, 
-                    dateOfTermination: dateOfTermination,
-                    // ipAddress: req.headers.host, 
-                    ipAddress: req.body.ip, 
-                });
-                return res.status(404).json({ success: "failure", message: "User have ended his day." });
-            }
-        } else {
-            await userStat.create({ 
-                userCode: req.body.userCode, 
-                dateOfJoining: dateOfJoining, 
-                dateOfTermination: dateOfTermination,
-                // ipAddress: req.headers.host, 
-                ipAddress: req.body.ip, 
-            });
-            return res.status(404).json({ success: "failure", message: "User is not present." });
-        }
+        await userStat.create({ 
+            userCode: req.body.userCode, 
+            dateOfJoining: dateOfJoining, 
+            dateOfTermination: dateOfTermination,
+            // ipAddress: req.headers.host, 
+            ipAddress: req.body.ip, 
+        });
 
         // For Present status
         var present = 0, workingSunday = 0, totalSunday = 0;
@@ -224,11 +192,23 @@ module.exports.getAttendanceReportByDate = async (req, res) => {
     }
 }
 
+// Clean dashbaord
 module.exports.deleteUserStats = async (req, res) => {
     try {
         await userStat.deleteMany({});
         res.status(200).json({ status: "true", message: "Dashboard Clean Up" });
     } catch (error) {
+        console.log(error);
+        res.status(400).json({ success: "false", error: `${error}` });
+    }
+}
+
+// delete particular user
+module.exports.deleteUser = async(req, res) => {
+    try{
+        await userStat.deleteOne({userCode: req.body.userCode});
+        res.status(200).json({ status: "true", message: "Particular user deleted" });
+    }catch(error){
         console.log(error);
         res.status(400).json({ success: "false", error: `${error}` });
     }

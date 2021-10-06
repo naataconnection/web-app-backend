@@ -6,10 +6,12 @@ const userStatSchema = new mongoose.Schema({
         unique: true,
     },
     dateOfJoining: {
-        type: String
+        type: String,
+        default: null,
     },
     dateOfTermination: {
-        type: String
+        type: String,
+        default: null,
     },
     currLatitude: {
         type: String,
