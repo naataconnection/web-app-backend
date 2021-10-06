@@ -1,3 +1,7 @@
+require("dotenv").config();
+const jsonwebtoken = require("jsonwebtoken");
+const User = require("../models/user");
+
 exports.authRequired = (req, res, next) => {
 	if (req.isAuthenticated()) {
 	  return next();
