@@ -1,8 +1,11 @@
 const vehicleStatus = require("../utils/fleethunt");
+const ownerFleetHunt = require("../models/ownerFleetHunt");
+const driver = require("../models/driver");
 
 module.exports.getAllVehicle = async (req, res) => {
     try{
-        const vehicles = await vehicleStatus.fleethuntAllUser();
+        const owner = await ownerFleetHunt.find({});
+        const vehicles = await vehicleStatus.fleethuntAllUser(owner[0].fleetHuntApiKey);
         res.status(200).json(vehicles.body);
     }catch(error){
         console.log(error);
@@ -12,8 +15,8 @@ module.exports.getAllVehicle = async (req, res) => {
 
 module.exports.getVehiclebyId = async (req, res) => {
     try{
-        const id = req.body.vehicleId; 
-        const vehicles = await vehicleStatus.fleethuntbyid(id);
+        const owner = await ownerFleetHunt.find({});
+        const vehicles = await vehicleStatus.fleethuntbyid(req.body.fleetHuntId, owner[0].fleetHuntApiKey);
         res.status(200).json(vehicles.body);
     }catch(error){
         console.log(error);

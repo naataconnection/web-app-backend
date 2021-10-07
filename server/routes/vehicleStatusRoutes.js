@@ -6,6 +6,6 @@ const vehicleStatusCnt = require("../controllers/vehicleStatus");
 // Main route - '/vehicle'
 
 router.get("/getAll", vehicleStatusCnt.getAllVehicle);
-router.get("/getbyid", vehicleStatusCnt.getVehiclebyId);
+router.get("/getbyId", vehicleStatusCnt.getVehiclebyId);
 
 module.exports = router

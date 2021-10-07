@@ -1,9 +1,8 @@
 const request = require("request");
 require("dotenv").config();
 
-const fleethuntbyid = (vehicleId) => {
-    let apiKey = process.env.FLEETHUNT_API_KEY;
-    let URL = "https://www.fleethunt.in/api/locate" + "?device_id=" + vehicleId + "api_token=" + apiKey;
+const fleethuntbyid = (vehicleId, apiKey) => {
+    let URL = "https://www.fleethunt.in/api/locate" + "?device_id=" + vehicleId + "&api_token=" + apiKey;
     var options = {
         method: "GET",
         url: URL,
@@ -21,8 +20,7 @@ const fleethuntbyid = (vehicleId) => {
     });
 };
 
-const fleethuntAllUser = () => {
-    let apiKey = process.env.FLEETHUNT_API_KEY;
+const fleethuntAllUser = (apiKey) => {
     let URL = "https://www.fleethunt.in/api/fleet" + "?api_token=" + apiKey;
     var options = {
         method: "GET",
