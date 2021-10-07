@@ -60,23 +60,27 @@ const ServiceRequestSchema = new mongoose.Schema({
     // 4 -> Assigned Driver and Delivery Boy
     // 5 -> Dispatched with Driver
     // 6 -> Delivered by Driver
+    // 7 -> Closed by Manager
   },
-
-  // The below code won't be required as we will search in order database for service request.
-  //   order: [
-  //     {
-  //       type: mongoose.Schema.Types.ObjectId,
-  //       ref: "order",
-  //     },
-  //   ],
-
+  orders: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "order",
+    },
+  ],
   startDate: {
     type: Date,
+  },
+  startTime:{
+    type: String
   },
   endDate: {
     type: Date,
   },
-  remarks: [
+  endTime:{
+    type: String
+  },
+  remarksManager: [
     {
       type: String,
     },

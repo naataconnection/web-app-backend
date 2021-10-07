@@ -8,7 +8,7 @@ const Invoice = require("../models/invoice");
 
 
 exports.createRequest = async (req, res)=>{
-    var {customerCode, isApproved, superUserCode, isRecurring, frequency, remark, totalParcels, invoicesData} = req.body;
+    var {customerCode, status, superUserCode, isRecurring, frequency} = req.body;
 
     var customer;
     try{
@@ -41,15 +41,12 @@ exports.createRequest = async (req, res)=>{
             error:`${err}`
         })
     }
-    
-
 
     const result = await ServiceRequest.countDocuments()
-    const requestCode = "NCREQ"+paddingZero(result+1, 4);
-    const orderCode = "NCORD"+paddingZero(result+1, 0);
+    const requestCode = "NCSR"+paddingZero(result+1, 4);
 
-    var remarks = [];
-    remarks.push(remark);
+    var remarksManager = [];
+    remarksManager.push(remark);
 
     const serviceRequest = new ServiceRequest({
         requestCode,
@@ -57,8 +54,9 @@ exports.createRequest = async (req, res)=>{
         superUser,
         isRecurring,
         frequency,
-        status: isApproved
-    })
+        status,
+        remarksManager
+    });
 
     try{
         await serviceRequest.save();
@@ -66,45 +64,6 @@ exports.createRequest = async (req, res)=>{
     catch(err){
         res.status(400).json({
             message: "Wrong Details Provided",
-            error:`${err}`
-        })
-    }
-
-    var n = invoicesData.length;
-    var invoices;
-    for(var i=0;i<n;i++){
-        var invoice = new Invoice({
-            invoiceCode: invoicesData[i].invoiceCode,
-            numberParcels: invoicesData[i].numberParcels,
-            parcelType: invoicesData[i].parcelType,
-        });
-
-        try{
-            await invoice.save();
-        }
-        catch(err){
-            res.status(400).json({
-                error:`${err}`
-            })
-        }
-
-        invoices.push(invoice);
-    }
-
-
-    const order = new Order({
-        orderCode,
-        serviceRequest,
-        totalParcels,
-        invoices
-    });
-
-    try{
-        await order.save();
-    }
-    catch(err){
-        res.status(400).json({
-            message:"Wrong Details provided",
             error:`${err}`
         })
     }
@@ -155,7 +114,12 @@ exports.approveRequest = async (req, res) =>{
         })
     }
 
-    serviceRequest.superUser = superUser;
+    if(serviceRequest.superUser!=superUser){
+        res.status(400).json({
+            message:`Given super user has not created this request`
+        })
+    }
+
     serviceRequest.status = 2;
 
     try{
@@ -360,16 +324,32 @@ exports.assignDriversAndDB = async (req, res)=>{
     })
 };
 
-exports.assignDriverToInvoice = async (req, res)=>{
-    var {driverCode, invoiceCode} = req.body;
+exports.createOrder = async(req, res)=>{
+    var {requestCode, driverCode, deliverySheetId, startingKM} = req.body;
+
+    var serviceRequest;
+    try{
+        serviceRequest = await ServiceRequest.findOne({requestCode});
+
+        if(serviceRequest==null){
+            res.status(400).json({
+                message:"No Service Request found for this request code"
+            })
+        }
+    }
+    catch(err){
+        res.status(400).json({
+            error:`${err}`
+        })
+    }
 
     var driver;
     try{
-        driver = await Driver.findOne({userCode: driverCode});
+        driver = await Driver.findOne({userCode:driverCode});
 
-        if(driverCode==null){
+        if(driver==null){
             res.status(400).json({
-                message:`No driver found for this driver code`
+                message: `No driver found wih this driver code`
             })
         }
     }
@@ -379,15 +359,19 @@ exports.assignDriverToInvoice = async (req, res)=>{
         })
     }
 
-    var invoice;
+    const base = requestCode.slice(-4);
+    var n = requestCode.orders.length;
+    const orderCode = "NCOR"+base+"/"+paddingZero(n+1, 2);
+
+    const order = new Order({
+        driver, 
+        orderCode,
+        deliverySheetId,
+        startingKM
+    })
+
     try{
-        invoice = await Invoice.findOne({invoiceCode: invoiceCode});
-
-        if(invoice==null){
-            res.status(400).json({
-                message:`No Invoice found for this invoiceCode`
-            })
-        }
+        await order.save();
     }
     catch(err){
         res.status(400).json({
@@ -395,24 +379,91 @@ exports.assignDriverToInvoice = async (req, res)=>{
         })
     }
 
-    invoice.driver = driver;
+    requestCode.orders.push(order);
+
+    try{
+        await requestCode.save();
+    }
+    catch(err){
+        res.status(400).json({
+            error:`${err}`
+        })
+    }
+
+    res.status(200).json({
+        message:`Order created for requestCode - ${requestCode}`
+    })
+};
+
+exports.createInvoice = async(req, res)=>{
+    var {orderCode, invoiceId, numberParcels, parcelWeight, deliveryAddress, parcelType} = req.body;
+
+    var order;
+    try{
+        order = await Order.findOne({orderCode});
+
+        if(order==null){
+            res.status(400).json({
+                message: `No Orde found for this orderCode`
+            })
+        }
+    }
+    catch(err){
+        res.status(400).json({
+            error: `${err}`
+        })
+    }
+
+    var n = order.invoices.length;
+    const orderCodeSplit = orderCode.split("/");
+    const invoiceCode = "NCIC"+orderCodeSplit[-2]+"/"+orderCodeSplit[-1]+"/"+paddingZero(n+1, 2);
+
+    const invoice = new Invoice({
+        invoiceCode,
+        invoiceId,
+        numberParcels,
+        parcelWeight,
+        deliveryAddress,
+        parcelType
+    });
 
     try{
         await invoice.save();
     }
     catch(err){
         res.status(400).json({
+            error: `${err}`
+        })
+    }
+
+    order.invoices.push(invoice);
+
+    try{
+        await order.save();
+    }
+    catch(err){
+        res.status(400).json({
             error:`${err}`
         })
     }
 
     res.status(200).json({
-        message:`Invoice Updated to dispatched`
+        message: `Invoice Created for orderCode - ${orderCode}`
     })
 };
 
 exports.dispatchedDriver  = async(req, res)=>{
-    var {driverCode, invoiceCode, orderCode} = req.body;
+    var {driverCode, orderCode, requestCode} = req.body;
+
+    var order;
+    try{
+        order = await Order.findOne({orderCode:orderCode});
+    }
+    catch(err){
+        res.status(400).json({
+            error:`${err}`
+        })
+    }
 
     var driver;
     try{
@@ -430,15 +481,15 @@ exports.dispatchedDriver  = async(req, res)=>{
         })
     }
 
-    var invoice;
-    try{
-        invoice = await Invoice.findOne({invoiceCode: invoiceCode});
+    if(order.driver!=driver){
+        res.status(400).json({
+            message:`Driver who intiated the request is not same as given driver`
+        })
+    }
 
-        if(invoice==null){
-            res.status(400).json({
-                message:`No invoice found for this invoice code`
-            })
-        }
+    var serviceRequest;
+    try{
+        serviceRequest = await ServiceRequest.findOne({requestCode:requestCode});
     }
     catch(err){
         res.status(400).json({
@@ -446,19 +497,10 @@ exports.dispatchedDriver  = async(req, res)=>{
         })
     }
 
-    if(invoice.driver!=driver){
-        res.status(400).json({
-            message:`Driver with code - ${driverCode} is not assigned to this invoice`
-        })
-    }
+    order.dispatched = true;
 
-    invoice.dispatched = true;
-
-
-
-    var order;
     try{
-        order = await Order.findOne({orderCode:orderCode});
+        await order.save();
     }
     catch(err){
         res.status(400).json({
@@ -466,37 +508,47 @@ exports.dispatchedDriver  = async(req, res)=>{
         })
     }
 
-    var invoices = order.invoices;
-    var n = invoices.length;
+    var n = serviceRequest.orders.length;
+
     var allDispatched = true;
 
     for(var i=0;i<n;i++){
-        if(invoices[i].driver==null){
+        if(serviceRequest.orders[i].dispatched==false){
             allDispatched = false;
             break;
         }
-    }
+    }   
 
     if(allDispatched==true){
-        order.status = 5;
+        serviceRequest.status = 5;
     }
 
     try{
-        await order.save();
+        await serviceRequest.save();
+    }
+    catch(err){
+        res.status(400).json({
+            error: `${err}`
+        })
+    }
+
+    res.status(200).json({
+        message:`Order updated to dispatch`
+    })
+};
+
+exports.deliverDriver  = async(req, res)=>{
+    var {driverCode, orderCode, requestCode} = req.body;
+
+    var order;
+    try{
+        order = await Order.findOne({orderCode:orderCode});
     }
     catch(err){
         res.status(400).json({
             error:`${err}`
         })
     }
-
-    res.status(200).json({
-        message:`Invoice updated to dispatch for invoice Code - ${invoiceCode}`
-    })
-};
-
-exports.deliveredDriver  = async(req, res)=>{
-    var {driverCode, invoiceCode, orderCode} = req.body;
 
     var driver;
     try{
@@ -514,15 +566,15 @@ exports.deliveredDriver  = async(req, res)=>{
         })
     }
 
-    var invoice;
-    try{
-        invoice = await Invoice.findOne({invoiceCode: invoiceCode});
+    if(order.driver!=driver){
+        res.status(400).json({
+            message:`Driver who intiated the request is not same as given driver`
+        })
+    }
 
-        if(invoice==null){
-            res.status(400).json({
-                message:`No invoice found for this invoice code`
-            })
-        }
+    var serviceRequest;
+    try{
+        serviceRequest = await ServiceRequest.findOne({requestCode:requestCode});
     }
     catch(err){
         res.status(400).json({
@@ -530,40 +582,7 @@ exports.deliveredDriver  = async(req, res)=>{
         })
     }
 
-    if(invoice.driver!=driver){
-        res.status(400).json({
-            message:`Driver with code - ${driverCode} is not assigned to this invoice`
-        })
-    }
-
-    invoice.dispatched = true;
-
-
-
-    var order;
-    try{
-        order = await Order.findOne({orderCode:orderCode});
-    }
-    catch(err){
-        res.status(400).json({
-            error:`${err}`
-        })
-    }
-
-    var invoices = order.invoices;
-    var n = invoices.length;
-    var allDelivered = true;
-
-    for(var i=0;i<n;i++){
-        if(invoices[i].driver==null){
-            allDelivered = false;
-            break;
-        }
-    }
-
-    if(allDelivered==true){
-        order.status = 5;
-    }
+    order.delivered = true;
 
     try{
         await order.save();
@@ -574,7 +593,84 @@ exports.deliveredDriver  = async(req, res)=>{
         })
     }
 
+    var n = serviceRequest.orders.length;
+
+    var allDelivered = true;
+
+    for(var i=0;i<n;i++){
+        if(serviceRequest.orders[i].dispatched==false){
+            allDelivered = false;
+            break;
+        }
+    }   
+
+    if(allDelivered==true){
+        serviceRequest.status = 6;
+    }
+
+    try{
+        await serviceRequest.save();
+    }
+    catch(err){
+        res.status(400).json({
+            error: `${err}`
+        })
+    }
+
     res.status(200).json({
-        message:`Invoice updated to dispatch for invoice Code - ${invoiceCode}`
+        message:`Order updated to delivered`
     })
+};
+
+exports.closeRequest = async (req, res)=>{
+    var {managerCode, requestCode} = req.body;
+
+    var manager;
+    try{
+        manager = Manager.findOne({userCode:managerCode});
+
+        if(manager==null){
+            res.status(400).json({
+                message:`No manager found for this manager code`
+            })
+        }
+    }
+    catch(err){
+        res.status(400).json({
+            error:`${err}`
+        })
+    }
+
+    var serviceRequest;
+    try{
+        serviceRequest = ServiceRequest.findOne({requestCode:requestCode})
+
+        if(serviceRequest==null){
+            res.status(400).json({
+                message:`No service request found for this requestCode`
+            })
+        }
+    }
+    catch(err){
+        res.status(400).json({
+            error:`${err}`
+        })
+    }
+
+    if(serviceRequest.manager!=manager){
+        res.status(400).json({
+            message:`Given managerCode is not corresponding to manager of service request`
+        })
+    }
+
+    serviceRequest.status = 7;
+
+    try{
+        await serviceRequest.save();
+    }
+    catch(err){
+        res.status(400).json({
+            error:`${err}`
+        })
+    }
 };

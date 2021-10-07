@@ -5,15 +5,25 @@ const InvoiceSchema = new mongoose.Schema({
         type: String,
         unique: true
     },
-    driver:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "driver"
+    invoiceId: {
+        type: String,
+        unique: true
     },
     numberParcels:{
-        type: Number
+        type: Number,
+        default: 0
+    },
+    parcelWeight:{
+        type: Number,
+        default: 0
+    },
+    deliveryAddress:{
+        type: String,
+        required: true
     },
     parcelType:{
-        type: String
+        type: String,
+        required: true
     },
     dispatched:{
         type: Boolean,
