@@ -75,6 +75,7 @@ exports.loginUser_verifyOtp = (req, res,next) => {
 		const userCode = user.userCode;
 		const token = jsonwebtoken.sign({ user: userCode, maxAge: parseInt(process.env.MAX_AGE) }, process.env.SECRET);
 		res.cookie('token', token, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
+		res.cookie('userCode', userCode, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
 		return res.status(200).json({message:info.message});
 	}
   })(req, res,next);
@@ -89,7 +90,7 @@ exports.logoutUser = (req,res,next) => {
 			   return  res.status(400).json({message:"Invalid Token!!!Pls login with correct credentials"});
 		   } else {
 			  res.clearCookie('token');
-			  // res.clearCookie('employeeCode');
+			  res.clearCookie('userCode');
 			  const message = "User with user code "+code.user+" is logged out successfullly";
 			  res.status(200).json({message:message});
 		   }	
