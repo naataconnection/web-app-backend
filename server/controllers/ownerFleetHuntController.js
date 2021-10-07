@@ -29,7 +29,6 @@ module.exports.update = async(req, res) => {
 module.exports.getData = async(req, res) => {
     try{
         const owner = await ownerFleetHunt.find({});
-        console.log(owner);
         res.status(200).json({success: "true", data: owner});
     }catch(error){
         console.log(error);
