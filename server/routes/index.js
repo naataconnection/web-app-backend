@@ -11,8 +11,10 @@ const serviceRequestRoutes = require("./serviceRequestRoutes.js");
 const attendanceRoutes = require("./attendanceRoutes");
 const getUseRoutes = require("./getUserRoutes");
 const vehicleRoutes = require("./vehicleRoutes");
+const editUserProfileFieldsRoutes = require("./editUserProfileFieldsRoutes.js");
 const router = express.Router();
 
+router.use("/user/edit",editUserProfileFieldsRoutes);
 router.use("/user",userAuthRoutes);
 router.use("/superUser",superUserAuthRoutes);
 router.use("/otp",otpRoutes);
@@ -32,5 +34,4 @@ router.get("/",(req,res)=>{
 	res.send('<h1>Helloooo</h1>');
 
 });
-
 module.exports = router;
