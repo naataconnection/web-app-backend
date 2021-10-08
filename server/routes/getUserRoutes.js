@@ -6,5 +6,6 @@ const getUserHelper = require("../helpers/getUserList");
 // Main - "/users"
 
 router.get("/userList", getUserHelper.getUsersList);
+router.get("/profile", getUserHelper.getUserProfile);
 
-module.exports = router
+module.exports = router;
