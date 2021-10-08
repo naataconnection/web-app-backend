@@ -34,13 +34,25 @@ module.exports.markAttendance = async(req, res) => {
 
     const location = await geolocation.location({ip: req.body.ip});
     //req.headers.host
+    const date = dateTime()[0];
+    const time = dateTime()[1];
     try{
-        const date = dateTime()[0];
-        const time = dateTime()[1];
-        const user = await attendance.findOne({userCode: req.body.userCode, date: date})
+        const user = await attendance.findOne({userCode: req.body.userCode, date: date});
+
         if(user){
-            await attendance.updateOne({startTime: time,latitude: location.body.latitude, longitude: location.body.longitude, attendance_status: 1})
-            res.status(200).send({success: "true", message: `Mark the user Present`});
+            if(user.startTime == null){
+                const doc = await attendance.findOneAndUpdate(
+                    {userCode: req.body.userCode, date: date }, 
+                    {startTime: time,
+                    latitude: location.body.latitude, 
+                    longitude: location.body.longitude, 
+                    attendance_status: 1},
+                    {new: true}
+                );
+                res.status(200).send({success: "true", message: `Mark the user Present`});
+            }else{
+                res.status(500).send({success: "false", message: `You had already mark the attendance.`})
+            }
         }else{
             res.status(500).send({success: "false", message: `User doesn't exist`})
         }
@@ -58,12 +70,15 @@ module.exports.endDay = async(req, res) => {
         const user = await attendance.findOne({userCode: req.body.userCode, date: date})
         if(user){
             if(user.startTime){
-                await attendance.updateOne({endTime: time});
+                const doc = await attendance.findOneAndUpdate(
+                    {userCode: req.body.userCode, date: date }, 
+                    {endTime: time},
+                    {new: true}
+                );
                 res.status(200).send({success: "true", message: `Update the end time`});
             }else{
                 res.status(400).send({success: "false", message: `You haven't started the day. So, you can't end the day!!`});
             }
-            
         }else{
             res.status(400).send({success: "false", message: `User doesn't exist`})
         }

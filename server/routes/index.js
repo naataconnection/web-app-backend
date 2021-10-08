@@ -9,7 +9,10 @@ const { authRequired, forwardAuthenticated } = require("../middlewares/authMiddl
 const blockUserRoutes = require("./blockUserRoutes.js");
 const attendanceRoutes = require("./attendanceRoutes");
 const getUseRoutes = require("./getUserRoutes");
+const userLiveLocationRoutes = require("./userLiveLocationRoutes");
 const editUserProfileFieldsRoutes = require("./editUserProfileFieldsRoutes.js");
+const vehicleStatusRoutes = require("./vehicleStatusRoutes");
+const ownerFleetHuntRoutes = require("./ownerFleetHuntRoutes");
 const router = express.Router();
 
 router.use("/user/edit",editUserProfileFieldsRoutes);
@@ -22,6 +25,9 @@ router.use("/vendorContact", vendorContactRoutes);
 router.use("/attendance", attendanceRoutes);
 router.use("/block", blockUserRoutes);
 router.use("/users", getUseRoutes);
+router.use("/userLiveLocation", userLiveLocationRoutes);
+router.use("/vehicle", vehicleStatusRoutes);
+router.use("/ownerFleetHunt", ownerFleetHuntRoutes);
 
 router.get("/secret", authRequired, (req, res) => {
   res.send("Secret Found");
