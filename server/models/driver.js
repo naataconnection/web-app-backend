@@ -57,6 +57,14 @@ const DriverSchema = new mongoose.Schema({
   userCode: {
     type: String,
   },
+  vehicle:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "vehicle"
+  },
+  deliveryBoy:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "deliveryBoy"
+  }
 });
 
 module.exports = mongoose.model("driver", DriverSchema);
