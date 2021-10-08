@@ -23,8 +23,7 @@ const OrderSchema = new mongoose.Schema({
   //   required: true
   // },
   startingKM:{
-    type: Number,
-    required: true
+    type: Number
   },
   // startingKMProof:{
   //   type: File,
@@ -41,16 +40,14 @@ const OrderSchema = new mongoose.Schema({
     })
   },
   endingKM: {
-    type: Number,
-    required:true
+    type: Number
   },
   // endingKMProof:{
   //   type: File,
   //   required:true,
   // },
   totalParcels:{
-    type:Number,
-    required: true
+    type:Number
   },
   totalWeight:{
     type: Number

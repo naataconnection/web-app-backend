@@ -65,7 +65,7 @@ const ServiceRequestSchema = new mongoose.Schema({
   orders: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "order",
+      ref: "order"
     },
   ],
   startDate: {

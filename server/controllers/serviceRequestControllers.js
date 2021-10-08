@@ -5,6 +5,10 @@ const SuperUser = require("../models/superUser");
 const Order = require("../models/order");
 const Manager = require("../models/manager");
 const Invoice = require("../models/invoice");
+const Driver = require("../models/driver");
+const Vehicle = require("../models/driver");
+const DeliveryBoy = require("../models/deliveryBoy");
+
 
 
 exports.createRequest = async (req, res)=>{
@@ -43,10 +47,7 @@ exports.createRequest = async (req, res)=>{
     }
 
     const result = await ServiceRequest.countDocuments()
-    const requestCode = "NCSR"+paddingZero(result+1, 4);
-
-    var remarksManager = [];
-    remarksManager.push(remark);
+    const requestCode = "NCSR/"+paddingZero(result+1, 4);
 
     const serviceRequest = new ServiceRequest({
         requestCode,
@@ -54,8 +55,7 @@ exports.createRequest = async (req, res)=>{
         superUser,
         isRecurring,
         frequency,
-        status,
-        remarksManager
+        status
     });
 
     try{
@@ -114,7 +114,11 @@ exports.approveRequest = async (req, res) =>{
         })
     }
 
-    if(serviceRequest.superUser!=superUser){
+    console.log("Service Request SuperUser", serviceRequest.superUser);
+    console.log("Super User from request", superUser._id);
+
+    if(!(serviceRequest.superUser.equals(superUser._id))){
+
         res.status(400).json({
             message:`Given super user has not created this request`
         })
@@ -179,7 +183,7 @@ exports.assignManager = async (req, res)=>{
         })
     }
 
-    if(serviceRequest.superUser!=superUser){
+    if((!(serviceRequest.superUser.equals(superUser._id)))){
         res.status(401).json({
             message:`Given superUser is not authorized for this service request`
         })
@@ -240,7 +244,7 @@ exports.assignDriversAndDB = async (req, res)=>{
         })
     }
 
-    var n = driverCodes.size();
+    var n = driverCodes.length;
     var drivers = [];
     var vehicles = [];
     var deliveryBoys = [];
@@ -266,7 +270,7 @@ exports.assignDriversAndDB = async (req, res)=>{
         var vehicle;
 
         try{
-            vehicle = await vehicle.findOne({vehicleCode:vehicleCodes[i]});
+            vehicle = await Vehicle.findOne({vehicleCode:vehicleCodes[i]});
 
             if(vehicle==null){
                 res.status(400).json({
@@ -283,7 +287,7 @@ exports.assignDriversAndDB = async (req, res)=>{
         var deliveryBoy;
 
         try{
-            deliveryBoy = await deliveryBoy.findOne({userCode: deliveryBoyCodes[i]});
+            deliveryBoy = await DeliveryBoy.findOne({userCode: deliveryBoyCodes[i]});
 
             if(deliveryBoy==null){
                 res.status(400).json({
@@ -300,6 +304,14 @@ exports.assignDriversAndDB = async (req, res)=>{
         driver.vehicle = vehicle;
         driver.deliveryBoy = deliveryBoy;
 
+        try{
+            await driver.save();
+        }
+        catch(err){
+            res.status(400).json({
+                error:`${err}`
+            })
+        }
         drivers.push(driver);
         vehicles.push(vehicle);
         deliveryBoys.push(deliveryBoy);
@@ -360,8 +372,16 @@ exports.createOrder = async(req, res)=>{
     }
 
     const base = requestCode.slice(-4);
-    var n = requestCode.orders.length;
-    const orderCode = "NCOR"+base+"/"+paddingZero(n+1, 2);
+    var n;
+    if(serviceRequest.orders==null){
+        n=0;
+    }
+    else{
+        n=serviceRequest.orders.length
+    }
+
+
+    const orderCode = "NCOR/"+base+"/"+paddingZero(n+1, 2);
 
     const order = new Order({
         driver, 
@@ -379,10 +399,10 @@ exports.createOrder = async(req, res)=>{
         })
     }
 
-    requestCode.orders.push(order);
+    serviceRequest.orders.push(order);
 
     try{
-        await requestCode.save();
+        await serviceRequest.save();
     }
     catch(err){
         res.status(400).json({
@@ -404,7 +424,7 @@ exports.createInvoice = async(req, res)=>{
 
         if(order==null){
             res.status(400).json({
-                message: `No Orde found for this orderCode`
+                message: `No Order found for this orderCode`
             })
         }
     }
@@ -416,7 +436,9 @@ exports.createInvoice = async(req, res)=>{
 
     var n = order.invoices.length;
     const orderCodeSplit = orderCode.split("/");
-    const invoiceCode = "NCIC"+orderCodeSplit[-2]+"/"+orderCodeSplit[-1]+"/"+paddingZero(n+1, 2);
+    // console.log(orderCodeSplit[0]);
+    // console.log(orderCodeSplit[1]);
+    const invoiceCode = "NCIC/"+orderCodeSplit[1]+"/"+orderCodeSplit[2]+"/"+paddingZero(n+1, 2);
 
     const invoice = new Invoice({
         invoiceCode,
@@ -481,7 +503,7 @@ exports.dispatchedDriver  = async(req, res)=>{
         })
     }
 
-    if(order.driver!=driver){
+    if(!(order.driver.equals(driver._id))){
         res.status(400).json({
             message:`Driver who intiated the request is not same as given driver`
         })
@@ -497,7 +519,7 @@ exports.dispatchedDriver  = async(req, res)=>{
         })
     }
 
-    order.dispatched = true;
+    order.dispatch = true;
 
     try{
         await order.save();
@@ -566,7 +588,7 @@ exports.deliverDriver  = async(req, res)=>{
         })
     }
 
-    if(order.driver!=driver){
+    if(!(order.driver.equals(driver._id))){
         res.status(400).json({
             message:`Driver who intiated the request is not same as given driver`
         })
@@ -582,7 +604,7 @@ exports.deliverDriver  = async(req, res)=>{
         })
     }
 
-    order.delivered = true;
+    order.deliver = true;
 
     try{
         await order.save();
