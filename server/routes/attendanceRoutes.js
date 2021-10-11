@@ -3,6 +3,7 @@ const router = express.Router();
 
 const attendanceCnt = require("../controllers/attendance.js");
 const attendanceDashboardCnt = require("../controllers/attendanceDashboard");
+const attendanceDownloadCnt = require("../controllers/attendanceDownload");
 
 // Main route - '/attendance'
 
@@ -15,6 +16,9 @@ router.post("/getReportByDateAndUserCode", attendanceDashboardCnt.getAttendanceR
 router.post("/getReportByDate", attendanceDashboardCnt.getAttendanceReportByDate);
 router.delete("/clearDashboard", attendanceDashboardCnt.deleteUserStats);
 router.delete("/deleteUser", attendanceDashboardCnt.deleteUser);
+
+// attendance report routes
+router.post("/download", attendanceDownloadCnt.createUserXls);
 
 
 module.exports = router
