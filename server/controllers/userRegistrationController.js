@@ -5,298 +5,299 @@ const DeliveryBoy = require("../models/deliveryBoy");
 const Manager = require("../models/manager");
 const Customer = require("../models/customer");
 const mailer = require("../helpers/mailer");
-const {paddingZero} = require("../helpers/paddingZeros");
+const { paddingZero } = require("../helpers/paddingZeros");
 
 // Controller to register a user.
-exports.registerUser = (req, res) => {
-  var { firstName, middleName, lastName, emailId, contact, role } = req.body;
+exports.registerUser = async (req, res) => {
+	var { firstName, middleName, lastName, emailId, contact, role } = req.body;
 
-  if (!firstName || !emailId || !contact) {
-    res.status(409).json({
-      message: "Required fields are not present.",
-    });
-  }
+	if (!firstName || !emailId || !contact) {
+		res.status(409).json({
+			message: "Required fields are not present.",
+		});
+	}
 
-  role = role.toUpperCase();
+	role = role.toUpperCase();
 
-  const user = new User({
-    firstName,
-    middleName,
-    lastName,
-    emailId,
-    contact,
-    role,
-  });
-  var companyCode;
-  user
-    .save()
-    .then((result) => {
-      if (role == "DRIVER") {
-        Driver.countDocuments()
-          .then((result) => {
-            console.log(`Number of documents:`, result);
-            result += 1;
-            result = paddingZero(result, 4);
-            companyCode = "NCTP02" + result;
-            console.log(`Unique Code : ${companyCode}`);
-            const driver = new Driver({
-              user,
-              userCode: companyCode,
-            });
 
-            driver.save();
+	const user = new User({
+		firstName,
+		middleName,
+		lastName,
+		emailId,
+		contact,
+		role
+	});
 
-            user.userCode = driver.userCode;
-            user.save();
-          })
-          .catch((error) => {
-            console.log(`Error from count function: ${error}`);
-          });
-      } else if (role == "MANAGER") {
-        Manager.countDocuments()
-          .then((result) => {
-            console.log(`Number of documents:`, result);
-            result+=1;
-            result = paddingZero(result, 4);
-            companyCode = "NCTP01" + result;
-          })
-          .catch((error) => {
-            console.log(`Error from count function: ${error}`);
-          });
+	var userCode;
 
-        const manager = new Manager({
-          userCode: companyCode,
-          user,
-        });
+	try {
+		await user.save();
+	}
+	catch (err) {
+		res.status(400).json({
+			error: `${err}`
+		})
+	}
 
-        manager.save();
 
-        user.userCode = manager.userCode;
-        user.save();
-      } else if (role == "DELIVERY BOY") {
-        DeliveryBoy.countDocuments()
-          .then((result) => {
-            console.log(`Number of documents:`, result);
-            result+=1;
-            result = paddingZero(result, 4);
-            companyCode = "NCTP03" + result;
-          })
-          .catch((error) => {
-            console.log(`Error from count function: ${error}`);
-          });
+	if (role == "MANAGER") {
+		var result = await Manager.countDocuments();
+		userCode = "NCTP01" + paddingZero(result + 1, 4);
 
-        const deliveryBoy = new DeliveryBoy({
-          userCode: companyCode,
-          user,
-        });
+		const manager = new Manager({
+			userCode,
+			user
+		});
 
-        deliveryBoy.save();
+		try {
+			await manager.save();
+		}
+		catch (err) {
+			res.status(400).json({
+				error: `${err}`
+			})
+		}
+	}
+	else if (role == "DRIVER") {
+		var result = await Driver.countDocuments();
+		userCode = "NCTP02" + paddingZero(result + 1, 4);
 
-        user.userCode = deliveryBoy.userCode();
-        deliveryBoy.save();
-      } else if (role == "CUSTOMER") {
-        Customer.countDocuments()
-          .then((result) => {
-            console.log(`Number of documents:`, result);
-            result+=1;
-            result = paddingZero(result, 4);
-            companyCode = "NCPR01" + result;
-          })
-          .catch((error) => {
-            console.log(`Error from count function: ${error}`);
-          });
+		const driver = new Driver({
+			userCode,
+			user
+		});
 
-        const customer = new DeliveryBoy({
-          userCode: companyCode,
-          user,
-        });
+		try {
+			await driver.save();
+		}
+		catch (err) {
+			res.status(400).json({
+				error: `${err}`
+			})
+		}
+	}
+	else if (role == "DELIVERY BOY") {
+		var result = await DeliveryBoy.countDocuments();
+		userCode = "NCTP03" + paddingZero(result + 1, 4);
 
-        customer.save();
+		const deliveryBoy = new DeliveryBoy({
+			userCode,
+			user
+		});
 
-        user.userCode = customer.userCode();
-        customer.save();
-      }
+		try {
+			await deliveryBoy.save();
+		}
+		catch (err) {
+			res.status(400).json({
+				error: `${err}`
+			})
+		}
+	}
+	else if (role == "CUSTOMER") {
+		var result = await Customer.countDocuments();
+		userCode = "NCPR01" + paddingZero(result + 1, 4);
 
-      mailer.send(
-        `${process.env.EMAIL_SMTP_USERNAME}`,
-        emailId,
-        "User Registered",
-        `<p>
-          ${user.firstName} ${user.lastName} has been registered on website with email - ${user.emailId}, phone number - ${user.contact} and UserCode - ${user.userCode}  
-        <p>`
-      );
+		const customer = new Customer({
+			userCode,
+			user
+		});
 
-      return res.status(200).json({
-        message: `User Registraion Successful`,
-      });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        message: `Incorrect Data Provided`,
-        error: `${err}`,
-      });
-    });
+		try {
+			await customer.save();
+		}
+		catch (err) {
+			res.status(400).json({
+				error: `${err}`
+			})
+		}
+	}
+
+	user.userCode = userCode;
+
+	try {
+		await user.save();
+	}
+	catch (err) {
+		res.status(400).json({
+			error: `${err}`
+		})
+	}
+
+	mailer.send(
+		`${process.env.EMAIL_SMTP_USERNAME}`,
+		emailId,
+		"User Registered",
+		`<p>
+      ${user.firstName} ${user.lastName} has been registered on website with email - ${user.emailId}, phone number - ${user.contact} and UserCode - ${user.userCode}  
+    <p>`
+	);
+
+	return res.status(200).json({
+		message: `User Registraion Successful`,
+	});
 };
 
 exports.registerDriver = (req, res) => {
-  var {
-    userCode,
-    address,
-    city,
-    state,
-    age,
-    drivingLicenseType,
-    drivingLicenseExpireDate,
-    secondaryContact,
-    bloodGroup,
-  } = req.body;
+	var {
+		userCode,
+		address,
+		city,
+		state,
+		age,
+		drivingLicenseType,
+		drivingLicenseExpireDate,
+		secondaryContact,
+		bloodGroup,
+	} = req.body;
 
-  Driver.updateOne(
-    { userCode },
-    {
-      address,
-      city,
-      state,
-      age,
-      drivingLicenseType,
-      drivingLicenseExpireDate,
-      secondaryContact,
-      bloodGroup,
-    },
-    (err, result) => {
-      if (err) {
-        res.status(500).json({
-          error: `${err}`,
-        });
-      }
+	Driver.updateOne(
+		{ userCode },
+		{
+			address,
+			city,
+			state,
+			age,
+			drivingLicenseType,
+			drivingLicenseExpireDate,
+			secondaryContact,
+			bloodGroup,
+		},
+		(err, result) => {
+			if (err) {
+				res.status(500).json({
+					error: `${err}`,
+				});
+			}
 
-      if (res == null) {
-        res.status(404).json({
-          message: "No driver profile found with this userCode",
-        });
-      }
+			if (res == null) {
+				res.status(404).json({
+					message: "No driver profile found with this userCode",
+				});
+			}
 
-      res.status(200).json({
-        message: "Fields Updated for driver profile",
-      });
-    }
-  );
+			res.status(200).json({
+				message: "Fields Updated for driver profile",
+			});
+		}
+	);
 };
 
 exports.registerManager = (req, res) => {
-  var { userCode, joinDate, secondaryContact, emergencyContact, bloodGroup } =
-    req.body;
+	var { userCode, joinDate, secondaryContact, emergencyContact, bloodGroup } =
+		req.body;
 
-  Manager.updateOne(
-    { userCode },
-    {
-      joinDate,
-      secondaryContact,
-      emergencyContact,
-      bloodGroup,
-    },
-    (err, result) => {
-      if (err) {
-        res.status(500).json({
-          error: `${err}`,
-        });
-      }
+	Manager.updateOne(
+		{ userCode },
+		{
+			joinDate,
+			secondaryContact,
+			emergencyContact,
+			bloodGroup,
+		},
+		(err, result) => {
+			if (err) {
+				res.status(500).json({
+					error: `${err}`,
+				});
+			}
 
-      if (res == null) {
-        res.status(404).json({
-          message: "No driver profile found with this userCode",
-        });
-      }
+			if (res == null) {
+				res.status(404).json({
+					message: "No driver profile found with this userCode",
+				});
+			}
 
-      res.status(200).json({
-        message: "Fields Updated for driver profile",
-      });
-    }
-  );
+			res.status(200).json({
+				message: "Fields Updated for manager profile",
+			});
+		}
+	);
 };
 
 exports.registerDeliveryBoy = (req, res) => {
-  var {
-    emailId,
-    address,
-    city,
-    state,
-    age,
-    secondaryContact,
-    emergencyContact,
-    bloodGroup,
-  } = req.body;
+	var {
+		userCode,
+		address,
+		city,
+		state,
+		age,
+		secondaryContact,
+		emergencyContact,
+		bloodGroup,
+	} = req.body;
 
-  DeliveryBoy.updateOne(
-    { userCode },
-    {
-      address,
-      city,
-      state,
-      age,
-      secondaryContact,
-      emergencyContact,
-      bloodGroup,
-    },
-    (err, result) => {
-      if (err) {
-        res.status(500).json({
-          error: `${err}`,
-        });
-      }
+	DeliveryBoy.updateOne(
+		{ userCode },
+		{
+			address,
+			city,
+			state,
+			age,
+			secondaryContact,
+			emergencyContact,
+			bloodGroup,
+		},
+		(err, result) => {
+			if (err) {
+				res.status(500).json({
+					error: `${err}`,
+				});
+			}
 
-      if (res == null) {
-        res.status(404).json({
-          message: "No driver profile found with this userCode",
-        });
-      }
+			if (res == null) {
+				res.status(404).json({
+					message: "No driver profile found with this userCode",
+				});
+			}
 
-      res.status(200).json({
-        message: "Fields Updated for driver profile",
-      });
-    }
-  );
+			res.status(200).json({
+				message: "Fields Updated for delivery boy profile",
+			});
+		}
+	);
 };
 
 exports.registerCustomer = (req, res) => {
-  var {
-    userCode,
-    companyName,
-    department,
-    address,
-    city,
-    state,
-    secondaryContact,
-    gst,
-  } = req.body;
+	var {
+		userCode,
+		companyName,
+		department,
+		address,
+		city,
+		state,
+		secondaryContact,
+		gst,
+	} = req.body;
 
-  DeliveryBoy.updateOne(
-    { userCode },
-    {
-      companyName,
-      department,
-      address,
-      city,
-      state,
-      secondaryContact,
-      gst,
-    },
-    (err, result) => {
-      if (err) {
-        res.status(500).json({
-          error: `${err}`,
-        });
-      }
+	Customer.updateOne(
+		{ userCode },
+		{
+			companyName,
+			department,
+			address,
+			city,
+			state,
+			secondaryContact,
+			gst,
+		},
+		(err, result) => {
+			if (err) {
+				res.status(500).json({
+					error: `${err}`,
+				});
+			}
 
-      if (res == null) {
-        res.status(404).json({
-          message: "No driver profile found with this userCode",
-        });
-      }
+			if (res == null) {
+				res.status(404).json({
+					message: "No driver profile found with this userCode",
+				});
+			}
 
-      res.status(200).json({
-        message: "Fields Updated for driver profile",
-      });
-    }
-  );
+			res.status(200).json({
+				message: "Fields Updated for customer profile",
+			});
+		}
+	);
 };

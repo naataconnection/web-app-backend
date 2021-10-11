@@ -1,6 +1,6 @@
 const express = require("express");
 const blockUserControllers = require("../controllers/blockUserController.js");
-const router = require("./userAuthRoutes.js");
+const router = express.Router();
 
 // Main - '/block'
 

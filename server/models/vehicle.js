@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const VehicleSchema = new mongoose.Schema({
+  vehicleCode:{
+    type:String,
+    unique:true
+  },
   vehicleType: {
     type: Number,
     // 0 -> Owned, 1 -> rented
@@ -54,11 +58,6 @@ const VehicleSchema = new mongoose.Schema({
   //   insurance: {
   //       type: String
   //   }
-
-  driver: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
-  },
   dailyRent: {
     type: Number,
     default: 0,
