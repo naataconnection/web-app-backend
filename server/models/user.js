@@ -12,10 +12,10 @@ const userSchema = new mongoose.Schema({
   lastName: {
     type: String,
   },
-  password: {
-    type: String,
-    required: true,
-  },
+  // password: {
+  //   type: String,
+  //   required: true,
+  // },
   emailId: {
     type: String,
     unique: true
@@ -24,19 +24,19 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: true
   },
-  employeeCode:{
+  userCode:{
     type: String,
-    required: true,
-	unique: true
+    // required: true,
+	  unique: true
   },
-  emailVerified: {
-    type: Boolean,
-    default: false
+  role:{
+    type:String,
+    required: true
   },
-  contactVerified: {
-    type: Boolean,
-    default: false
-  }
+  active:{
+	  type: Boolean, 
+	  default: true
+  },
 });
 
 module.exports = mongoose.model("user", userSchema, "users");

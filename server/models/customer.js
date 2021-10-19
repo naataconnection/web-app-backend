@@ -20,13 +20,10 @@ const CustomerSchema = mongoose.Schema({
   state: {
     type: String,
   },
-  phone: {
+  secondaryContact: {
     type: String,
   },
-  email: {
-    type: String,
-  },
-  vendorID: {
+  userCode: {
     type: String,
   },
   gst: {
