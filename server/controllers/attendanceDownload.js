@@ -4,6 +4,7 @@ const attendance = require("../models/attendance");
 const manager = require("../models/manager");
 const driver = require("../models/driver");
 const deliveryBoy = require("../models/deliveryBoy");
+const upload = require("../utils/s3");
 
 module.exports.createUserXls = async (req, res) => {
 
@@ -132,16 +133,15 @@ module.exports.createUserXls = async (req, res) => {
             tempStartDate = new_date.toISOString().substr(0, 10);      
         }
 
+        const fileName = "users_" + ".xls"
+        const loc = __dirname + '/../../public/users/' + fileName;
+        workbook.xlsx.writeFile(loc)
+
+        const ans = await upload.s3upload(loc);
+
         res.status(200).json({
             status: 'success',
-            present: present,
-            absent: totalDays - present,
-            totalSunday: totalSunday,
-            workingSunday: workingSunday,
-            totalDays: totalDays,
-            dateOfJoining: dateOfJoining,
-            dateOfTermination: dateOfTermination,
-            data: result,
+            link: ans.Location,
         });
     } catch (error) {
         console.log(error);
