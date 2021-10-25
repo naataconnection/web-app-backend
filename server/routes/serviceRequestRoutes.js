@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const serviceRequesControllers = require("../controllers/serviceRequestControllers");
 
-router.post("/create", serviceRequesControllers.createRequest);
+router.post("/createSuperUser", serviceRequesControllers.createRequestBySuperUser);
+router.post("/createCustomer", serviceRequesControllers.createRequestByCustomer);
 router.post("/approve", serviceRequesControllers.approveRequest);
 router.post("/assign/manager", serviceRequesControllers.assignManager);
 router.post("/assign/driversDB", serviceRequesControllers.assignDriversAndDB);
