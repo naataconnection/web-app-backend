@@ -2,7 +2,6 @@ const gc = require("../config/gc");
 require('dotenv').config()
 
 const bucket = gc.bucket(process.env.GOOGLEBUCKET_KEY || "naata_connection");
-//process.env.GOOGLEBUCKET_KEY || "naata_connection"
 
 const uploadFile = async (filePath, destFileName) => {
     return new Promise((resolve,reject) => {
@@ -12,7 +11,6 @@ const uploadFile = async (filePath, destFileName) => {
             if (err) {
                 reject(err)
             }
-            console.log(bucket.name);
             resolve("https://storage.googleapis.com/"+ bucket.name + "/" + destFileName);
         });
     }) 

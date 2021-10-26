@@ -4,7 +4,8 @@ const attendance = require("../models/attendance");
 const manager = require("../models/manager");
 const driver = require("../models/driver");
 const deliveryBoy = require("../models/deliveryBoy");
-const upload = require("../utils/s3");
+const uploadFile = require("../utils/gCloud").uploadFile;
+const fs = require("fs");
 
 module.exports.createUserXls = async (req, res) => {
 
@@ -87,23 +88,6 @@ module.exports.createUserXls = async (req, res) => {
         }
 
         // For Present status
-        var present = 0, workingSunday = 0, totalSunday = 0;
-        var differenceInTime = new Date(endDate).getTime() - new Date(startDate).getTime();
-        var totalDays = differenceInTime / (1000 * 3600 * 24);
-        totalDays++;
-        for (var i = 0; i < result.length; i++) {
-            if (result[i].attendance_status == 1) {
-                present++;
-            }
-            if (result[i].day == "Sunday") {
-                totalSunday++;
-                if (result[i].attendance_status == 1) {
-                    workingSunday++;
-                }
-            }
-        }
-
-        console.log(result);
 
         var tempStartDate = startDate;
         var inr = 0;
@@ -133,15 +117,19 @@ module.exports.createUserXls = async (req, res) => {
             tempStartDate = new_date.toISOString().substr(0, 10);      
         }
 
-        const fileName = "users_" + ".xls"
-        const loc = __dirname + '/../../public/users/' + fileName;
-        workbook.xlsx.writeFile(loc)
+        const fileName = "attendanceReport_" + req.body.userCode + ".xls"
+        const loc = __dirname + '/../../public/attendanceReport/' + fileName;
+        workbook.xlsx.writeFile(loc);
 
-        const ans = await upload.s3upload(loc);
+        var destPath = "attendanceReport/" + fileName;
+
+        let publicUrl = uploadFile(loc, destPath);
+        publicUrl = await Promise.all([publicUrl])
+        fs.unlinkSync(loc);
 
         res.status(200).json({
             status: 'success',
-            link: ans.Location,
+            link: publicUrl[0],
         });
     } catch (error) {
         console.log(error);
