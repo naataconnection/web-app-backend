@@ -1,5 +1,4 @@
 const excel = require('exceljs')
-const workbook = new excel.Workbook();
 const attendance = require("../models/attendance");
 const manager = require("../models/manager");
 const driver = require("../models/driver");
@@ -9,6 +8,7 @@ const fs = require("fs");
 
 module.exports.createUserXls = async (req, res) => {
 
+    const workbook = new excel.Workbook();
     const users = workbook.addWorksheet('Attendance Report');
     const A = 'A'
     const B = 'B'
@@ -45,7 +45,7 @@ module.exports.createUserXls = async (req, res) => {
                 message: 'Data doesn\'t exist'
             })
         }
-
+        console.log(result);
         var dateOfJoining, dateOfTermination;
         if (req.body.userCode[5] == "1") {
             const output = await manager.find({ userCode: req.body.userCode }).select({ "dateOfJoining": 1, "dateOfTermination": 1 });
@@ -88,7 +88,7 @@ module.exports.createUserXls = async (req, res) => {
         }
 
         // For Present status
-
+        console.log(dateOfJoining);
         var tempStartDate = startDate;
         var inr = 0;
 
@@ -97,29 +97,40 @@ module.exports.createUserXls = async (req, res) => {
                 //blank
                 users.getCell(A + rowNo).value = tempStartDate;
                 users.getCell(B + rowNo).value = "-"
+                console.log("Archana");
             }
             if(tempStartDate >= dateOfJoining){
-                if(tempStartDate <= dateOfTermination){
+                if(dateOfTermination === null){
                     users.getCell(A + rowNo).value = tempStartDate;
                     if(tempStartDate == result[inr].date && inr < result.length){
-                        users.getCell(B + rowNo).value = result[inr].attendance_status;
+                        users.getCell(B + rowNo).value = result[inr].attendance_status ? "Present" : "Absent";
+                        console.log(result[inr]);
                         inr++;
                     }
                 }else{
-                    // blank
-                    users.getCell(A + rowNo).value = tempStartDate;
-                    users.getCell(B + rowNo).value = "-"
+                    if(tempStartDate <= dateOfTermination){
+                        users.getCell(A + rowNo).value = tempStartDate;
+                        if(tempStartDate == result[inr].date && inr < result.length){
+                            users.getCell(B + rowNo).value = result[inr].attendance_status;
+                            inr++;
+                        }
+                    }else{
+                        // blank
+                        users.getCell(A + rowNo).value = tempStartDate;
+                        users.getCell(B + rowNo).value = "-"
+                    }
                 }
             }
             rowNo++;
             var inr_date = new Date(tempStartDate);
             var new_date = new Date(inr_date.setDate(inr_date.getDate() + 1)); 
-            tempStartDate = new_date.toISOString().substr(0, 10);      
+            tempStartDate = new_date.toISOString().substr(0, 10);  
+            console.log(tempStartDate);    
         }
 
         const fileName = "attendanceReport_" + req.body.userCode + ".xls"
         const loc = __dirname + '/../../public/attendanceReport/' + fileName;
-        workbook.xlsx.writeFile(loc);
+        await workbook.xlsx.writeFile(loc);
 
         var destPath = "attendanceReport/" + fileName;
 
