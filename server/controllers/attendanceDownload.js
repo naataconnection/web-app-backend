@@ -97,14 +97,12 @@ module.exports.createUserXls = async (req, res) => {
                 //blank
                 users.getCell(A + rowNo).value = tempStartDate;
                 users.getCell(B + rowNo).value = "-"
-                console.log("Archana");
             }
             if(tempStartDate >= dateOfJoining){
                 if(dateOfTermination === null){
                     users.getCell(A + rowNo).value = tempStartDate;
                     if(tempStartDate == result[inr].date && inr < result.length){
                         users.getCell(B + rowNo).value = result[inr].attendance_status ? "Present" : "Absent";
-                        console.log(result[inr]);
                         inr++;
                     }
                 }else{
@@ -124,8 +122,7 @@ module.exports.createUserXls = async (req, res) => {
             rowNo++;
             var inr_date = new Date(tempStartDate);
             var new_date = new Date(inr_date.setDate(inr_date.getDate() + 1)); 
-            tempStartDate = new_date.toISOString().substr(0, 10);  
-            console.log(tempStartDate);    
+            tempStartDate = new_date.toISOString().substr(0, 10);     
         }
 
         const fileName = "attendanceReport_" + req.body.userCode + ".xls"
@@ -146,7 +143,5 @@ module.exports.createUserXls = async (req, res) => {
         console.log(error);
         res.status(400).json({ success: "false", error: `${error}` });
     }
-
-    // col - sno, date, attendance_status
 
 }
