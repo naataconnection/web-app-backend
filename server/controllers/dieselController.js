@@ -19,7 +19,7 @@ module.exports.create = async (req, res) => {
         billUrl = await Promise.all([billUrl]);
         fs.unlinkSync(localdestBill);
 
-        const { kmOfVehicle, pump, liter, totalAmount, userCode, paymentMode, remarks} = req.body;
+        const { kmOfVehicle, pump, liter, totalAmount, vehicleNumber, userCode, paymentMode, remarks} = req.body;
         var date = dateTime()[0];
         var dieselRate = totalAmount/liter;
         var kmOfVehicleImg = kmUrl[0];
@@ -32,12 +32,83 @@ module.exports.create = async (req, res) => {
             liter, 
             dieselRate,
             totalAmount, 
+            vehicleNumber,
             userCode, 
             paymentMode, 
             remarks,
             billImage,
         });
         res.status(200).json({success: "true", message: newEntry});
+    }catch(error){
+        console.log(error);
+        res.status(400).json({success: "false", error:`${error}`});
+    }
+}
+
+module.exports.user = async (req, res) => {
+    try{
+        const userList = await diesel.find({userCode: req.body.userCode});
+        res.status(200).json({ success: "true", data: userList });
+    }catch(error){
+        console.log(error);
+        res.status(400).json({success: "false", error:`${error}`});
+    }
+}
+
+module.exports.allUsers = async (req, res) => {
+    try{
+        const userList = await diesel.find({});
+        res.status(200).json({ success: "true", data: userList });
+    }catch(error){
+        console.log(error);
+        res.status(400).json({success: "false", error:`${error}`});
+    }
+}
+
+module.exports.sortByDate = async (req, res) => {
+    try{
+        const userList = await diesel.find({date: req.body.date});
+        res.status(200).json({ success: "true", data: userList });
+    }catch(error){
+        console.log(error);
+        res.status(400).json({success: "false", error:`${error}`});
+    }
+}
+
+module.exports.sortByDateAndUserCode = async (req, res) => {
+    try{
+        const userList = await diesel.find({date: req.body.date, userCode: req.body.userCode});
+        res.status(200).json({ success: "true", data: userList });
+    }catch(error){
+        console.log(error);
+        res.status(400).json({success: "false", error:`${error}`});
+    }
+}
+
+module.exports.sortByVehicleNumber = async (req, res) => {
+    try{
+        const userList = await diesel.find({vehicleNumber: req.body.vehicleNumber});
+        res.status(200).json({ success: "true", data: userList });
+    }catch(error){
+        console.log(error);
+        res.status(400).json({success: "false", error:`${error}`});
+    }
+}
+
+module.exports.sortByModeOfPayment = async (req, res) => {
+    try{
+        const userList = await diesel.find({paymentMode: req.body.paymentMode});
+        res.status(200).json({ success: "true", data: userList });
+    }catch(error){
+        console.log(error);
+        res.status(400).json({success: "false", error:`${error}`});
+    }
+}
+
+module.exports.sortByPump = async (req, res) => {
+    try{
+        const userList = await diesel.find({pump: req.body.pump});
+        res.status(200).json({ success: "true", data: userList });
     }catch(error){
         console.log(error);
         res.status(400).json({success: "false", error:`${error}`});

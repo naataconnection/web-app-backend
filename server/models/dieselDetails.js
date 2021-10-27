@@ -27,10 +27,10 @@ const dieselSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-//   vehicleId:{
-//     type: String,
-//     required: true,
-//   },
+  vehicleNumber:{
+    type: String,
+    required: true,
+  },
   userCode:{
     type: String,
     required: true,
