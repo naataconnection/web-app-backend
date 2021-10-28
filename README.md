@@ -90,3 +90,6 @@
   - /superUser - Will block the SuperUser
 - /users
   - /userList - Will get the user firstName, middleName, lastName and userCode
+  - /profile - Will get the user object and rolewise profile from the usercode input
+- /superUsers
+  - /profile - Will get the super user object from the usercode input
