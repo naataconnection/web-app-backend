@@ -16,6 +16,7 @@ const userLiveLocationRoutes = require("./userLiveLocationRoutes");
 const editUserProfileFieldsRoutes = require("./editUserProfileFieldsRoutes.js");
 const vehicleStatusRoutes = require("./vehicleStatusRoutes");
 const ownerFleetHuntRoutes = require("./ownerFleetHuntRoutes");
+const dieselRoutes = require("./dieselRoutes");
 const router = express.Router();
 
 router.use("/user/edit",editUserProfileFieldsRoutes);
@@ -34,6 +35,7 @@ router.use("/vehicle", vehicleRoutes);
 router.use("/userLiveLocation", userLiveLocationRoutes);
 router.use("/vehicle", vehicleStatusRoutes);
 router.use("/ownerFleetHunt", ownerFleetHuntRoutes);
+router.use("/diesel", dieselRoutes);
 
 router.get("/secret", authRequired, (req, res) => {
   res.send("Secret Found");
