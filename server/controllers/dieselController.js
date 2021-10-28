@@ -119,7 +119,7 @@ module.exports.sortByDateRange = async (req, res) => {
     try{
         const userList = await diesel.find({date: {
             $gte: req.body.startDate,
-            $lte: <req className="body endDate"></req>
+            $lte: req.body.endDate
         }});
         res.status(200).json({ success: "true", data: userList });
     }catch(error){
