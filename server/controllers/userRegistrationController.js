@@ -7,6 +7,8 @@ const Customer = require("../models/customer");
 const mailer = require("../helpers/mailer");
 const { paddingZero } = require("../helpers/paddingZeros");
 const dateTime = require("../utils/dateTimeFormat").dateDayTime;
+const fs = require("fs");
+const uploadFile = require("../utils/gCloud").uploadFile;
 
 // Controller to register a user.
 exports.registerUser = async (req, res) => {
@@ -144,7 +146,33 @@ exports.registerUser = async (req, res) => {
 	});
 };
 
-exports.registerDriver = (req, res) => {
+exports.registerDriver = async (req, res) => {
+
+	const DLPath = req.files[0].path.replace('\\', '/');
+	const localdestDL = __dirname + "/../../public/profile/" + DLPath.substring(DLPath.lastIndexOf('\\') + 1);
+	const DLdestPath = "driver/" + DLPath.substring(DLPath.lastIndexOf('\\') + 1);
+	let DLurl = uploadFile(localdestDL, DLdestPath);
+	DLurl = await Promise.all([DLurl]);
+	fs.unlinkSync(localdestDL);
+
+	const kycPath = req.files[1].path.replace('\\', '/');
+	const localdestkyc = __dirname + "/../../public/profile/" + kycPath.substring(kycPath.lastIndexOf('\\') + 1);
+	const kycdestPath = "driver/" + kycPath.substring(kycPath.lastIndexOf('\\') + 1);
+	let kycUrl = uploadFile(localdestkyc, kycdestPath);
+	kycUrl = await Promise.all([kycUrl]);
+	fs.unlinkSync(localdestkyc);
+
+	const idCardPath = req.files[2].path.replace('\\', '/');
+	const localdestidCard = __dirname + "/../../public/profile/" + idCardPath.substring(idCardPath.lastIndexOf('\\') + 1);
+	const idCarddestPath = "driver/" + idCardPath.substring(idCardPath.lastIndexOf('\\') + 1);
+	let idCardUrl = uploadFile(localdestidCard, idCarddestPath);
+	idCardUrl = await Promise.all([idCardUrl]);
+	fs.unlinkSync(localdestidCard);
+
+	var drivingLicense = DLurl[0];
+	var kyc = kycUrl[0];
+	var idCard = idCardUrl[0];
+
 	var {
 		userCode,
 		address,
@@ -165,8 +193,11 @@ exports.registerDriver = (req, res) => {
 			state,
 			age,
 			drivingLicenseType,
+			drivingLicense,
 			drivingLicenseExpireDate,
+			kyc,
 			secondaryContact,
+			idCard,
 			bloodGroup,
 		},
 		(err, result) => {
@@ -189,15 +220,24 @@ exports.registerDriver = (req, res) => {
 	);
 };
 
-exports.registerManager = (req, res) => {
-	var { userCode, joinDate, secondaryContact, emergencyContact, bloodGroup } =
+exports.registerManager = async (req, res) => {
+
+	const idCardPath = req.file.path.replace('\\', '/');
+	const localdestidCard = __dirname + "/../../public/profile/" + idCardPath.substring(idCardPath.lastIndexOf('\\') + 1);
+	const idCarddestPath = "manager/" + idCardPath.substring(idCardPath.lastIndexOf('\\') + 1);
+	let idCardUrl = uploadFile(localdestidCard, idCarddestPath);
+	idCardUrl = await Promise.all([idCardUrl]);
+	fs.unlinkSync(localdestidCard);
+
+	var { userCode, dateOfJoining, secondaryContact, emergencyContact, bloodGroup } =
 		req.body;
 
 	Manager.updateOne(
 		{ userCode },
 		{
-			joinDate,
+			dateOfJoining,
 			secondaryContact,
+			idCard,
 			emergencyContact,
 			bloodGroup,
 		},
@@ -221,7 +261,22 @@ exports.registerManager = (req, res) => {
 	);
 };
 
-exports.registerDeliveryBoy = (req, res) => {
+exports.registerDeliveryBoy = async (req, res) => {
+
+	const kycPath = req.files[0].path.replace('\\', '/');
+	const localdestkyc = __dirname + "/../../public/profile/" + kycPath.substring(kycPath.lastIndexOf('\\') + 1);
+	const kycdestPath = "deliveryBoy/" + kycPath.substring(kycPath.lastIndexOf('\\') + 1);
+	let kycUrl = uploadFile(localdestkyc, kycdestPath);
+	kycUrl = await Promise.all([kycUrl]);
+	fs.unlinkSync(localdestkyc);
+
+	const idCardPath = req.files[1].path.replace('\\', '/');
+	const localdestidCard = __dirname + "/../../public/profile/" + idCardPath.substring(idCardPath.lastIndexOf('\\') + 1);
+	const idCarddestPath = "deliveryBoy/" + idCardPath.substring(idCardPath.lastIndexOf('\\') + 1);
+	let idCardUrl = uploadFile(localdestidCard, idCarddestPath);
+	idCardUrl = await Promise.all([idCardUrl]);
+	fs.unlinkSync(localdestidCard);
+
 	var {
 		userCode,
 		address,
@@ -233,6 +288,9 @@ exports.registerDeliveryBoy = (req, res) => {
 		bloodGroup,
 	} = req.body;
 
+	var kyc = kycUrl[0];
+	var idCard = idCardUrl[0];
+
 	DeliveryBoy.updateOne(
 		{ userCode },
 		{
@@ -240,7 +298,9 @@ exports.registerDeliveryBoy = (req, res) => {
 			city,
 			state,
 			age,
+			kyc,
 			secondaryContact,
+			idCard,
 			emergencyContact,
 			bloodGroup,
 		},

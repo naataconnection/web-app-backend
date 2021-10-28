@@ -16,10 +16,9 @@ const ManagerSchema = new mongoose.Schema({
   secondaryContact: {
     type: String,
   },
-  // Photo
-  //   idCard: {
-  //     type: String,
-  //   },
+  idCard: {
+    type: String,
+  },
   emergencyContact: {
     type: String,
   },

@@ -25,29 +25,24 @@ const DriverSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  // drivingLicense: {
-  //   type: Buffer,
-  //   contentType: String
-  // },
+  drivingLicense: {
+    type: String,
+  },
   drivingLicenseType: {
     type: String,
   },
   drivingLicenseExpiryDate: {
     type: Date,
   },
-  // kyc: [
-  //   {
-  //     type: Buffer,
-  //     contentType: String
-  //   },
-  // ],
+  kyc: {
+    type: String,
+  },
   secondaryContact: {
     type: String,
   },
-  // idCard: {
-  //   type: Buffer,
-  //   contentType: String
-  // },
+  idCard: {
+    type: String,
+  },
   emergencyContact: {
     type: String,
   },

@@ -25,19 +25,15 @@ const DeliveryBoySchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  //   Photo Upload
-  //   kyc: [
-  //     {
-  //       type: String,
-  //     },
-  //   ],
+  kyc: {
+    type: String,
+  },
   secondaryContact: {
     type: String,
   },
-  // Photo
-  //   idCard: {
-  //     type: String,
-  //   },
+  idCard: {
+    type: String,
+  },
   emergencyContact: {
     type: String,
   },
