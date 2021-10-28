@@ -15,5 +15,6 @@ router.get("/sortByPaymentMode", dieselControllers.sortByModeOfPayment);
 router.get("/sortByVehicleNumber", dieselControllers.sortByVehicleNumber);
 router.get("/sortByDate", dieselControllers.sortByDate);
 router.get("/sortByDateAndUserCode", dieselControllers.sortByDateAndUserCode);
+router.get("/sortByDateRange", dieselControllers.sortByDateRange);
 
 module.exports = router;

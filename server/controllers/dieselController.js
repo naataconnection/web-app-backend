@@ -114,3 +114,16 @@ module.exports.sortByPump = async (req, res) => {
         res.status(400).json({success: "false", error:`${error}`});
     }
 }
+
+module.exports.sortByDateRange = async (req, res) => {
+    try{
+        const userList = await diesel.find({date: {
+            $gte: req.body.startDate,
+            $lte: <req className="body endDate"></req>
+        }});
+        res.status(200).json({ success: "true", data: userList });
+    }catch(error){
+        console.log(error);
+        res.status(400).json({success: "false", error:`${error}`});
+    }
+}
