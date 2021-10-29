@@ -7,8 +7,7 @@ const Customer = require("../models/customer");
 const mailer = require("../helpers/mailer");
 const { paddingZero } = require("../helpers/paddingZeros");
 const dateTime = require("../utils/dateTimeFormat").dateDayTime;
-const fs = require("fs");
-const uploadFile = require("../utils/gCloud").uploadFile;
+const gCloudUrl = require("../helpers/gCloud").gCloudUrl;
 
 // Controller to register a user.
 exports.registerUser = async (req, res) => {
@@ -146,32 +145,19 @@ exports.registerUser = async (req, res) => {
 	});
 };
 
+
 exports.registerDriver = async (req, res) => {
 
-	const DLPath = req.files[0].path.replace('\\', '/');
-	const localdestDL = __dirname + "/../../public/profile/" + DLPath.substring(DLPath.lastIndexOf('\\') + 1);
-	const DLdestPath = "driver/" + DLPath.substring(DLPath.lastIndexOf('\\') + 1);
-	let DLurl = uploadFile(localdestDL, DLdestPath);
-	DLurl = await Promise.all([DLurl]);
-	fs.unlinkSync(localdestDL);
-
-	const kycPath = req.files[1].path.replace('\\', '/');
-	const localdestkyc = __dirname + "/../../public/profile/" + kycPath.substring(kycPath.lastIndexOf('\\') + 1);
-	const kycdestPath = "driver/" + kycPath.substring(kycPath.lastIndexOf('\\') + 1);
-	let kycUrl = uploadFile(localdestkyc, kycdestPath);
-	kycUrl = await Promise.all([kycUrl]);
-	fs.unlinkSync(localdestkyc);
-
-	const idCardPath = req.files[2].path.replace('\\', '/');
-	const localdestidCard = __dirname + "/../../public/profile/" + idCardPath.substring(idCardPath.lastIndexOf('\\') + 1);
-	const idCarddestPath = "driver/" + idCardPath.substring(idCardPath.lastIndexOf('\\') + 1);
-	let idCardUrl = uploadFile(localdestidCard, idCarddestPath);
-	idCardUrl = await Promise.all([idCardUrl]);
-	fs.unlinkSync(localdestidCard);
-
-	var drivingLicense = DLurl[0];
-	var kyc = kycUrl[0];
-	var idCard = idCardUrl[0];
+	var drivingLicense, kyc, idCard;
+	if(req.files && req.files.length > 0){
+		drivingLicense = await gCloudUrl(req.files[0].path, "driver/");
+		kyc = await gCloudUrl(req.files[1].path, "driver/");
+		idCard = await gCloudUrl(req.files[2].path, "driver/");
+	}else{
+		res.status(404).json({
+			message: "File doesn't exist",
+		});
+	}
 
 	var {
 		userCode,
@@ -222,12 +208,14 @@ exports.registerDriver = async (req, res) => {
 
 exports.registerManager = async (req, res) => {
 
-	const idCardPath = req.file.path.replace('\\', '/');
-	const localdestidCard = __dirname + "/../../public/profile/" + idCardPath.substring(idCardPath.lastIndexOf('\\') + 1);
-	const idCarddestPath = "manager/" + idCardPath.substring(idCardPath.lastIndexOf('\\') + 1);
-	let idCardUrl = uploadFile(localdestidCard, idCarddestPath);
-	idCardUrl = await Promise.all([idCardUrl]);
-	fs.unlinkSync(localdestidCard);
+	var idCard;
+	if(req.file && req.file.length > 0){
+		idCard = await gCloudUrl(req.file.path, "manager/");
+	}else{
+		res.status(404).json({
+			message: "File doesn't exist",
+		});
+	}
 
 	var { userCode, dateOfJoining, secondaryContact, emergencyContact, bloodGroup } =
 		req.body;
@@ -263,19 +251,15 @@ exports.registerManager = async (req, res) => {
 
 exports.registerDeliveryBoy = async (req, res) => {
 
-	const kycPath = req.files[0].path.replace('\\', '/');
-	const localdestkyc = __dirname + "/../../public/profile/" + kycPath.substring(kycPath.lastIndexOf('\\') + 1);
-	const kycdestPath = "deliveryBoy/" + kycPath.substring(kycPath.lastIndexOf('\\') + 1);
-	let kycUrl = uploadFile(localdestkyc, kycdestPath);
-	kycUrl = await Promise.all([kycUrl]);
-	fs.unlinkSync(localdestkyc);
-
-	const idCardPath = req.files[1].path.replace('\\', '/');
-	const localdestidCard = __dirname + "/../../public/profile/" + idCardPath.substring(idCardPath.lastIndexOf('\\') + 1);
-	const idCarddestPath = "deliveryBoy/" + idCardPath.substring(idCardPath.lastIndexOf('\\') + 1);
-	let idCardUrl = uploadFile(localdestidCard, idCarddestPath);
-	idCardUrl = await Promise.all([idCardUrl]);
-	fs.unlinkSync(localdestidCard);
+	var kyc, idCard;
+	if(req.files && req.files.length > 0){
+		kyc = await gCloudUrl(req.files[0].path, "deliveryBoy/");
+		idCard = await gCloudUrl(req.files[1].path, "deliveryBoy/");
+	}else{
+		res.status(404).json({
+			message: "File doesn't exist",
+		});
+	}
 
 	var {
 		userCode,
@@ -287,9 +271,6 @@ exports.registerDeliveryBoy = async (req, res) => {
 		emergencyContact,
 		bloodGroup,
 	} = req.body;
-
-	var kyc = kycUrl[0];
-	var idCard = idCardUrl[0];
 
 	DeliveryBoy.updateOne(
 		{ userCode },
