@@ -25,13 +25,13 @@ const DeliveryBoySchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  kyc: {
+  idCard1: {
     type: String,
   },
   secondaryContact: {
     type: String,
   },
-  idCard: {
+  idCard2: {
     type: String,
   },
   emergencyContact: {
@@ -43,6 +43,9 @@ const DeliveryBoySchema = new mongoose.Schema({
   userCode: {
     type: String,
   },
+  profileImage: {
+    type: String,
+  }
 });
 
 module.exports = mongoose.model("deliveryBoy", DeliveryBoySchema);

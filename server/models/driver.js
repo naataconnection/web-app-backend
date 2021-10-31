@@ -34,13 +34,13 @@ const DriverSchema = new mongoose.Schema({
   drivingLicenseExpiryDate: {
     type: Date,
   },
-  kyc: {
+  idCard1: {
     type: String,
   },
   secondaryContact: {
     type: String,
   },
-  idCard: {
+  idCard2: {
     type: String,
   },
   emergencyContact: {
@@ -59,6 +59,9 @@ const DriverSchema = new mongoose.Schema({
   deliveryBoy:{
     type: mongoose.Schema.Types.ObjectId,
     ref: "deliveryBoy"
+  },
+  profileImage: {
+    type: String,
   }
 });
 

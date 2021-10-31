@@ -28,6 +28,9 @@ const ManagerSchema = new mongoose.Schema({
   userCode: {
     type: String,
   },
+  profileImage: {
+    type: String,
+  }
 });
 
 module.exports = mongoose.model("manager", ManagerSchema);
