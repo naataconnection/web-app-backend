@@ -148,11 +148,12 @@ exports.registerUser = async (req, res) => {
 
 exports.registerDriver = async (req, res) => {
 
-	var drivingLicense, kyc, idCard;
+	var drivingLicense, idCard1, idCard2, profileImage;
 	if(req.files && req.files.length > 0){
 		drivingLicense = await gCloudUrl(req.files[0].path, "driver/");
-		kyc = await gCloudUrl(req.files[1].path, "driver/");
-		idCard = await gCloudUrl(req.files[2].path, "driver/");
+		idCard1 = await gCloudUrl(req.files[1].path, "driver/");
+		idCard2 = await gCloudUrl(req.files[2].path, "driver/");
+		profileImage = await gCloudUrl(req.files[3].path, "driver/");
 	}else{
 		res.status(404).json({
 			message: "File doesn't exist",
@@ -181,10 +182,11 @@ exports.registerDriver = async (req, res) => {
 			drivingLicenseType,
 			drivingLicense,
 			drivingLicenseExpireDate,
-			kyc,
+			idCard1,
 			secondaryContact,
-			idCard,
+			idCard2,
 			bloodGroup,
+			profileImage,
 		},
 		(err, result) => {
 			if (err) {
@@ -208,9 +210,10 @@ exports.registerDriver = async (req, res) => {
 
 exports.registerManager = async (req, res) => {
 
-	var idCard;
-	if(req.file && req.file.length > 0){
-		idCard = await gCloudUrl(req.file.path, "manager/");
+	var idCard, profileImage;
+	if(req.files && req.files.length > 0){
+		idCard = await gCloudUrl(req.files[0].path, "manager/");
+		profileImage = await gCloudUrl(req.files[1].path, "manager/");
 	}else{
 		res.status(404).json({
 			message: "File doesn't exist",
@@ -228,6 +231,7 @@ exports.registerManager = async (req, res) => {
 			idCard,
 			emergencyContact,
 			bloodGroup,
+			profileImage,
 		},
 		(err, result) => {
 			if (err) {
@@ -251,10 +255,11 @@ exports.registerManager = async (req, res) => {
 
 exports.registerDeliveryBoy = async (req, res) => {
 
-	var kyc, idCard;
+	var idCard1, idCard2, profileImage;
 	if(req.files && req.files.length > 0){
-		kyc = await gCloudUrl(req.files[0].path, "deliveryBoy/");
-		idCard = await gCloudUrl(req.files[1].path, "deliveryBoy/");
+		idCard1 = await gCloudUrl(req.files[0].path, "deliveryBoy/");
+		idCard2 = await gCloudUrl(req.files[1].path, "deliveryBoy/");
+		profileImage = await gCloudUrl(req.files[2].path, "deliveryBoy/");
 	}else{
 		res.status(404).json({
 			message: "File doesn't exist",
@@ -279,11 +284,12 @@ exports.registerDeliveryBoy = async (req, res) => {
 			city,
 			state,
 			age,
-			kyc,
+			idCard1,
 			secondaryContact,
-			idCard,
+			idCard2,
 			emergencyContact,
 			bloodGroup,
+			profileImage,
 		},
 		(err, result) => {
 			if (err) {
@@ -306,6 +312,16 @@ exports.registerDeliveryBoy = async (req, res) => {
 };
 
 exports.registerCustomer = (req, res) => {
+
+	var profileImage;
+	if(req.file && req.file.length > 0){
+		profileImage = await gCloudUrl(req.file.path, "customer/");
+	}else{
+		res.status(404).json({
+			message: "File doesn't exist",
+		});
+	}
+
 	var {
 		userCode,
 		companyName,
@@ -327,6 +343,7 @@ exports.registerCustomer = (req, res) => {
 			state,
 			secondaryContact,
 			gst,
+			profileImage,
 		},
 		(err, result) => {
 			if (err) {
