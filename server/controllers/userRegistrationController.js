@@ -6,6 +6,7 @@ const Manager = require("../models/manager");
 const Customer = require("../models/customer");
 const mailer = require("../helpers/mailer");
 const { paddingZero } = require("../helpers/paddingZeros");
+const dateTime = require("../utils/dateTimeFormat").dateDayTime;
 
 // Controller to register a user.
 exports.registerUser = async (req, res) => {
@@ -47,6 +48,7 @@ exports.registerUser = async (req, res) => {
 
 		const manager = new Manager({
 			userCode,
+			dateOfJoining: dateTime()[0],
 			user
 		});
 
@@ -65,6 +67,7 @@ exports.registerUser = async (req, res) => {
 
 		const driver = new Driver({
 			userCode,
+			dateOfJoining: dateTime()[0],
 			user
 		});
 
@@ -83,6 +86,7 @@ exports.registerUser = async (req, res) => {
 
 		const deliveryBoy = new DeliveryBoy({
 			userCode,
+			dateOfJoining: dateTime()[0],
 			user
 		});
 
@@ -101,6 +105,7 @@ exports.registerUser = async (req, res) => {
 
 		const customer = new Customer({
 			userCode,
+			dateOfJoining: dateTime()[0],
 			user
 		});
 

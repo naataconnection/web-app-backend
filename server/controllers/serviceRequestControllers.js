@@ -11,7 +11,7 @@ const DeliveryBoy = require("../models/deliveryBoy");
 
 
 
-exports.createRequest = async (req, res)=>{
+exports.createRequestBySuperUser = async (req, res)=>{
     var {customerCode, status, superUserCode, isRecurring, frequency} = req.body;
 
     var customer;
@@ -56,6 +56,51 @@ exports.createRequest = async (req, res)=>{
         isRecurring,
         frequency,
         status
+    });
+
+    try{
+        await serviceRequest.save();
+    }
+    catch(err){
+        res.status(400).json({
+            message: "Wrong Details Provided",
+            error:`${err}`
+        })
+    }
+
+    res.status(200).json({
+        message:"Service Request Created Successfully"
+    })
+};
+
+exports.createRequestByCustomer = async (req, res) => {
+    var {customerCode, isRecurring, frequency} = req.body;
+
+    var customer;
+    try{
+        customer = await Customer.findOne({userCode: customerCode});
+        
+        if(customer==null){
+            res.status(404).json({
+                message:"No Customer found for this customer code."
+            })
+        }
+    }
+    catch(err){
+        res.status(400).json({
+            error: `${err}`
+        })
+    }
+
+    const result = await ServiceRequest.countDocuments()
+    const requestCode = "NCSR/"+paddingZero(result+1, 4);
+
+    const serviceRequest = new ServiceRequest({
+        requestCode,
+        customer,
+        isRecurring,
+        frequency,
+        status:1
     });
 
     try{
