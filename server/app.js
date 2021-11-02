@@ -4,7 +4,7 @@ const db = require("./db.js");
 const app = express();
 const passport = require("passport");
 const morgan = require("morgan");
-const cors = require("cors"); 
+const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
 const indexRoutes = require("./routes/index.js");
@@ -21,10 +21,8 @@ require("./config/passport")(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use("/", indexRoutes );
+app.use("/api", indexRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is running at localhost:${process.env.PORT}`);
 });
-	
-	
