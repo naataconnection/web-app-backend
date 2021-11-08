@@ -311,7 +311,7 @@ exports.registerDeliveryBoy = async (req, res) => {
 	);
 };
 
-exports.registerCustomer = (req, res) => {
+exports.registerCustomer = async (req, res) => {
 
 	var profileImage;
 	if(req.file && req.file.length > 0){

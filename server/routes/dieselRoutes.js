@@ -6,15 +6,15 @@ const dieselControllers = require("../controllers/dieselController");
 // Main route - "/diesel"
 
 router.post("/create", imageUpload.array('images'), dieselControllers.create);
-router.get("/user", dieselControllers.user);
+router.get("/user", dieselControllers.dieselDetail);
 
 // dashboard
-router.get("/allUser", dieselControllers.allUsers);
-router.get("/sortByPump", dieselControllers.sortByPump);
-router.get("/sortByPaymentMode", dieselControllers.sortByModeOfPayment);
-router.get("/sortByVehicleNumber", dieselControllers.sortByVehicleNumber);
-router.get("/sortByDate", dieselControllers.sortByDate);
-router.get("/sortByDateAndUserCode", dieselControllers.sortByDateAndUserCode);
-router.get("/sortByDateRange", dieselControllers.sortByDateRange);
+router.get("/allUser", dieselControllers.allDieselDetails);
+router.get("/sortByPump", dieselControllers.searchByPump);
+router.get("/sortByPaymentMode", dieselControllers.searchByModeOfPayment);
+router.get("/sortByVehicleNumber", dieselControllers.searchByVehicleNumber);
+router.get("/sortByDate", dieselControllers.searchByDate);
+router.get("/sortByDateAndUserCode", dieselControllers.searchByDateAndUserCode);
+router.get("/sortByDateRange", dieselControllers.searchByDateRange);
 
 module.exports = router;

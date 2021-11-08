@@ -7,5 +7,9 @@ const getUserHelper = require("../helpers/getUserList");
 
 router.get("/userList", getUserHelper.getUsersList);
 router.get("/profile", getUserHelper.getUserProfile);
+router.get("/driver", getUserHelper.getDriver);
+router.get("/deliveryBoy", getUserHelper.getDeliveryBoy);
+router.get("/customer", getUserHelper.getCustomer);
+router.get("/manager", getUserHelper.getManager);
 
 module.exports = router;

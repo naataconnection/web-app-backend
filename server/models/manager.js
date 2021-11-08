@@ -18,6 +18,7 @@ const ManagerSchema = new mongoose.Schema({
   },
   idCard: {
     type: String,
+    default: null
   },
   emergencyContact: {
     type: String,
@@ -30,6 +31,7 @@ const ManagerSchema = new mongoose.Schema({
   },
   profileImage: {
     type: String,
+    default: null
   }
 });
 

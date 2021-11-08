@@ -73,7 +73,11 @@ const VehicleSchema = new mongoose.Schema({
   fleetHuntId: {
     type: String,
     default: null
-  }
+  },
+  active:{
+	  type: Boolean, 
+	  default: true
+  },
 });
 
 module.exports = mongoose.model("vehicle", VehicleSchema);

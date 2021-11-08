@@ -1,23 +1,18 @@
 const diesel = require("../models/dieselDetails");
 const dateTime = require("../utils/dateTimeFormat").dateDayTime;
-const uploadFile = require("../utils/gCloud").uploadFile;
-const fs = require('fs');
 
 module.exports.create = async (req, res) => {
     try{
-        const kmOfVehiclePath = req.files[0].path.replace('\\', '/');
-        const localdestkmOfVehicle = __dirname + "/../../public/profile/" + kmOfVehiclePath.substring(kmOfVehiclePath.lastIndexOf('\\') + 1);
-        const kmOfVehicledestPath = "diesel/" + kmOfVehiclePath.substring(kmOfVehiclePath.lastIndexOf('\\') + 1);
-        let kmUrl = uploadFile(localdestkmOfVehicle, kmOfVehicledestPath);
-        kmUrl = await Promise.all([kmUrl]);
-        fs.unlinkSync(localdestkmOfVehicle);
 
-        const billPath = req.files[1].path.replace('\\', '/');
-        const localdestBill = __dirname + "/../../public/profile/" + billPath.substring(billPath.lastIndexOf('\\') + 1);
-        const billdestPath = "diesel/" + billPath.substring(billPath.lastIndexOf('\\') + 1);
-        let billUrl = uploadFile(localdestBill, billdestPath);
-        billUrl = await Promise.all([billUrl]);
-        fs.unlinkSync(localdestBill);
+        var kmOfVehicleImg, billImage;
+        if(req.files && req.files.length > 0){
+            kmOfVehicleImg = await gCloudUrl(req.files[0].path, "diesel/");
+            billImage = await gCloudUrl(req.files[1].path, "diesel/");
+        }else{
+            res.status(404).json({
+                message: "File doesn't exist",
+            });
+        }
 
         const { kmOfVehicle, pump, liter, totalAmount, vehicleNumber, userCode, paymentMode, remarks} = req.body;
         var date = dateTime()[0];
@@ -45,7 +40,7 @@ module.exports.create = async (req, res) => {
     }
 }
 
-module.exports.user = async (req, res) => {
+module.exports.dieselDetail = async (req, res) => {
     try{
         const userList = await diesel.find({userCode: req.body.userCode});
         res.status(200).json({ success: "true", data: userList });
@@ -55,7 +50,7 @@ module.exports.user = async (req, res) => {
     }
 }
 
-module.exports.allUsers = async (req, res) => {
+module.exports.allDieselDetails = async (req, res) => {
     try{
         const userList = await diesel.find({});
         res.status(200).json({ success: "true", data: userList });
@@ -65,7 +60,7 @@ module.exports.allUsers = async (req, res) => {
     }
 }
 
-module.exports.sortByDate = async (req, res) => {
+module.exports.searchByDate = async (req, res) => {
     try{
         const userList = await diesel.find({date: req.body.date});
         res.status(200).json({ success: "true", data: userList });
@@ -75,7 +70,7 @@ module.exports.sortByDate = async (req, res) => {
     }
 }
 
-module.exports.sortByDateAndUserCode = async (req, res) => {
+module.exports.searchByDateAndUserCode = async (req, res) => {
     try{
         const userList = await diesel.find({date: req.body.date, userCode: req.body.userCode});
         res.status(200).json({ success: "true", data: userList });
@@ -85,7 +80,7 @@ module.exports.sortByDateAndUserCode = async (req, res) => {
     }
 }
 
-module.exports.sortByVehicleNumber = async (req, res) => {
+module.exports.searchByVehicleNumber = async (req, res) => {
     try{
         const userList = await diesel.find({vehicleNumber: req.body.vehicleNumber});
         res.status(200).json({ success: "true", data: userList });
@@ -95,7 +90,7 @@ module.exports.sortByVehicleNumber = async (req, res) => {
     }
 }
 
-module.exports.sortByModeOfPayment = async (req, res) => {
+module.exports.searchByModeOfPayment = async (req, res) => {
     try{
         const userList = await diesel.find({paymentMode: req.body.paymentMode});
         res.status(200).json({ success: "true", data: userList });
@@ -105,7 +100,7 @@ module.exports.sortByModeOfPayment = async (req, res) => {
     }
 }
 
-module.exports.sortByPump = async (req, res) => {
+module.exports.searchByPump = async (req, res) => {
     try{
         const userList = await diesel.find({pump: req.body.pump});
         res.status(200).json({ success: "true", data: userList });
@@ -115,7 +110,7 @@ module.exports.sortByPump = async (req, res) => {
     }
 }
 
-module.exports.sortByDateRange = async (req, res) => {
+module.exports.searchByDateRange = async (req, res) => {
     try{
         const userList = await diesel.find({date: {
             $gte: req.body.startDate,

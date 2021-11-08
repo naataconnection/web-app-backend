@@ -18,6 +18,7 @@ exports.registerVehicle = async (req, res) => {
     dailyRent,
     costPerKM,
     costPerDay,
+    fleetHuntId,
   } = req.body;
 
     var vehicleCode;
@@ -41,7 +42,8 @@ exports.registerVehicle = async (req, res) => {
     insuranceEndDate,
     dailyRent,
     costPerKM,
-    costPerDay
+    costPerDay,
+    fleetHuntId
   });
 
   try{

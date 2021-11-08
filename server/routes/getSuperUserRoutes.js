@@ -6,5 +6,6 @@ const getSuperUserHelper = require("../helpers/getSuperUser");
 // Main - "/superUsers"
 
 router.get("/profile", getSuperUserHelper.getSuperUserProfile);
+router.get("/admin", getSuperUserHelper.getAdmin);
 
 module.exports = router;
