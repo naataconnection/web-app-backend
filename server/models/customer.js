@@ -29,6 +29,9 @@ const CustomerSchema = mongoose.Schema({
   gst: {
     type: String,
   },
+  profileImage: {
+    type: String,
+  }
 });
 
 module.exports = mongoose.model("customer", CustomerSchema);

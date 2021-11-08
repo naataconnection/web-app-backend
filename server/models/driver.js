@@ -25,29 +25,24 @@ const DriverSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  // drivingLicense: {
-  //   type: Buffer,
-  //   contentType: String
-  // },
+  drivingLicense: {
+    type: String,
+  },
   drivingLicenseType: {
     type: String,
   },
   drivingLicenseExpiryDate: {
     type: Date,
   },
-  // kyc: [
-  //   {
-  //     type: Buffer,
-  //     contentType: String
-  //   },
-  // ],
+  idCard1: {
+    type: String,
+  },
   secondaryContact: {
     type: String,
   },
-  // idCard: {
-  //   type: Buffer,
-  //   contentType: String
-  // },
+  idCard2: {
+    type: String,
+  },
   emergencyContact: {
     type: String,
   },
@@ -64,6 +59,9 @@ const DriverSchema = new mongoose.Schema({
   deliveryBoy:{
     type: mongoose.Schema.Types.ObjectId,
     ref: "deliveryBoy"
+  },
+  profileImage: {
+    type: String,
   }
 });
 

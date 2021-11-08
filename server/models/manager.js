@@ -16,10 +16,10 @@ const ManagerSchema = new mongoose.Schema({
   secondaryContact: {
     type: String,
   },
-  // Photo
-  //   idCard: {
-  //     type: String,
-  //   },
+  idCard: {
+    type: String,
+    default: null
+  },
   emergencyContact: {
     type: String,
   },
@@ -29,6 +29,10 @@ const ManagerSchema = new mongoose.Schema({
   userCode: {
     type: String,
   },
+  profileImage: {
+    type: String,
+    default: null
+  }
 });
 
 module.exports = mongoose.model("manager", ManagerSchema);

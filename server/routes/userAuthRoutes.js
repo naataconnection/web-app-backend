@@ -4,6 +4,7 @@ const userRegistrationControllers = require("../controllers/userRegistrationCont
 const otpControllers = require("../controllers/otpController.js");
 const { authRequired, forwardAuthenticated, verifyUser } = require("../middlewares/authMiddleware.js");
 const router = express.Router();
+const imageUpload = require("../utils/multer");
 
 // Main path - "/user"
 
@@ -14,9 +15,9 @@ router.post("/logout", userLoginControllers.logoutUser);
 
 //userRegistrationController
 router.post("/register", userRegistrationControllers.registerUser);
-router.post("/registerDriver", userRegistrationControllers.registerDriver);
-router.post("/registerManager", userRegistrationControllers.registerManager);
-router.post("/registerDeliveryBoy", userRegistrationControllers.registerDeliveryBoy);
+router.post("/registerDriver", imageUpload.array('images'), userRegistrationControllers.registerDriver);
+router.post("/registerManager", imageUpload.single('image'), userRegistrationControllers.registerManager);
+router.post("/registerDeliveryBoy", imageUpload.array('images'), userRegistrationControllers.registerDeliveryBoy);
 router.post("/registerCustomer", userRegistrationControllers.registerCustomer);
 
 module.exports = router;

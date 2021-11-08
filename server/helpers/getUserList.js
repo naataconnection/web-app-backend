@@ -39,3 +39,46 @@ module.exports.getUserProfile = async (req, res) => {
     }
 }
 
+module.exports.getDriver = async (req, res) => {
+	try{
+		const userCode = req.body.userCode;
+        const user = await Driver.findOne({userCode: userCode});
+		res.status(200).json({ success: "true", data: user });
+	}catch(error){
+		console.log(error);
+        return res.status(400).json({ success: "false", error: `${error}` });
+	}
+}
+
+module.exports.getDeliveryBoy = async (req, res) => {
+	try{
+		const userCode = req.body.userCode;
+        const user = await DeliveryBoy.findOne({userCode: userCode});
+		res.status(200).json({ success: "true", data: user });
+	}catch(error){
+		console.log(error);
+        return res.status(400).json({ success: "false", error: `${error}` });
+	}
+}
+
+module.exports.getManager = async (req, res) => {
+	try{
+		const userCode = req.body.userCode;
+        const user = await Manager.findOne({userCode: userCode});
+		res.status(200).json({ success: "true", data: user });
+	}catch(error){
+		console.log(error);
+        return res.status(400).json({ success: "false", error: `${error}` });
+	}
+}
+
+module.exports.getCustomer = async (req, res) => {
+	try{
+		const userCode = req.body.userCode;
+        const user = await Customer.findOne({userCode: userCode});
+		res.status(200).json({ success: "true", data: user });
+	}catch(error){
+		console.log(error);
+        return res.status(400).json({ success: "false", error: `${error}` });
+	}
+}
