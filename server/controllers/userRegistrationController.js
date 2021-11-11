@@ -145,197 +145,223 @@ exports.registerUser = async (req, res) => {
 	});
 };
 
+module.exports.registerDriver = async (req, res) => {
 
-exports.registerDriver = async (req, res) => {
+	try{
+		var i = 0;
+		var drivingLicense, idCard1, idCard2, profileImage;
 
-	var drivingLicense, idCard1, idCard2, profileImage;
-	if(req.files && req.files.length > 0){
-		drivingLicense = await gCloudUrl(req.files[0].path, "driver/");
-		idCard1 = await gCloudUrl(req.files[1].path, "driver/");
-		idCard2 = await gCloudUrl(req.files[2].path, "driver/");
-		profileImage = await gCloudUrl(req.files[3].path, "driver/");
-	}else{
-		res.status(404).json({
-			message: "File doesn't exist",
-		});
-	}
+		if(req.body.isDrivingLicense == 1){
+			drivingLicense = await gCloudUrl(req.files[i].path, "driver/");
+			i++;
+		}else{
+			drivingLicense = req.body.drivingLicense;
+		}
 
-	var {
-		userCode,
-		address,
-		city,
-		state,
-		age,
-		drivingLicenseType,
-		drivingLicenseExpireDate,
-		secondaryContact,
-		bloodGroup,
-	} = req.body;
+		if(req.body.isIdCard1 == 1){
+			idCard1 = await gCloudUrl(req.files[i].path, "driver/");
+			i++;
+		}else{
+			idCard1 = req.body.idCard1;
+		}
 
-	Driver.updateOne(
-		{ userCode },
-		{
+		if(req.body.isIdCard2 == 1){
+			idCard2 = await gCloudUrl(req.files[i].path, "driver/");
+			i++;
+		}else{
+			idCard2 = req.body.idCard2;
+		}
+
+		if(req.body.isProfileImage == 1){
+			profileImage = await gCloudUrl(req.files[i].path, "driver/");
+			i++;
+		}else{
+			profileImage = req.body.profileImage;
+		}
+
+		var {
+			userCode,
 			address,
 			city,
 			state,
 			age,
 			drivingLicenseType,
-			drivingLicense,
 			drivingLicenseExpireDate,
-			idCard1,
 			secondaryContact,
-			idCard2,
 			bloodGroup,
-			profileImage,
-		},
-		(err, result) => {
-			if (err) {
-				res.status(500).json({
-					error: `${err}`,
-				});
-			}
+		} = req.body;
 
-			if (res == null) {
-				res.status(404).json({
-					message: "No driver profile found with this userCode",
-				});
-			}
+		const driver = await Driver.updateOne(
+			{ userCode },
+			{
+				address,
+				city,
+				state,
+				age,
+				drivingLicenseType,
+				drivingLicense,
+				drivingLicenseExpireDate,
+				idCard1,
+				secondaryContact,
+				idCard2,
+				bloodGroup,
+				profileImage,
+			},
+		)
 
+		if(driver.matchedCount){
 			res.status(200).json({
 				message: "Fields Updated for driver profile",
 			});
+		}else{
+			res.status(404).json({
+				message: "No driver profile found with this userCode",
+			});
 		}
-	);
-};
 
-exports.registerManager = async (req, res) => {
-
-	var idCard, profileImage;
-	if(req.files && req.files.length > 0){
-		idCard = await gCloudUrl(req.files[0].path, "manager/");
-		profileImage = await gCloudUrl(req.files[1].path, "manager/");
-	}else{
-		res.status(404).json({
-			message: "File doesn't exist",
+	}catch(error){
+		res.status(500).json({
+			error: `${error}`,
 		});
 	}
+};
 
-	var { userCode, dateOfJoining, secondaryContact, emergencyContact, bloodGroup } =
+module.exports.registerManager = async (req, res) => {
+
+	try{
+
+		var i = 0;
+		var idCard, profileImage;
+
+		if(req.body.isIdCard == 1){
+			idCard = await gCloudUrl(req.files[i].path, "manager/");
+			i++;
+		}else{
+			idCard = req.body.idCard;
+		}
+
+		if(req.body.isProfileImage == 1){
+			profileImage = await gCloudUrl(req.files[i].path, "manager/");
+			i++;
+		}else{
+			profileImage = req.body.profileImage;
+		}
+
+		var { userCode, dateOfJoining, secondaryContact, emergencyContact, bloodGroup } =
 		req.body;
 
-	Manager.updateOne(
-		{ userCode },
-		{
-			dateOfJoining,
-			secondaryContact,
-			idCard,
-			emergencyContact,
-			bloodGroup,
-			profileImage,
-		},
-		(err, result) => {
-			if (err) {
-				res.status(500).json({
-					error: `${err}`,
-				});
-			}
+		const manager = await Manager.updateOne(
+			{ userCode },
+			{
+				dateOfJoining,
+				secondaryContact,
+				idCard,
+				emergencyContact,
+				bloodGroup,
+				profileImage,
+			},
+		)
 
-			if (res == null) {
-				res.status(404).json({
-					message: "No driver profile found with this userCode",
-				});
-			}
-
+		if(manager.matchedCount){
 			res.status(200).json({
 				message: "Fields Updated for manager profile",
 			});
+		}else{
+			res.status(404).json({
+				message: "No driver profile found with this userCode",
+			});
 		}
-	);
-};
 
-exports.registerDeliveryBoy = async (req, res) => {
-
-	var idCard1, idCard2, profileImage;
-	if(req.files && req.files.length > 0){
-		idCard1 = await gCloudUrl(req.files[0].path, "deliveryBoy/");
-		idCard2 = await gCloudUrl(req.files[1].path, "deliveryBoy/");
-		profileImage = await gCloudUrl(req.files[2].path, "deliveryBoy/");
-	}else{
-		res.status(404).json({
-			message: "File doesn't exist",
+	}catch(error){
+		res.status(500).json({
+			error: `${error}`,
 		});
 	}
+};
 
-	var {
-		userCode,
-		address,
-		city,
-		state,
-		age,
-		secondaryContact,
-		emergencyContact,
-		bloodGroup,
-	} = req.body;
+module.exports.registerDeliveryBoy = async (req, res) => {
 
-	DeliveryBoy.updateOne(
-		{ userCode },
-		{
+	try{
+		var i = 0;
+		var idCard1, idCard2, profileImage;
+
+		if(req.body.isIdCard1 == 1){
+			idCard1 = await gCloudUrl(req.files[i].path, "deliveryBoy/");
+			i++;
+		}else{
+			idCard1 = req.body.idCard1;
+		}
+
+		if(req.body.isIdCard2 == 1){
+			idCard2 = await gCloudUrl(req.files[i].path, "deliveryBoy/");
+			i++;
+		}else{
+			idCard2 = req.body.idCard2;
+		}
+
+		if(req.body.isProfileImage == 1){
+			profileImage = await gCloudUrl(req.files[i].path, "deliveryBoy/");
+			i++;
+		}else{
+			profileImage = req.body.profileImage;
+		}
+
+		var {
+			userCode,
 			address,
 			city,
 			state,
 			age,
-			idCard1,
 			secondaryContact,
-			idCard2,
 			emergencyContact,
 			bloodGroup,
-			profileImage,
-		},
-		(err, result) => {
-			if (err) {
-				res.status(500).json({
-					error: `${err}`,
-				});
-			}
+		} = req.body;
 
-			if (res == null) {
-				res.status(404).json({
-					message: "No driver profile found with this userCode",
-				});
-			}
+		const deliveryBoy = DeliveryBoy.updateOne(
+			{ userCode },
+			{
+				address,
+				city,
+				state,
+				age,
+				idCard1,
+				secondaryContact,
+				idCard2,
+				emergencyContact,
+				bloodGroup,
+				profileImage,
+			},
+		);
 
+		if(deliveryBoy.matchedCount){
 			res.status(200).json({
 				message: "Fields Updated for delivery boy profile",
 			});
+		}else{
+			res.status(404).json({
+				message: "No delivery profile found with this userCode",
+			});
 		}
-	);
-};
 
-exports.registerCustomer = async (req, res) => {
-
-	var profileImage;
-	if(req.file && req.file.length > 0){
-		profileImage = await gCloudUrl(req.file.path, "customer/");
-	}else{
-		res.status(404).json({
-			message: "File doesn't exist",
+	}catch(error){
+		res.status(500).json({
+			error: `${error}`,
 		});
 	}
+};
 
-	var {
-		userCode,
-		companyName,
-		department,
-		address,
-		city,
-		state,
-		secondaryContact,
-		gst,
-	} = req.body;
+module.exports.registerCustomer = async (req, res) => {
 
-	Customer.updateOne(
-		{ userCode },
-		{
+	try{
+		var profileImage;
+		if(req.body.isProfileImage == 1){
+			profileImage = await gCloudUrl(req.file.path, "customer/");
+		}else{
+			profileImage = req.body.profileImage;
+		}
+
+		var {
+			userCode,
 			companyName,
 			department,
 			address,
@@ -343,24 +369,36 @@ exports.registerCustomer = async (req, res) => {
 			state,
 			secondaryContact,
 			gst,
-			profileImage,
-		},
-		(err, result) => {
-			if (err) {
-				res.status(500).json({
-					error: `${err}`,
-				});
-			}
+		} = req.body;
+	
+		var customer = await Customer.updateOne(
+			{ userCode },
+			{
+				companyName,
+				department,
+				address,
+				city,
+				state,
+				secondaryContact,
+				gst,
+				profileImage,
+			},
+		)
 
-			if (res == null) {
-				res.status(404).json({
-					message: "No driver profile found with this userCode",
-				});
-			}
-
+		if(customer.matchedCount){
 			res.status(200).json({
 				message: "Fields Updated for customer profile",
 			});
+		}else{
+			res.status(404).json({
+				message: "No customer profile found with this userCode",
+			});
 		}
-	);
+
+
+	}catch(error){
+		res.status(500).json({
+			error: `${error}`,
+		});
+	}
 };
