@@ -1,7 +1,7 @@
 const Notification = require("../models/notification");
 const dateTime = require("../utils/dateTimeFormat").dateDayTime;
 
-module.exports.create = (req, res) => {
+module.exports.create = async (req, res) => {
     try{
         var entryDate = dateTime()[0];
         const notification = await Notification.create({
@@ -14,7 +14,7 @@ module.exports.create = (req, res) => {
     }
 }
 
-module.exports.getNotification = (req, res) => {
+module.exports.getNotification = async (req, res) => {
     try{
         const currDate = dateTime()[0];
         const result = await Notification.find({
