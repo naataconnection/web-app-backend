@@ -723,3 +723,33 @@ exports.closeRequest = async (req, res) => {
     });
   }
 };
+
+module.exports.getPendingServiceRequest = async (req, res) => {
+  try {
+    const users = await ServiceRequest.find({userCode: req.body.userCode, status: 1});
+    res.status(200).send({success: "true", message: users});
+  }catch (error) {
+    console.log(error);
+    res.status(400).json({ success: "false", error: `${error}` });
+  }
+}
+
+module.exports.getCompletedServiceRequest = async (req, res) => {
+  try {
+    const users = await ServiceRequest.find({userCode: req.body.userCode, status: 7});
+    res.status(200).send({success: "true", message: users});
+  }catch (error) {
+    console.log(error);
+    res.status(400).json({ success: "false", error: `${error}` });
+  }
+}
+
+module.exports.getActiveServiceRequest = async (req, res) => {
+  try {
+    const users = await ServiceRequest.find({userCode: req.body.userCode, status: { $ne: 0}, status: { $ne: 1}, status: { $ne: 7}});
+    res.status(200).send({success: "true", message: users});
+  }catch (error) {
+    console.log(error);
+    res.status(400).json({ success: "false", error: `${error}` });
+  }
+}
