@@ -14,21 +14,18 @@ const OrderSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  // deliverySheetImage:{
-  //   type: String,
-  //   required: true
-  // },
-  // proofDelivery:{
-  //   type: File,
-  //   required: true
-  // },
+  deliverySheetImage:{
+    type: String,
+  },
+  proofDelivery:{
+    type: String,
+  },
   startingKM:{
     type: Number
   },
-  // startingKMProof:{
-  //   type: File,
-  //   required:true,
-  // },
+  startingKMProof:{
+    type: String,
+  },
   startingLocation:{
     type: new mongoose.Schema({
       longitude: {
@@ -42,10 +39,9 @@ const OrderSchema = new mongoose.Schema({
   endingKM: {
     type: Number
   },
-  // endingKMProof:{
-  //   type: File,
-  //   required:true,
-  // },
+  endingKMProof:{
+    type: String,
+  },
   totalParcels:{
     type:Number
   },

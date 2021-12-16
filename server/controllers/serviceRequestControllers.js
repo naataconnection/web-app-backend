@@ -327,6 +327,37 @@ exports.assignDriversAndDB = async (req, res) => {
       deliveryBoy = await DeliveryBoy.findOne({
         userCode: deliveryBoyCodes[i],
       });
+    const base = requestCode.slice(-4);
+    var n;
+    if(serviceRequest.orders==null){
+        n=0;
+    }
+    else{
+        n=serviceRequest.orders.length
+    }
+
+
+    const orderCode = "NCOR/"+base+"/"+paddingZero(n+1, 2);
+
+    var deliverySheetImage, startingKMProof;
+
+	if(req.files && req.files.length > 0){
+		deliverySheetImage = await gCloudUrl(req.files[0].path, `${orderCode}/`);
+		startingKMProof = await gCloudUrl(req.files[1].path, `${orderCode}/`);
+	}else{
+		res.status(404).json({
+			message: "File doesn't exist",
+		});
+	}
+
+    const order = new Order({
+        driver, 
+        orderCode,
+        deliverySheetId,
+        startingKM,
+        deliverySheetImage,
+        startingKMProof
+    });
 
       if (deliveryBoy == null) {
         res.status(400).json({
