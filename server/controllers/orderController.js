@@ -5,7 +5,8 @@ const Driver = require("../models/driver");
 module.exports.getOrder = async (req, res) => {
     try{
         const data = await Order.find({orderCode: req.body.orderCode});
-        if(data[0]){
+        console.log(data.length);
+        if(data.length!=0){
             for(let i = 0;i < data.length; i++){
 
                 const driver = await Driver.findOne({_id: data[i].driver}).select({"userCode": 1});
@@ -20,7 +21,7 @@ module.exports.getOrder = async (req, res) => {
                 data[i].driver = driver;
             }
         }else{
-            return res.status(200).send({success: "true", "message": "Order doesn't exist with this OrderCode"});
+            return res.status(404).send({success: "true", "message": "Order doesn't exist with this OrderCode"});
         }
         res.status(200).send({success: "true", message: data});
     }catch(error){
