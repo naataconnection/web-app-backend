@@ -32,7 +32,7 @@ const getUserCodefromObjectId = async (array) => {
             var vehicles = [];
             if(array[i].vehicles[0]){
               for(let j = 0;j < array[i].vehicles.length; j++){
-                const userCode = await Vehicle.findOne({_id: array[i].vehicles[j]}).select({"userCode": 1});
+                const userCode = await Vehicle.findOne({_id: array[i].vehicles[j]}).select({"vehicleCode": 1});
                 vehicles.push(userCode);
               }
             }
