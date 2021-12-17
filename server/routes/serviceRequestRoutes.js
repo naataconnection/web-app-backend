@@ -28,4 +28,9 @@ router.get("/invoices", invoicesControllers.getInvoice);
 
 router.get("/", serviceRequesControllers.getServiceRequest);
 
+// Dashboard
+router.get("/all/active", serviceRequesControllers.getAllActiveServiceRequest);
+router.get("/all/pending", serviceRequesControllers.getAllPendingServiceRequest);
+router.get("/all/completed", serviceRequesControllers.getAllCompletedServiceRequest);
+
 module.exports = router;

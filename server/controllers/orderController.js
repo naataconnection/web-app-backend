@@ -20,7 +20,7 @@ module.exports.getOrder = async (req, res) => {
                 data[i].driver = driver;
             }
         }else{
-            res.status(200).send({success: "true", "message": "Order doesn't exist with this OrderCode"});
+            return res.status(200).send({success: "true", "message": "Order doesn't exist with this OrderCode"});
         }
         res.status(200).send({success: "true", message: data});
     }catch(error){
