@@ -5,11 +5,11 @@ const getUserHelper = require("../helpers/getUserList");
 
 // Main - "/users"
 
-router.get("/userList", getUserHelper.getUsersList);
-router.get("/profile", getUserHelper.getUserProfile);
-router.get("/driver", getUserHelper.getDriver);
-router.get("/deliveryBoy", getUserHelper.getDeliveryBoy);
-router.get("/customer", getUserHelper.getCustomer);
-router.get("/manager", getUserHelper.getManager);
+router.post("/userList", getUserHelper.getUsersList);
+router.post("/profile", getUserHelper.getUserProfile);
+router.post("/driver", getUserHelper.getDriver);
+router.post("/deliveryBoy", getUserHelper.getDeliveryBoy);
+router.post("/customer", getUserHelper.getCustomer);
+router.post("/manager", getUserHelper.getManager);
 
 module.exports = router;

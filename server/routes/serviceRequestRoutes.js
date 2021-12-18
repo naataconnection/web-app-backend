@@ -24,7 +24,7 @@ router.get("/activeUsers", serviceRequesControllers.getActiveServiceRequest);
 router.get("/pendingUsers", serviceRequesControllers.getPendingServiceRequest);
 router.get("/completedUsers", serviceRequesControllers.getCompletedServiceRequest);
 router.post("/orders", ordersControllers.getOrder);
-router.get("/invoices", invoicesControllers.getInvoice);
+router.post("/invoices", invoicesControllers.getInvoice);
 
 router.get("/", serviceRequesControllers.getServiceRequest);
 
