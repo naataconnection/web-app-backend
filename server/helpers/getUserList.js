@@ -82,3 +82,27 @@ module.exports.getCustomer = async (req, res) => {
         return res.status(400).json({ success: "false", error: `${error}` });
 	}
 }
+
+module.exports.allDriver = async (req, res) => {
+	try{
+		const user = await Driver.find();
+		if(user[0]){
+			return res.status(200).json({ success: "true", data: user});
+		}
+		res.status(200).json({ success: "true", message: "No driver exists"});
+	}catch(error){
+		return res.status(400).json({ success: "false", error: `${error}`});
+	}
+}
+
+module.exports.allDeliveryBoy = async (req, res) => {
+	try{
+		const user = await DeliveryBoy.find();
+		if(user[0]){
+			return res.status(200).json({ success: "true", data: user});
+		}
+		res.status(200).json({ success: "true", message: "No deliveryboy exists"});
+	}catch(error){
+		return res.status(400).json({ success: "false", error: `${error}`});
+	}
+}
