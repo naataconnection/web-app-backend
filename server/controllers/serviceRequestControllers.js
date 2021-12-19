@@ -8,7 +8,9 @@ const Invoice = require("../models/invoice");
 const Driver = require("../models/driver");
 const Vehicle = require("../models/vehicle");
 const DeliveryBoy = require("../models/deliveryBoy");
+const User = require("../models/user");
 const getUserCodefromObjectId = require("../helpers/getUserCodeforServicerequest").getUserCodefromObjectId;
+const getName = require("../helpers/getUserCodeforServicerequest").getName;
 
 exports.getServiceRequest = async (req, res) => {
   ServiceRequest.find({}, (err, requests) => {
@@ -784,16 +786,33 @@ module.exports.getCompletedServiceRequest = async (req, res) => {
   }
 }
 
-module.exports.getActiveServiceRequest = async (req, res) => {
+module.exports.getActiveServiceRequest = async (req, res, next) => {
   try {
     const array = await ServiceRequest.find({userCode: req.body.userCode, status: { $ne: 0}, status: { $ne: 1}, status: { $ne: 7}});
     const result = await getUserCodefromObjectId(array);
     if(!result[0]){
       return res.status(200).send({success: "true", message: "No active Service request with this userCode"});
     }
-    res.status(200).send({success: "true", message: result});
+    req.body.data = result;
+    next();
   }catch (error) {
     console.log(error);
+    res.status(400).json({ success: "false", error: `${error}` });
+  }
+}
+
+module.exports.getwithName = async (req, res) => {
+  try{
+    const result = req.body.data;
+    const ans = await getName(result);
+    var deliveryBoys = [];
+    var drivers = [];
+    for(let i = 0;i < ans.length; i++){
+      deliveryBoys.push(ans[i].updatedDeliveryBoys);
+      drivers.push(ans[i].updatedDrivers);
+    }
+    res.status(200).send({success: "true", deliveryBoys: deliveryBoys, drivers: drivers, data: ans});
+  }catch(error){
     res.status(400).json({ success: "false", error: `${error}` });
   }
 }

@@ -59,3 +59,27 @@ exports.registerVehicle = async (req, res) => {
       message:`vehicle registered successfully`
   })
 };
+
+module.exports.getVehicles = async (req, res) => {
+  try{
+    const list = await Vehicle.findOne({vehicleCode: req.body.vehicleCode});
+    if(list){
+      return res.status(200).json({success: "true", data: list});
+    }
+    res.status(200).json({success: "true", message: "No Vehicle exists with this userCode"});
+  }catch(error){
+    res.status(400).json({success: "false", error:`${error}`});
+  }
+}
+
+module.exports.allVehicles = async (req, res) => {
+  try{
+    const list = await Vehicle.find();
+    if(list[0]){
+      return res.status(200).json({success: "true", data: list});
+    }
+    res.status(200).json({success: "true", message: "No Vehicle exists"});
+  }catch(error){
+    res.status(400).json({success: "false", error:`${error}`});
+  }
+}
