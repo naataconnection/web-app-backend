@@ -20,9 +20,9 @@ router.post("/create/invoice", serviceRequesControllers.createInvoice);
 router.post("/dispatch/driver", serviceRequesControllers.dispatchedDriver);
 router.post("/deliver/driver", serviceRequesControllers.deliverDriver);
 router.post("/close/manager", serviceRequesControllers.closeRequest);
-router.get("/activeUsers", serviceRequesControllers.getActiveServiceRequest);
-router.get("/pendingUsers", serviceRequesControllers.getPendingServiceRequest);
-router.get("/completedUsers", serviceRequesControllers.getCompletedServiceRequest);
+router.get("/activeUsers", serviceRequesControllers.getActiveServiceRequest, serviceRequesControllers.getwithName);
+router.get("/pendingUsers", serviceRequesControllers.getPendingServiceRequest, serviceRequesControllers.getwithName);
+router.get("/completedUsers", serviceRequesControllers.getCompletedServiceRequest, serviceRequesControllers.getwithName);
 router.post("/orders", ordersControllers.getOrder);
 router.post("/invoices", invoicesControllers.getInvoice);
 
