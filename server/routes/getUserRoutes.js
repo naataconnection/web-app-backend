@@ -15,6 +15,8 @@ router.get("/allDriver", getUserHelper.allDriver);
 router.get("/allDeliveryBoy", getUserHelper.allDeliveryBoy);
 router.get("/allManagerwithName", getUserHelper.allManagerwithName);
 router.get("/allDriverwithName", getUserHelper.allDriverwithName);
+router.get("/allDeliveryBoywithName", getUserHelper.allDriverwithName);
+router.get("/allCustomerwithName", getUserHelper.allDriverwithName);
 router.get("/", getUserHelper.users);
 
 module.exports = router;
