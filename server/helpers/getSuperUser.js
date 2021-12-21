@@ -23,3 +23,42 @@ module.exports.getAdmin = async (req, res) => {
 	}
 }
 
+module.exports.allsuperUser = async (req, res) => {
+    try{
+        const user = await superUsers.find();
+        if(user.length > 0){
+            return res.status(200).json({ success: "true", data: user});
+        }
+		res.status(200).json({ success: "true", message: "No superUser exists"});
+    }catch(error){
+        console.log(error);
+        return res.status(400).json({ success: "false", error: `${error}` });
+    }
+}
+
+module.exports.allAdmin = async (req, res) => {
+    try{
+        const user = await superUsers.find({role: "ADMIN"});
+        if(user.length > 0){
+            return res.status(200).json({ success: "true", data: user });
+        }
+		res.status(200).json({ success: "true", message: "No admin exists"});
+    }catch(error){
+        console.log(error);
+        return res.status(400).json({ success: "false", error: `${error}` });
+    }
+}
+
+module.exports.allOwner = async (req, res) => {
+    try{
+        const user = await superUsers.find({role: "OWNER"});
+        if(user.length > 0){
+            return res.status(200).json({ success: "true", data: user });
+        }
+		res.status(200).json({ success: "true", message: "No owner exists"});
+    }catch(error){
+        console.log(error);
+        return res.status(400).json({ success: "false", error: `${error}` });
+    }
+}
+
