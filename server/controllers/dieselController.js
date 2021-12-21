@@ -1,13 +1,14 @@
 const diesel = require("../models/dieselDetails");
 const dateTime = require("../utils/dateTimeFormat").dateDayTime;
+const gCloudUrl = require("../helpers/gCloud").gCloudUrl
 
 module.exports.create = async (req, res) => {
     try{
 
-        var kmOfVehicleImg, billImage;
+        var kmUrl, billUrl;
         if(req.files && req.files.length > 0){
-            kmOfVehicleImg = await gCloudUrl(req.files[0].path, "diesel/");
-            billImage = await gCloudUrl(req.files[1].path, "diesel/");
+            kmUrl = await gCloudUrl(req.files[0].path, "diesel/");
+            billUrl = await gCloudUrl(req.files[1].path, "diesel/");
         }else{
             res.status(404).json({
                 message: "File doesn't exist",
