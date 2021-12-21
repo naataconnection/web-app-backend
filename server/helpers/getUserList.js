@@ -106,3 +106,91 @@ module.exports.allDeliveryBoy = async (req, res) => {
 		return res.status(400).json({ success: "false", error: `${error}`});
 	}
 }
+
+module.exports.allManagerwithName = async (req, res) => {
+	try{
+        const userList = await Manager.find();
+		var result = [];
+		if(userList.length > 0){
+			for(var i = 0;i < userList.length; i++){
+				const details = await users.findOne({userCode: userList[i].userCode}).select({"firstName": 1, "middleName": 1, "lastName": 1});
+				result.push(details);
+			}
+		}else{
+			res.status(200).json({ success: "true", message: "No manager exists"});
+		}
+		res.status(200).json({ success: "true",  data: userList, driver: result});
+	}catch(error){
+		console.log(error);
+        return res.status(400).json({ success: "false", error: `${error}` });
+	}
+}
+
+module.exports.allCustomerwithName = async (req, res) => {
+	try{
+		const userList = await Customer.find();
+		var result = [];
+		if(userList.length > 0){
+			for(var i = 0;i < userList.length; i++){
+				const details = await users.findOne({userCode: userList[i].userCode}).select({"userCode": 1, "firstName": 1, "middleName": 1, "lastName": 1});
+				result.push(details);
+			}
+		}else{
+			res.status(200).json({ success: "true", message: "No customer exists"});
+		}
+		res.status(200).json({ success: "true",  data: userList, driver: result});
+	}catch(error){
+		console.log(error);
+        return res.status(400).json({ success: "false", error: `${error}` });
+	}
+}
+
+module.exports.allDriverwithName = async (req, res) => {
+	try{
+		const userList = await Driver.find();
+		var result = [];
+		if(userList.length > 0){
+			for(var i = 0;i < userList.length; i++){
+				const details = await users.findOne({userCode: userList[i].userCode}).select({"userCode": 1, "firstName": 1, "middleName": 1, "lastName": 1});
+				result.push(details);
+			}
+		}else{
+			res.status(200).json({ success: "true", message: "No driver exists"});
+		}
+		res.status(200).json({ success: "true",  data: userList, driver: result});
+	}catch(error){
+		return res.status(400).json({ success: "false", error: `${error}`});
+	}
+}
+
+module.exports.allDeliveryBoywithName = async (req, res) => {
+	try{
+		const userList = await DeliveryBoy.find();
+		var result = [];
+		if(userList.length > 0){
+			for(var i = 0;i < userList.length; i++){
+				const details = await users.findOne({userCode: userList[i].userCode}).select({"userCode": 1, "firstName": 1, "middleName": 1, "lastName": 1});
+				result.push(details);
+			}
+		}else{
+			res.status(200).json({ success: "true", message: "No deliveryBoy exists"});
+		}
+		res.status(200).json({ success: "true", data: userList, driver: result});
+	}catch(error){
+		return res.status(400).json({ success: "false", error: `${error}`});
+	}
+}
+
+module.exports.users = async (req, res) => {
+	try{
+		const userList = await users.find().select({"userCode": 1, "firstName": 1, "middleName": 1, "lastName": 1});
+		if(userList.length > 0){
+			res.status(200).json({ success: "true", data: userList});
+		}
+		res.status(200).json({success: "true", message: "No User exists"});
+	}catch(error){
+		consle.log(error);
+		return res.status(400).json({ success: "false", error: `${error}`});
+	}
+}
+
