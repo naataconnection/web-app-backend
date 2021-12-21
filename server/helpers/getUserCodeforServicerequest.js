@@ -10,10 +10,17 @@ const User = require("../models/user");
 const getUserCodefromObjectId = async (array) => {
     if(array.length > 0){
         for(let i = 0;i < array.length; i++){
-            const customer = await Customer.findOne({_id: array[i].customer}).select({"userCode": 1});
-            const manager = await Manager.findOne({_id: array[i].manager}).select({"userCode": 1});
-            const superUser = await SuperUser.findOne({_id: array[i].superUser}).select({"userCode": 1, "firstName": 1, "middleName": 1, "lastName": 1});
-  
+            var customer, manager, superUser;
+            if(customer){
+              customer = await Customer.findOne({_id: array[i].customer}).select({"userCode": 1});
+            }
+            if(manager){
+              manager = await Manager.findOne({_id: array[i].manager}).select({"userCode": 1});
+            }
+            if(superUser){
+              superUser = await SuperUser.findOne({_id: array[i].superUser}).select({"userCode": 1, "firstName": 1, "middleName": 1, "lastName": 1});
+            }
+        
             var orders = [];
             if(array[i].orders.length > 0){
               for(let j = 0;j < array[i].orders.length; j++){
@@ -56,6 +63,7 @@ const getUserCodefromObjectId = async (array) => {
   
         }
       }
+     
       return array;
 }
 
@@ -63,11 +71,17 @@ const getName = async (result) =>{
 
   if(result.length > 0){
     for(let i = 0;i < result.length; i++){
-      const customer = await User.findOne({userCode: result[i].customer.userCode}).select({"userCode": 1, "firstName": 1, "middleName": 1, "lastName": 1});
-      const manager = await User.findOne({userCode: result[i].manager.userCode}).select({"userCode": 1, "firstName": 1, "middleName": 1, "lastName": 1});
-     
+      var customer, manager;
+      if(result[i].customer){
+        customer = await User.findOne({userCode: result[i].customer.userCode}).select({"userCode": 1, "firstName": 1, "middleName": 1, "lastName": 1});
+      }
+      
+      if(result[i].manager){
+        manager = await User.findOne({userCode: result[i].manager.userCode}).select({"userCode": 1, "firstName": 1, "middleName": 1, "lastName": 1});
+      }
+
       var drivers = [];
-      if(result[i].drivers.length > 0){
+      if(result[i].drivers.length > 0 && result[i].drivers[0] != null){
         for(let j = 0;j < result[i].drivers.length; j++){
           const details = await User.findOne({userCode: result[i].drivers[j].userCode}).select({"userCode": 1, "firstName": 1, "middleName": 1, "lastName": 1});
           drivers.push(details);
@@ -75,7 +89,7 @@ const getName = async (result) =>{
       }
 
       var deliveryBoys = [];
-      if(result[i].deliveryBoys.length > 0){
+      if(result[i].deliveryBoys.length > 0 && result[i].deliveryBoys[0] != null){
         for(let j = 0;j < result[i].deliveryBoys.length; j++){
           const details = await User.findOne({userCode: result[i].deliveryBoys[j].userCode}).select({"userCode": 1, "firstName": 1, "middleName": 1, "lastName": 1});
           deliveryBoys.push(details);

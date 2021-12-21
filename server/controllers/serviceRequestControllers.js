@@ -762,10 +762,11 @@ module.exports.getPendingServiceRequest = async (req, res) => {
   try {
     const array = await ServiceRequest.find({userCode: req.body.userCode, status: 1});
     const result = await getUserCodefromObjectId(array);
-    if(!result[0]){
+    if(result.length <= 0){
       return res.status(200).send({success: "true", message: "No pending Service request with this userCode"});
     }
-    res.status(200).send({success: "true", message: result});
+    req.body.data = result;
+    next();
   }catch (error) {
     console.log(error);
     res.status(400).json({ success: "false", error: `${error}` });
@@ -776,10 +777,11 @@ module.exports.getCompletedServiceRequest = async (req, res) => {
   try {
     const array = await ServiceRequest.find({userCode: req.body.userCode, status: 7});
     const result = await getUserCodefromObjectId(array);
-    if(!result[0]){
+    if(result.length <= 0){
       return res.status(200).send({success: "true", message: "No completed Service request with this userCode"});
     }
-    res.status(200).send({success: "true", message: result});
+    req.body.data = result;
+    next();
   }catch (error) {
     console.log(error);
     res.status(400).json({ success: "false", error: `${error}` });
@@ -790,7 +792,7 @@ module.exports.getActiveServiceRequest = async (req, res, next) => {
   try {
     const array = await ServiceRequest.find({userCode: req.body.userCode, status: { $ne: 0}, status: { $ne: 1}, status: { $ne: 7}});
     const result = await getUserCodefromObjectId(array);
-    if(!result[0]){
+    if(result.length <= 0){
       return res.status(200).send({success: "true", message: "No active Service request with this userCode"});
     }
     req.body.data = result;
@@ -813,6 +815,7 @@ module.exports.getwithName = async (req, res) => {
     }
     res.status(200).send({success: "true", deliveryBoys: deliveryBoys, drivers: drivers, data: ans});
   }catch(error){
+    console.log(error);
     res.status(400).json({ success: "false", error: `${error}` });
   }
 }
