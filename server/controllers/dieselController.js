@@ -4,7 +4,6 @@ const gCloudUrl = require("../helpers/gCloud").gCloudUrl
 
 module.exports.create = async (req, res) => {
     try{
-
         var kmUrl, billUrl;
         if(req.files && req.files.length > 0){
             kmUrl = await gCloudUrl(req.files[0].path, "diesel/");
@@ -18,8 +17,8 @@ module.exports.create = async (req, res) => {
         const { kmOfVehicle, pump, liter, totalAmount, vehicleNumber, userCode, paymentMode, remarks} = req.body;
         var date = dateTime()[0];
         var dieselRate = totalAmount/liter;
-        var kmOfVehicleImg = kmUrl[0];
-        var billImage = billUrl[0];
+        var kmOfVehicleImg = kmUrl;
+        var billImage = billUrl;
         const newEntry = await diesel.create({
             kmOfVehicle,
             kmOfVehicleImg,

@@ -119,7 +119,7 @@ module.exports.allManagerwithName = async (req, res) => {
 		}else{
 			res.status(200).json({ success: "true", message: "No manager exists"});
 		}
-		res.status(200).json({ success: "true",  data: userList, driver: result});
+		res.status(200).json({ success: "true",  data: userList, manager: result});
 	}catch(error){
 		console.log(error);
         return res.status(400).json({ success: "false", error: `${error}` });
@@ -138,7 +138,7 @@ module.exports.allCustomerwithName = async (req, res) => {
 		}else{
 			res.status(200).json({ success: "true", message: "No customer exists"});
 		}
-		res.status(200).json({ success: "true",  data: userList, driver: result});
+		res.status(200).json({ success: "true",  data: userList, customer: result});
 	}catch(error){
 		console.log(error);
         return res.status(400).json({ success: "false", error: `${error}` });
@@ -175,7 +175,7 @@ module.exports.allDeliveryBoywithName = async (req, res) => {
 		}else{
 			res.status(200).json({ success: "true", message: "No deliveryBoy exists"});
 		}
-		res.status(200).json({ success: "true", data: userList, driver: result});
+		res.status(200).json({ success: "true", data: userList, deliveryBoy: result});
 	}catch(error){
 		return res.status(400).json({ success: "false", error: `${error}`});
 	}

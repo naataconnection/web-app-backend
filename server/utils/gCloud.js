@@ -21,7 +21,8 @@ const deleteFile = async (destFileName) => {
         console.log(destFileName);
         bucket.file(destFileName).delete((err, file) => {
             if (err) {
-                reject(err)
+                console.log(err);
+                resolve(false);
             }
             resolve("delete the file" + destFileName);
         });
