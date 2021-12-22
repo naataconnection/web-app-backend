@@ -11,13 +11,13 @@ const getUserCodefromObjectId = async (array) => {
     if(array.length > 0){
         for(let i = 0;i < array.length; i++){
             var customer, manager, superUser;
-            if(customer){
+            if(array[i].customer){
               customer = await Customer.findOne({_id: array[i].customer}).select({"userCode": 1});
             }
-            if(manager){
+            if(array[i].manager){
               manager = await Manager.findOne({_id: array[i].manager}).select({"userCode": 1});
             }
-            if(superUser){
+            if(array[i].superUser){
               superUser = await SuperUser.findOne({_id: array[i].superUser}).select({"userCode": 1, "firstName": 1, "middleName": 1, "lastName": 1});
             }
         
