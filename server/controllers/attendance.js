@@ -6,7 +6,7 @@ const dateTime = require("../utils/dateTimeFormat").dateDayTime;
 
 module.exports.employees = async (req, res) => {
     try{
-        const user = await users.find();
+        const user = await users.find({role: { $ne: "CUSTOMER"}, active: true});
         const array = Object.values(JSON.parse(JSON.stringify(user)));
         var date = dateTime()[0];
         var day = dateTime()[2];
