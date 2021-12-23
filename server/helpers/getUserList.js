@@ -183,7 +183,7 @@ module.exports.allDeliveryBoywithName = async (req, res) => {
 
 module.exports.users = async (req, res) => {
 	try{
-		const userList = await users.find().select({"userCode": 1, "firstName": 1, "middleName": 1, "lastName": 1});
+		const userList = await users.find().select({"userCode": 1, "firstName": 1, "middleName": 1, "lastName": 1, "role": 1});
 		if(userList.length > 0){
 			res.status(200).json({ success: "true", data: userList});
 		}
