@@ -7,7 +7,7 @@ const attendanceDownloadCnt = require("../controllers/attendanceDownload");
 
 // Main route - '/attendance'
 
-router.get("/addUserList", attendanceCnt.employees);
+router.post("/addUserList", attendanceCnt.employees);
 router.patch("/markPresent", attendanceCnt.markAttendance);
 router.patch("/endtheDay", attendanceCnt.endDay);
 

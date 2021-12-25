@@ -26,11 +26,11 @@ router.post("/completedUsers", serviceRequesControllers.getCompletedServiceReque
 router.post("/orders", ordersControllers.getOrder);
 router.post("/invoices", invoicesControllers.getInvoice);
 
-router.get("/", serviceRequesControllers.getServiceRequest);
+router.post("/", serviceRequesControllers.getServiceRequest);
 
 // Dashboard
-router.get("/all/active", serviceRequesControllers.getAllActiveServiceRequest);
-router.get("/all/pending", serviceRequesControllers.getAllPendingServiceRequest);
-router.get("/all/completed", serviceRequesControllers.getAllCompletedServiceRequest);
+router.post("/all/active", serviceRequesControllers.getAllActiveServiceRequest);
+router.post("/all/pending", serviceRequesControllers.getAllPendingServiceRequest);
+router.post("/all/completed", serviceRequesControllers.getAllCompletedServiceRequest);
 
 module.exports = router;
