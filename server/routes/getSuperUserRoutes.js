@@ -5,10 +5,10 @@ const getSuperUserHelper = require("../helpers/getSuperUser");
 
 // Main - "/superUsers"
 
-router.get("/profile", getSuperUserHelper.getSuperUserProfile);
-router.get("/admin", getSuperUserHelper.getAdmin);
-router.get("/", getSuperUserHelper.allsuperUser);
-router.get("/allAdmin", getSuperUserHelper.allAdmin);
-router.get("/allOwner", getSuperUserHelper.allOwner);
+router.post("/profile", getSuperUserHelper.getSuperUserProfile);
+router.post("/admin", getSuperUserHelper.getAdmin);
+router.post("/", getSuperUserHelper.allsuperUser);
+router.post("/allAdmin", getSuperUserHelper.allAdmin);
+router.post("/allOwner", getSuperUserHelper.allOwner);
 
 module.exports = router;

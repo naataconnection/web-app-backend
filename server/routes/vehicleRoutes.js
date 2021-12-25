@@ -9,6 +9,6 @@ const blockVehicleControllers = require("../controllers/blockVehicleController")
 router.post("/register", vehicleControllers.registerVehicle);
 router.post("/block", blockVehicleControllers.vehicleBlock);
 router.post("/all", vehicleControllers.getVehicles);
-router.get("/", vehicleControllers.allVehicles);
+router.post("/", vehicleControllers.allVehicles);
 
 module.exports = router;

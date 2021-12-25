@@ -7,6 +7,6 @@ const notificationController = require("../controllers/notificationController");
 // Main route - "/notification"
 
 router.post("/create", imageUpload.array('images'), notificationController.create);
-router.get("/getAll", notificationController.getNotification);
+router.post("/getAll", notificationController.getNotification);
 
 module.exports = router;
