@@ -91,27 +91,22 @@
 const { exec } = require("child_process");
 const uploadFile = require("../utils/gCloud").uploadFile;
 
-module.exports.db = (req, res) => {
-  try{
-    exec("mongodump", async (error, stdout, stderr) => {
-      if (error) {
-          console.log(`error: ${error.message}`);
-          return res.status(400).json({ success: "false", error: `${error}`});
-      }
-      if (stderr) {
-          console.log(`stderr: ${stderr}`);
-          return res.status(400).json({ success: "false", error: `${error}`});
-      }
-      console.log(`stdout: ${stdout}`);
-      const location = __dirname + "/../../demo/testDB";
-      const filedestPath = "db/" + fileName;
-      let fileUrl = uploadFile(location, filedestPath);
-      fileUrl = await Promise.all([fileUrl]);
-      return res.status(200).json({ success: "true", message: "Command executed", url: fileUrl[0]});
-    });
-      
-  }catch(error){
-    console.log(`error: ${error}`);
-    return res.status(400).json({ success: "false", error: `${error}`});
-  }  
+module.exports.db = async (req, res) => {
+  exec("mongodump",(error, stdout, stderr) => {
+    if (error) {
+        console.log(`error: ${error.message}`);
+        return res.status(400).json({ success: "false", error: `${error}`});
+    }
+    if (stderr) {
+        console.log(`stderr: ${stderr}`);
+    }
+    console.log(`stdout: ${stdout}`);
+    
+  });  
+  const location = __dirname + "/../../demo/testDB";
+  const fileName = "exportDB"
+  const filedestPath = "db/" + fileName;
+  let fileUrl = uploadFile(location, filedestPath);
+  fileUrl = await Promise.all([fileUrl]);
+  return res.status(200).json({ success: "true", message: "Command executed", url: fileUrl[0]});
 }
