@@ -20,4 +20,4 @@ const genericContactSchema = new mongoose.Schema({
     },
 ) 
 
-module.exports = mongoose.model("Generic Contact", genericContactSchema);
+module.exports = mongoose.model("GenericContact", genericContactSchema);

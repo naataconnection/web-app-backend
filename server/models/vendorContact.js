@@ -29,4 +29,4 @@ const vendorContactSchema = new mongoose.Schema(
     }
 )
 
-module.exports = mongoose.model("Vendor Contact", vendorContactSchema);
+module.exports = mongoose.model("VendorContact", vendorContactSchema);
