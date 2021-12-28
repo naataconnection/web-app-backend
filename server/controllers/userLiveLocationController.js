@@ -1,4 +1,3 @@
-const userStat = require("../models/userStat");
 const geolocation = require("../utils/geoLocation");
 const dateTime = require("../utils/dateTimeFormat").dateDayTime;
 const attendance = require("../models/attendance");
@@ -10,21 +9,19 @@ module.exports.updateLiveLocation = async (req, res) => {
         const user = await attendance.find({ date: currDate, userCode: req.body.userCode });
         if (user[0].startTime !== null) {
             if (user[0].endTime === null) {
-                const result = await userStat.find({userCode: req.body.userCode});
-                const location = await geolocation.location({ ip: result[0].ipAddress});
-                const doc = await userStat.findOneAndUpdate(
-                    {userCode: req.body.userCode}, 
-                    {currLatitude: location.body.latitude, 
-                     currLongitude: location.body.longitude},
-                    {new: true}
-                );
-                
+                const userCodes = req.body.userCode;
+                var result = [];
+                for(let i = 0;i < userCodes.length; i++){
+                    var loc = {};
+                    const location = await geolocation.location({ ip: ipAddress}); // ipAddress come fron headers of user but when in frontend??
+                    loc["userCode"] = userCodes[i];
+                    loc["latitude"] = location.body.latitude;
+                    loc["longitutde"] = location.body.longitutde;
+                    result.push(loc);
+                }
                 return res.status(200).json({
                     status: 'success',
-                    data: {
-                        latitude: doc.currLatitude,
-                        longitude: doc.currLongitude,
-                    }
+                    data: result
                 });
             } else {
                 return res.status(404).json({ success: "failure", message: "User have ended his day." });

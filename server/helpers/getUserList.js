@@ -113,7 +113,7 @@ module.exports.allManagerwithName = async (req, res) => {
 		var result = [];
 		if(userList.length > 0){
 			for(var i = 0;i < userList.length; i++){
-				const details = await users.findOne({userCode: userList[i].userCode}).select({"firstName": 1, "middleName": 1, "lastName": 1});
+				const details = await users.findOne({userCode: userList[i].userCode}).select({"userCode": 1, "firstName": 1, "middleName": 1, "lastName": 1});
 				result.push(details);
 			}
 		}else{
