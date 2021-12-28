@@ -1,9 +1,10 @@
 const fs = require("fs");
+const path = require('path');
 const uploadFile = require("../utils/gCloud").uploadFile;
 
-const gCloudUrl = async (path, folderName) => {
-	const filePath = path.replace('\\', '/');
-	const localDestFilePath = __dirname + "/../../public/profile/" + filePath.substring(filePath.lastIndexOf('\\') + 1);
+const gCloudUrl = async (localPath, folderName) => {
+	const filePath = localPath.replace('\\', '/');
+	const localDestFilePath = path.join(__dirname, '..', '..', 'public', 'profile') + '/' + filePath.substring(filePath.lastIndexOf('\\') + 1);
 	const filedestPath = folderName + filePath.substring(filePath.lastIndexOf('\\') + 1);
 	let fileUrl = uploadFile(localDestFilePath, filedestPath);
 	fileUrl = await Promise.all([fileUrl]);
