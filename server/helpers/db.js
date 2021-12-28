@@ -25,7 +25,9 @@ module.exports.exportDB = (req, res) => {
     var localPath = path.join(__dirname, '..', '..', 'dump', 'testDB');
     for(let i = 0;i < lists.length; i++){
       zip.addLocalFile('./dump/testDB/' + lists[i] + '.bson');
-      fs.unlinkSync(localPath + "/" + lists[i] + '.bson')
+      zip.addLocalFile('./dump/testDB/' + lists[i] + '.metadata.json');
+      fs.unlinkSync(localPath + "/" + lists[i] + '.bson');
+      fs.unlinkSync(localPath + "/" + lists[i] + '.metadata.json');
     }
 
     const fileName = 'NaataConnection_database_' + new Date().getTime() + '.zip';
