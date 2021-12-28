@@ -102,8 +102,8 @@ module.exports.db = (req, res) => {
         console.log(`stderr: ${stderr}`);
     }
     console.log(`stdout: ${stdout}`);
-    var jsonPath = path.join(__dirname, '..', '..', 'demo', 'testDB');
-    const location = __dirname + "/../../dump/testDB";
+    var jsonPath = path.join(__dirname, '..', '..', 'dump', 'testDB');
+    // const location = __dirname + "/../../dump/testDB";
     const fileName = "exportDB"
     const filedestPath = "db/" + fileName;
     let fileUrl = uploadFile(jsonPath, filedestPath);
