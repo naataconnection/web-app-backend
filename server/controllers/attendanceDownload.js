@@ -5,6 +5,7 @@ const driver = require("../models/driver");
 const deliveryBoy = require("../models/deliveryBoy");
 const uploadFile = require("../utils/gCloud").uploadFile;
 const fs = require("fs");
+const path = require('path');
 
 module.exports.createUserXls = async (req, res) => {
 
@@ -126,7 +127,7 @@ module.exports.createUserXls = async (req, res) => {
         }
 
         const fileName = "attendanceReport_" + req.body.userCode + ".xls"
-        const loc = __dirname + '/../../public/attendanceReport/' + fileName;
+        const loc = path.join(__dirname, '..', '..', 'public', 'attendanceReport') + '/' + fileName;
         await workbook.xlsx.writeFile(loc);
 
         var destPath = "attendanceReport/" + fileName;
