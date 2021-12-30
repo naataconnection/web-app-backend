@@ -84,6 +84,10 @@ exports.loginUser_verifyOtp = (req, res,next) => {
 		var ipAddress = req.headers.host ? req.headers.host : req.connection.remoteAddress;
 		console.log("ip: ", req.ip);
 		console.log("req: ", req);
+		console.log(req.headers['x-forwarded-for']);
+		console.log(req.connection.remoteAddress);
+		console.log(req.headers.host);
+		console.log("ips: ", req.ips);
 		updateIpAddress(userCode, ipAddress);
 		return res.status(200).json({message:info.message, user:user});
 	}
