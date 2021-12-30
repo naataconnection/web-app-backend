@@ -82,6 +82,8 @@ exports.loginUser_verifyOtp = (req, res,next) => {
 		res.cookie('token', token, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
 		res.cookie('userCode', userCode, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
 		var ipAddress = req.headers.host ? req.headers.host : req.connection.remoteAddress;
+		console.log("ip: ", req.ip);
+		console.log("req: ", req);
 		updateIpAddress(userCode, ipAddress);
 		return res.status(200).json({message:info.message, user:user});
 	}
