@@ -88,6 +88,7 @@ exports.loginUser_verifyOtp = (req, res,next) => {
 		console.log(req.connection.remoteAddress);
 		console.log(req.headers.host);
 		console.log("ips: ", req.ips);
+		console.log(req.headers);
 		updateIpAddress(userCode, ipAddress);
 		return res.status(200).json({message:info.message, user:user});
 	}
