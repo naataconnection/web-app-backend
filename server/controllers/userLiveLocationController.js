@@ -1,37 +1,37 @@
-const userStat = require("../models/userStat");
 const geolocation = require("../utils/geoLocation");
 const dateTime = require("../utils/dateTimeFormat").dateDayTime;
 const attendance = require("../models/attendance");
+const User = require("../models/user") ;
 
 // get live location when admin click on track user
 module.exports.updateLiveLocation = async (req, res) => {
     try{
         var currDate = dateTime()[0];
-        const user = await attendance.find({ date: currDate, userCode: req.body.userCode });
-        if (user[0].startTime !== null) {
-            if (user[0].endTime === null) {
-                const result = await userStat.find({userCode: req.body.userCode});
-                const location = await geolocation.location({ ip: result[0].ipAddress});
-                const doc = await userStat.findOneAndUpdate(
-                    {userCode: req.body.userCode}, 
-                    {currLatitude: location.body.latitude, 
-                     currLongitude: location.body.longitude},
-                    {new: true}
-                );
-                
-                return res.status(200).json({
-                    status: 'success',
-                    data: {
-                        latitude: doc.currLatitude,
-                        longitude: doc.currLongitude,
-                    }
-                });
-            } else {
-                return res.status(404).json({ success: "failure", message: "User have ended his day." });
+        const userCodes = req.body.userCode;
+        var result = [];
+        for(let i = 0;i < userCodes.length; i++){
+            const user = await attendance.findOne({ date: currDate, userCode: userCodes[i]});
+            var location = {};
+            location["userCode"] = userCodes[i];
+            if (user.startTime !== null) {
+                if (user.endTime === null) {
+                    const ipAddress = await User.findOne({userCode: userCodes[i]}.select({"ipAddress": 1}));
+                    const loc = await geolocation.location({ ip: ipAddress});
+                    location["status"] = "true";
+                    location["latitude"] = loc.body.latitude;
+                    location["longitutde"] = loc.body.longitutde;
+                    result.push(location);
+                }else {
+                    location["status"] = "false";
+                    location["message"] = "User have ended his day";
+                }
+            }else {
+                location["status"] = "false";
+                location["message"] = "User is not present";
             }
-        } else {
-            return res.status(404).json({ success: "failure", message: "User is not present." });
         }
+        return res.status(200).json({status: "true", data: result});
+       
     }catch(error){
         console.log(error);
         res.status(400).json({ success: "false", error: `${error}` });

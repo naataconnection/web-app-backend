@@ -37,6 +37,9 @@ const userSchema = new mongoose.Schema({
 	  type: Boolean, 
 	  default: true
   },
+  ipAddress:{
+    type: String,
+  }
 });
 
 module.exports = mongoose.model("user", userSchema, "users");

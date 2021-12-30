@@ -2,9 +2,9 @@ const attendance = require("../models/attendance");
 const geolocation = require("../utils/geoLocation");
 const users = require("../models/user");
 const dateTime = require("../utils/dateTimeFormat").dateDayTime;
+const cron = require('node-cron');
 
-
-module.exports.employees = async (req, res) => {
+cron.schedule('0 */6 * * *', async function() {
     try{
         const user = await users.find({role: { $ne: "CUSTOMER"}, active: true});
         const array = Object.values(JSON.parse(JSON.stringify(user)));
@@ -13,15 +13,47 @@ module.exports.employees = async (req, res) => {
         for(var i = 0;i < array.length; i++){
             var userCode = array[i].userCode;
             var name = array[i].firstName;
-            if(array[i].middleName){
-                name = name + " " + array[i].middleName;
+            const check = await attendance.findOne({date: date, userCode: userCode});
+            if(!check){
+                if(array[i].middleName){
+                    name = name + " " + array[i].middleName;
+                }
+                if(array[i].lastName){
+                    name = name + " " + array[i].lastName;
+                }
+                const entry = await attendance.create({
+                    name, userCode , date, day,
+                })
             }
-            if(array[i].lastName){
-                name = name + " " + array[i].lastName;
+        }
+        console.log("All users added in the attendance list");
+    }catch(error){
+        console.log(error);
+    }    
+});
+
+
+module.exports.addEmployes = async (req, res) => {
+    try{
+        const user = await users.find({role: { $ne: "CUSTOMER"}, active: true});
+        const array = Object.values(JSON.parse(JSON.stringify(user)));
+        var date = dateTime()[0];
+        var day = dateTime()[2];
+        for(var i = 0;i < array.length; i++){
+            var userCode = array[i].userCode;
+            var name = array[i].firstName;
+            const check = await attendance.findOne({date: date, userCode: userCode});
+            if(!check){
+                if(array[i].middleName){
+                    name = name + " " + array[i].middleName;
+                }
+                if(array[i].lastName){
+                    name = name + " " + array[i].lastName;
+                }
+                const entry = await attendance.create({
+                    name, userCode , date, day,
+                })
             }
-            const entry = await attendance.create({
-                name, userCode , date, day,
-            })
         }
         res.status(200).send({success: "true", message: `All users added in the attendance list`});
     }catch(error){

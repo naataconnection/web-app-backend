@@ -3,6 +3,11 @@ const passport = require("passport");
 const jsonwebtoken = require("jsonwebtoken");
 const User = require("../models/user");
 
+const updateIpAddress = async (userCode, ipAddress) => {
+	const user = await User.findOneAndUpdate({userCode: userCode}, {ipAddress: ipAddress}, {new: true});
+	return;
+}
+
 // Controller to ckeck if user has registered.
 exports.loginUser_checkUser = (req,res,next) => {
 	const emailIdOrContact = req.body.emailIdOrContact;
@@ -76,6 +81,8 @@ exports.loginUser_verifyOtp = (req, res,next) => {
 		const token = jsonwebtoken.sign({ user: userCode, maxAge: parseInt(process.env.MAX_AGE) }, process.env.SECRET);
 		res.cookie('token', token, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
 		res.cookie('userCode', userCode, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
+		var ipAddress = req.headers.host ? req.headers.host : req.connection.remoteAddress;
+		updateIpAddress(userCode, ipAddress);
 		return res.status(200).json({message:info.message, user:user});
 	}
   })(req, res,next);
