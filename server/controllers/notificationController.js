@@ -1,18 +1,22 @@
 const Notification = require("../models/notification");
 const dateTime = require("../utils/dateTimeFormat").dateDayTime;
+const gCloudUrl = require("../helpers/gCloud").gCloudUrl;
 
 module.exports.create = async (req, res) => {
     try{
         var entryDate = dateTime()[0];
-        const { userCode, contents, title, expiryDate } = req.body;
-        var image = [];
+        const { userCode, content, title, expiryDate } = req.body;
+        var img = [];
         if(req.body.isImage == 1){
-			const url = await gCloudUrl(req.files[i].path, "notification/");
-			image.push(url);
+            for(let i = 0;i < req.files.length; i++){
+                const url = await gCloudUrl(req.files[i].path, "notification/");
+                img.push(url);
+            }
 		}
+        const image = img;
         const notification = await Notification.create({
-            userCode, contents, image, title, entryDate, expiryDate,
-        })
+            userCode, content, image, title, entryDate, expiryDate,
+        });
         res.status(200).send({success: "true", message: `Notification added in the database`});
     }catch(error){
         console.log(error);
