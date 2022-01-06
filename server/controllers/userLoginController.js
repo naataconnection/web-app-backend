@@ -81,15 +81,7 @@ exports.loginUser_verifyOtp = (req, res,next) => {
 		const token = jsonwebtoken.sign({ user: userCode, maxAge: parseInt(process.env.MAX_AGE) }, process.env.SECRET);
 		res.cookie('token', token, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
 		res.cookie('userCode', userCode, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
-		var ipAddress = req.headers.host ? req.headers.host : req.connection.remoteAddress;
-		console.log("ip: ", req.ip);
-		console.log("req: ", req);
-		console.log(req.headers['x-forwarded-for']);
-		console.log(req.connection.remoteAddress);
-		console.log(req.headers.host);
-		console.log("ips: ", req.ips);
-		console.log(req.headers);
-		updateIpAddress(userCode, ipAddress);
+		updateIpAddress(userCode, req.body.ipAddress);
 		return res.status(200).json({message:info.message, user:user});
 	}
   })(req, res,next);

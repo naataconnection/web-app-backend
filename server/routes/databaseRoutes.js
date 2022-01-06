@@ -4,7 +4,7 @@ const router = express.Router();
 
 // Main - '/db'
 
-router.get("/export", dbControllers.exportDB);
+router.post("/export", dbControllers.exportDB);
 
 module.exports = router;
 
