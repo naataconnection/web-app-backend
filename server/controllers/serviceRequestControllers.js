@@ -344,23 +344,14 @@ exports.assignDriversAndDB = async (req, res) => {
 
     var deliverySheetImage, startingKMProof;
 
-	if(req.files && req.files.length > 0){
-		deliverySheetImage = await gCloudUrl(req.files[0].path, `${orderCode}/`);
-		startingKMProof = await gCloudUrl(req.files[1].path, `${orderCode}/`);
-	}else{
-		res.status(404).json({
-			message: "File doesn't exist",
-		});
-	}
-
-    const order = new Order({
-        driver, 
-        orderCode,
-        deliverySheetId,
-        startingKM,
-        deliverySheetImage,
-        startingKMProof
-    });
+	// if(req.files && req.files.length > 0){
+	// 	deliverySheetImage = await gCloudUrl(req.files[0].path, `${orderCode}/`);
+	// 	startingKMProof = await gCloudUrl(req.files[1].path, `${orderCode}/`);
+	// }else{
+	// 	res.status(404).json({
+	// 		message: "File doesn't exist",
+	// 	});
+	// }
 
       if (deliveryBoy == null) {
         res.status(400).json({
