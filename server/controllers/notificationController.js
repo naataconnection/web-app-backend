@@ -17,6 +17,7 @@ module.exports.create = async (req, res) => {
         const notification = await Notification.create({
             userCode, content, image, title, entryDate, expiryDate,
         });
+        console.log(notification);
         res.status(200).send({success: "true", message: `Notification added in the database`});
     }catch(error){
         console.log(error);

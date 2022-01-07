@@ -4,7 +4,11 @@ const jsonwebtoken = require("jsonwebtoken");
 const User = require("../models/user");
 
 const updateIpAddress = async (userCode, ipAddress) => {
-	const user = await User.findOneAndUpdate({userCode: userCode}, {ipAddress: ipAddress}, {new: true});
+	try{
+		const user = await User.findOneAndUpdate({userCode: userCode}, {ipAddress: ipAddress}, {new: true});
+	}catch(error){
+		console.log(error);
+	}
 	return;
 }
 
@@ -81,7 +85,12 @@ exports.loginUser_verifyOtp = (req, res,next) => {
 		const token = jsonwebtoken.sign({ user: userCode, maxAge: parseInt(process.env.MAX_AGE) }, process.env.SECRET);
 		res.cookie('token', token, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
 		res.cookie('userCode', userCode, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
-		updateIpAddress(userCode, req.body.ipAddress);
+		if(req.body.ipAddress){
+			updateIpAddress(userCode, req.body.ipAddress);
+		}else{
+			return res.status(400).json({status: "false", error: "ipAddress missing!!"});
+		}
+		
 		return res.status(200).json({message:info.message, user:user});
 	}
   })(req, res,next);
