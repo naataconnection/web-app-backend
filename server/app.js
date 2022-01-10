@@ -5,6 +5,7 @@ const app = express();
 const passport = require("passport");
 const morgan = require("morgan");
 const cors = require("cors");
+const bodyParser = require('body-parser');
 const cookieParser = require("cookie-parser");
 
 const indexRoutes = require("./routes/index.js");
