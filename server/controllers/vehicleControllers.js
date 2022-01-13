@@ -50,12 +50,12 @@ exports.registerVehicle = async (req, res) => {
       await vehicle.save();
   }
   catch(err){
-      res.status(400).json({
+      return res.status(400).json({
           error:`${err}`
       })
   }
 
-  res.status(200).json({
+  return res.status(200).json({
       message:`vehicle registered successfully`
   })
 };
@@ -66,9 +66,9 @@ module.exports.getVehicles = async (req, res) => {
     if(list){
       return res.status(200).json({success: "true", data: list});
     }
-    res.status(200).json({success: "true", message: "No Vehicle exists with this userCode"});
+    return res.status(200).json({success: "true", message: "No Vehicle exists with this userCode"});
   }catch(error){
-    res.status(400).json({success: "false", error:`${error}`});
+    return res.status(400).json({success: "false", error:`${error}`});
   }
 }
 
@@ -78,8 +78,8 @@ module.exports.allVehicles = async (req, res) => {
     if(list[0]){
       return res.status(200).json({success: "true", data: list});
     }
-    res.status(200).json({success: "true", message: "No Vehicle exists"});
+    return res.status(200).json({success: "true", message: "No Vehicle exists"});
   }catch(error){
-    res.status(400).json({success: "false", error:`${error}`});
+    return res.status(400).json({success: "false", error:`${error}`});
   }
 }

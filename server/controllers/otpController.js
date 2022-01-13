@@ -7,40 +7,21 @@ const mailer = require("../helpers/mailer");
 const sms = require("../helpers/sms");
 
 // Controller to generate a new OTP for a particular user.
-exports.generateOTP = (req, res) => {
-    const contact = req.body.contact;
-
-    User.findOne({contact: contact}, (err, user) => {
-        if (err) {
-        res.status(404).json({
-            message: "Unable to generate OTP for required user.",
-        });
-        } else {
-        const newOTP = new OTP({
-            otp: otp(),
-            user: user,
-        });
+exports.generateOTP = async (req, res) => {
+    try{
+        const contact = req.body.contact;
+        const user = await User.findOne({contact: contact}); 
+        const newOTP = new OTP({otp: otp(), user: user});
         console.log(newOTP);
-        newOTP
-            .save()
-            .then((data) =>
-            res.status(200).json({
-                otp: data.otp,
-                message: "OTP generated.",
-            })
-            )
-            .catch((err) =>
-            res.status(500).json({
-                message: "Error saving new OTP",
-                err: `${err}`,
-            })
-            );
-        }
-    });
+        const data = await newOTP.save();
+        return res.status(200).json({otp: data.otp, message: "OTP generated."});
+    }catch(error){
+        return res.status(404).json({error: `${error}`});
+    } 
 };
 
 // Controller to generate and send the generated otp to the new email ID or contact in the request.
-exports.generateAndSendOTPForUser_ToNewEmailIdOrContact = (req, res) => {
+exports.generateAndSendOTPForUser_ToNewEmailIdOrContact = async (req, res) => {
 	const userCode = req.cookies.userCode;
 	const emailIdOrContact = req.body.emailIdOrContact;
 	
@@ -49,95 +30,42 @@ exports.generateAndSendOTPForUser_ToNewEmailIdOrContact = (req, res) => {
     
 	// If user entered the email id
 	if(emailIdOrContact.match(emailId_regex)){
-		User.findOne({userCode: userCode}, (err, user) => {
-        if (err) {
-        res.status(404).json({
-            message: "Unable to generate OTP for required user.",
-        });
-        } else {
-        const newOTP = new OTP({
-            otp: otp(),
-            user: user,
-        });
-        newOTP
-            .save()
-            .then((data) =>
-			     mailer
-					.send(
-					  `${process.env.EMAIL_SMTP_USERNAME}`,
-					  emailIdOrContact,
-					  "Test Mail",
-					  `<h1>Your OTP to login is `+newOTP.otp+` . This expires in 10 minutes.</h1>`
-					)
-					.then((result) => {
-					  res
-					  .status(200)
-					  .json({
-						  message: `OTP generated and sent to the entered email ID.`
-					  })
-					})
-					.catch((err) => {
-					  res
-					  .status(500)
-					  .json({
-						  message: `Error in NodeMailer API`,
-						  error : `${err}`
-					  })
-					})
-            )
-            .catch((err) =>
-            res.status(500).json({
-                message: "Error saving new OTP",
-                err: `${err}`,
-            })
-            );
+        try{
+            const user = await User.findOne({userCode: userCode});
+            if(user){
+                const newOTP = new OTP({otp: otp(), user: user});
+                const data = await newOTP.save();
+                await mailer.send(
+                    `${process.env.EMAIL_SMTP_USERNAME}`,
+                    emailIdOrContact,
+                    "Test Mail",
+                    `<h1>Your OTP to login is `+newOTP.otp+` . This expires in 10 minutes.</h1>`
+                );
+                return res.status(200).json({message: `OTP generated and sent to the entered email ID.`});
+            }   
+            return res.status(404).json({message: "User doesn't exist"});
+        }catch(error){
+            return res.status(404).json({error: `${error}`});
         }
-   		 });
 	}else{
-		User.findOne({userCode: userCode}, (err, user) => {
-        if (err) {
-        res.status(404).json({
-            message: "Unable to generate OTP for required user.",
-        });
-        } else {
-        const newOTP = new OTP({
-            otp: otp(),
-            user: user,
-        });
-        newOTP
-            .save()
-            .then((data) =>
-			     sms.sendOtp(
-			           newOTP.otp, emailIdOrContact
-		            ).then(() => {
-					  res
-					  .status(200)
-					  .json({
-						  message: `OTP generated and sent to the entered contact number.`
-					  })
-					})
-					.catch((err) => {
-					  res
-					  .status(500)
-					  .json({
-						  message: `Error in sms sender API`,
-						  error : `${err}`
-					  })
-					})
-            )
-            .catch((err) =>
-            res.status(500).json({
-                message: "Error saving new OTP vro",
-                err: `${err}`,
-            })
-            );
+        try{
+            const user = await User.findOne({userCode: userCode});
+            if(user){
+                const newOTP = new OTP({otp: otp(), user: user});
+                const data = await newOTP.save();
+                await sms.sendOtp(newOTP.otp, emailIdOrContact);
+                return res.status(200).json({message: `OTP generated and sent to the entered email ID.`});
+            }   
+            return res.status(404).json({message: "User doesn't exist"});
+        }catch(error){
+            return res.status(404).json({error: `${error}`});
         }
-   		 });
 	}
+    return;
 };
 
 // Controller to generate a new OTP for a particular user and send it to the email id or contact number.
-exports.generateAndSendOTPForUser = (req, res) => {
+exports.generateAndSendOTPForUser = async (req, res) => {
     const emailIdOrContact = req.body.emailIdOrContact;
 	
 	// Regular Expression to detect a email id.
@@ -145,95 +73,41 @@ exports.generateAndSendOTPForUser = (req, res) => {
     
 	// If user entered the email id
 	if(emailIdOrContact.match(emailId_regex)){
-		User.findOne({emailId: emailIdOrContact}, (err, user) => {
-        if (err) {
-        res.status(404).json({
-            message: "Unable to generate OTP for required user.",
-        });
-        } else {
-        const newOTP = new OTP({
-            otp: otp(),
-            user: user,
-        });
-        newOTP
-            .save()
-            .then((data) =>
-			     mailer
-					.send(
-					  `${process.env.EMAIL_SMTP_USERNAME}`,
-					  emailIdOrContact,
-					  "Test Mail",
-					  `<h1>Your OTP to login is `+newOTP.otp+` . This expires in 10 minutes.</h1>`
-					)
-					.then((result) => {
-					  res
-					  .status(200)
-					  .json({
-						  message: `OTP generated and sent to the entered email ID.`
-					  })
-					})
-					.catch((err) => {
-					  res
-					  .status(500)
-					  .json({
-						  message: `Error in NodeMailer API`,
-						  error : `${err}`
-					  })
-					})
-            )
-            .catch((err) =>
-            res.status(500).json({
-                message: "Error saving new OTP",
-                err: `${err}`,
-            })
-            );
+        try{
+            const user = await User.findOne({emailId: emailIdOrContact});
+            if(user){
+                const newOTP = new OTP({otp: otp(), user: user});
+                const data = await newOTP.save();
+                await mailer.send(
+                    `${process.env.EMAIL_SMTP_USERNAME}`,
+                    emailIdOrContact,
+                    "Test Mail",
+                    `<h1>Your OTP to login is `+newOTP.otp+` . This expires in 10 minutes.</h1>`
+                );
+                return res.status(200).json({message: `OTP generated and sent to the entered email ID.`});
+            }   
+            return res.status(404).json({message: "Unable to generate OTP for required user.",});
+        }catch(error){
+            return res.status(404).json({error: `${error}`});
         }
-   		 });
 	}else{
-		User.findOne({contact: emailIdOrContact}, (err, user) => {
-        if (err) {
-        res.status(404).json({
-            message: "Unable to generate OTP for required user.",
-        });
-        } else {
-        const newOTP = new OTP({
-            otp: otp(),
-            user: user,
-        });
-        newOTP
-            .save()
-            .then((data) =>
-			     sms.sendOtp(
-			           newOTP.otp, emailIdOrContact
-		            ).then(() => {
-					  res
-					  .status(200)
-					  .json({
-						  message: `OTP generated and sent to the entered contact number.`
-					  })
-					})
-					.catch((err) => {
-					  res
-					  .status(500)
-					  .json({
-						  message: `Error in sms sender API`,
-						  error : `${err}`
-					  })
-					})
-            )
-            .catch((err) =>
-            res.status(500).json({
-                message: "Error saving new OTP vro",
-                err: `${err}`,
-            })
-            );
+        try{
+            const user = await User.findOne({contact: emailIdOrContact});
+            if(user){
+                const newOTP = new OTP({otp: otp(), user: user});
+                const data = await newOTP.save();
+                await sms.sendOtp(newOTP.otp, emailIdOrContact);
+                return res.status(200).json({message: `OTP generated and sent to the entered email ID.`});
+            }   
+            return res.status(404).json({message: "User doesn't exist"});
+        }catch(error){
+            return res.status(404).json({error: `${error}`});
         }
-   		 });
 	}
 };
 
 // Controller to generate a new OTP for a particular super user and send it to the email id or contact number.
-exports.generateAndSendOTPForSuperUser = (req, res) => {
+exports.generateAndSendOTPForSuperUser = async (req, res) => {
     const emailIdOrContact = req.body.emailIdOrContact;
 	
 	// Regular Expression to detect a email id.
@@ -241,151 +115,82 @@ exports.generateAndSendOTPForSuperUser = (req, res) => {
     
 	// If super user entered the email id
 	if(emailIdOrContact.match(emailId_regex)){
-		SuperUser.findOne({emailId: emailIdOrContact}, (err, superUser) => {
-        if (err) {
-        res.status(404).json({
-            message: "Unable to generate OTP for required super user.",
-        });
-        } else {
-        const newOTP = new OTP({
-            otp: otp(),
-            superUser: superUser,
-        });
-        newOTP
-            .save()
-            .then((data) =>
-			     mailer
-					.send(
-					  `${process.env.EMAIL_SMTP_USERNAME}`,
-					  emailIdOrContact,
-					  "Test Mail",
-					  `<h1>Your OTP to login is `+newOTP.otp+` . This expires in 10 minutes.</h1>`
-					)
-					.then((result) => {
-					  res
-					  .status(200)
-					  .json({
-						  message: `OTP generated and sent to the entered email ID.`
-					  })
-					})
-					.catch((err) => {
-					  res
-					  .status(500)
-					  .json({
-						  message: `Error in NodeMailer API`,
-						  error : `${err}`
-					  })
-					})
-            )
-            .catch((err) =>
-            res.status(500).json({
-                message: "Error saving new OTP",
-                err: `${err}`,
-            })
-            );
+        try{
+            const superUser = await SuperUser.findOne({emailId: emailIdOrContact});
+            if(superUser){
+                const newOTP = new OTP({otp: otp(), superUser: superUser});
+                const data = await newOTP.save();
+                await mailer.send(
+                    `${process.env.EMAIL_SMTP_USERNAME}`,
+                    emailIdOrContact,
+                    "Test Mail",
+                    `<h1>Your OTP to login is `+newOTP.otp+` . This expires in 10 minutes.</h1>`
+                );
+                return res.status(200).json({message: `OTP generated and sent to the entered email ID.`});
+            }   
+            return res.status(404).json({message: "Unable to generate OTP for required user.",});
+        }catch(error){
+            return res.status(404).json({error: `${error}`});
         }
-   		 });
 	}else{
-		User.findOne({contact: emailIdOrContact}, (err, superUser) => {
-        if (err) {
-        res.status(404).json({
-            message: "Unable to generate OTP for required super user.",
-        });
-        } else {
-        const newOTP = new OTP({
-            otp: otp(),
-            superUser: superUser,
-        });
-        newOTP
-            .save()
-            .then((data) =>
-			     sms.sendOtp(
-			           newOTP.otp, emailIdOrContact
-		            ).then(() => {
-					  res
-					  .status(200)
-					  .json({
-						  message: `OTP generated and sent to the entered contact number.`
-					  })
-					})
-					.catch((err) => {
-					  res
-					  .status(500)
-					  .json({
-						  message: `Error in sms sender API`,
-						  error : `${err}`
-					  })
-					})
-            )
-            .catch((err) =>
-            res.status(500).json({
-                message: "Error saving new OTP vro",
-                err: `${err}`,
-            })
-            );
+        try{
+            const superUser = await SuperUser.findOne({contact: emailIdOrContact});
+            if(superUser){
+                const newOTP = new OTP({otp: otp(), superUser: superUser});
+                const data = await newOTP.save();
+                await sms.sendOtp(newOTP.otp, emailIdOrContact);
+                return res.status(200).json({message: `OTP generated and sent to the entered email ID.`});
+            }   
+            return res.status(404).json({message: "User doesn't exist"});
+        }catch(error){
+            return res.status(404).json({error: `${error}`});
         }
-   		 });
 	}
 };
 
 // Controller to fetch otp list and send it in response.
-exports.showOTP = (req, res) => {
-  OTP.find({}, (err, list) => {
-    if (err) {
-      res.status(500).json({
-        message: "unable to get all otps from database",
-        error: `${err}`,
-      });
-    } else {
-      res.send(list);
-    }
-  });
+exports.showOTP = async (req, res) => {
+  try{
+    const otp = await OTP.find({});
+    res.send(otp);
+  }catch(error){
+    return res.status(500).json({message: "unable to get all otps from database",error: `${err}`});
+  }  
 };
 
 // Controller to generate a new OTP.
-exports.generateOTPnoUser = (req, res) => {
-    const newOTP = new OTP({
-        otp: otp(),
-    });
-    console.log(newOTP);
-    newOTP.save((err) => {
-        if (err) {
-        res.status(500).json({
-            message: "Error saving new OTP",
-            err: `${err}`,
-        });
-        } else {
-        res.status(200).json({
-            message: "OTP generated successfully",
-            otp: newOTP.otp,
-        });
-        }
-    });
+exports.generateOTPnoUser = async (req, res) => {
+    try{
+        const newOTP = new OTP({otp: otp()});
+        console.log(newOTP);
+        await newOTP.save();
+        return res.status(200).json({message: "OTP generated successfully", otp: newOTP.otp});
+    }catch(error){
+        return  res.status(500).json({message: "Error saving new OTP", err: `${err}`});
+    }
 };
 
 // Controller to ckeck the otp entered by the user.
-exports.verifyOtp = (req,res,next) => {
-	const otp_entered = req.body.otp;
-	const userCode = req.cookies.userCode;
+exports.verifyOtp = async (req,res,next) => {
+    try{
+        const otp_entered = req.body.otp;
+	    const userCode = req.cookies.userCode;
+        const user = await User.findOne({userCode:userCode});
+        if(user){
+            const otp = await OTP.find({user: user}).sort({"createdAt": -1});
+            if(!otp){
+                return res.status(400).json({message: "OTP is expired !! Please start from email id again !!",});
+            }
+            if(otp[0].otp==otp_entered){
+                return next();
+            }
+            else{
+                return res.status(400).json({message: "Incorrect Otp Entered",});
+            }
+        }
+        return res.status(500).json({message: "An error caught while finding the user",})
+    }catch(error){
+        return res.status(500).json({message: `${error}`});
+    }
 	
-	User.findOne({userCode:userCode})
-	.then((user)=>{
-		OTP.find({user: user}).sort({"createdAt": -1}) 
-		.then((otp)=>{
-			if(!otp){
-				res.status(400).json({message: "OTP is expired !! Please start from email id again !!",});
-			}
-			if(otp[0].otp==otp_entered){
-				return next();
-			}
-			else{
-				return res.status(400).json({message: "Incorrect Otp Entered",});
-			}
-		})
-		.catch((err)=>{
-			return res.status(500).json({message: "Error Caught while finding otp",});
-		});
-	}).catch((err) => {
-		return res.status(500).json({message: "An error caught while finding the user",})
-	});
 };

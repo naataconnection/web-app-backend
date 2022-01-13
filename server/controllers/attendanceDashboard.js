@@ -122,8 +122,8 @@ module.exports.getAttendanceReportAllUsers = async (req, res) => {
     }catch(error){
         console.log(error);
         if (error.code == 11000) {
-            res.status(400).json({ success: "false", error: `User already added in the attendance dashboard` });
+            return res.status(400).json({ success: "false", error: `User already added in the attendance dashboard` });
         }
-        res.status(400).json({ success: "false", error: `${error}` });
+        return res.status(400).json({ success: "false", error: `${error}` });
     }
 }

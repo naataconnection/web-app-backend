@@ -22,8 +22,8 @@ module.exports.getOrder = async (req, res) => {
         }else{
             return res.status(200).send({success: "true", "message": "Order doesn't exist with this OrderCode"});
         }
-        res.status(200).send({success: "true", message: data});
+        return res.status(200).send({success: "true", message: data});
     }catch(error){
-        res.status(400).json({ success: "false", error: `${err}`});
+        return res.status(400).json({ success: "false", error: `${err}`});
     }
 }

@@ -37,7 +37,7 @@ exports.registerUser = async (req, res) => {
 		await user.save();
 	}
 	catch (err) {
-		res.status(400).json({
+		return res.status(400).json({
 			error: `${err}`
 		})
 	}
@@ -57,7 +57,7 @@ exports.registerUser = async (req, res) => {
 			await manager.save();
 		}
 		catch (err) {
-			res.status(400).json({
+			return res.status(400).json({
 				error: `${err}`
 			})
 		}
@@ -76,7 +76,7 @@ exports.registerUser = async (req, res) => {
 			await driver.save();
 		}
 		catch (err) {
-			res.status(400).json({
+			return res.status(400).json({
 				error: `${err}`
 			})
 		}
@@ -95,7 +95,7 @@ exports.registerUser = async (req, res) => {
 			await deliveryBoy.save();
 		}
 		catch (err) {
-			res.status(400).json({
+			return res.status(400).json({
 				error: `${err}`
 			})
 		}
@@ -114,7 +114,7 @@ exports.registerUser = async (req, res) => {
 			await customer.save();
 		}
 		catch (err) {
-			res.status(400).json({
+			return res.status(400).json({
 				error: `${err}`
 			})
 		}
@@ -126,7 +126,7 @@ exports.registerUser = async (req, res) => {
 		await user.save();
 	}
 	catch (err) {
-		res.status(400).json({
+		return res.status(400).json({
 			error: `${err}`
 		})
 	}
@@ -210,17 +210,17 @@ module.exports.registerDriver = async (req, res) => {
 		)
 
 		if(driver.matchedCount){
-			res.status(200).json({
+			return res.status(200).json({
 				message: "Fields Updated for driver profile",
 			});
 		}else{
-			res.status(404).json({
+			return res.status(404).json({
 				message: "No driver profile found with this userCode",
 			});
 		}
 
 	}catch(error){
-		res.status(500).json({
+		return res.status(500).json({
 			error: `${error}`,
 		});
 	}
@@ -263,17 +263,17 @@ module.exports.registerManager = async (req, res) => {
 		)
 
 		if(manager.matchedCount){
-			res.status(200).json({
+			return res.status(200).json({
 				message: "Fields Updated for manager profile",
 			});
 		}else{
-			res.status(404).json({
+			return res.status(404).json({
 				message: "No driver profile found with this userCode",
 			});
 		}
 
 	}catch(error){
-		res.status(500).json({
+		return res.status(500).json({
 			error: `${error}`,
 		});
 	}
@@ -334,17 +334,17 @@ module.exports.registerDeliveryBoy = async (req, res) => {
 		);
 
 		if(deliveryBoy.matchedCount){
-			res.status(200).json({
+			return res.status(200).json({
 				message: "Fields Updated for delivery boy profile",
 			});
 		}else{
-			res.status(404).json({
+			return res.status(404).json({
 				message: "No delivery profile found with this userCode",
 			});
 		}
 
 	}catch(error){
-		res.status(500).json({
+		return res.status(500).json({
 			error: `${error}`,
 		});
 	}
@@ -386,18 +386,18 @@ module.exports.registerCustomer = async (req, res) => {
 		)
 
 		if(customer.matchedCount){
-			res.status(200).json({
+			return res.status(200).json({
 				message: "Fields Updated for customer profile",
 			});
 		}else{
-			res.status(404).json({
+			return res.status(404).json({
 				message: "No customer profile found with this userCode",
 			});
 		}
 
 
 	}catch(error){
-		res.status(500).json({
+		return res.status(500).json({
 			error: `${error}`,
 		});
 	}
