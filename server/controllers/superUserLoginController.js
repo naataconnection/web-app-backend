@@ -62,8 +62,9 @@ exports.loginSuperUser_checkSuperUser = (req,res,next) => {
 exports.loginSuperUser_verifyOtp = (req, res,next) => {
   passport.authenticate("superUser-local", (err,superUser,info)=>{
     if(err){
+		console.log(err);
 		return res.status(400).json({
-        message: info.message,
+        message: info,
         error: `${err}`,
         });
 	}
