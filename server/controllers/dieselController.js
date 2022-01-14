@@ -2,6 +2,13 @@ const diesel = require("../models/dieselDetails");
 const dateTime = require("../utils/dateTimeFormat").dateDayTime;
 const gCloudUrl = require("../helpers/gCloud").gCloudUrl
 
+module.exports.testAPI = async (req,res)=>{
+    console.log("File API", req.file);
+    console.log("Files API", req.files);
+    console.log("Body", req.body);
+    return res.status(200).json({message:"dummy"});
+}
+
 module.exports.create = async (req, res) => {
     try{
         var kmUrl, billUrl;
