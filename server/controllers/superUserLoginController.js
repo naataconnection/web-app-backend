@@ -77,7 +77,7 @@ exports.loginSuperUser_verifyOtp = (req, res,next) => {
 		const token = jsonwebtoken.sign({ user: userCode, maxAge: parseInt(process.env.MAX_AGE) }, process.env.SECRET);
 		res.cookie('token', token, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
 		res.cookie('userCode', userCode, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
-		return res.status(200).json({message:info.message});
+		return res.status(200).json({message:info.message, superUser:superUser});
 	}
   })(req, res,next);
 };
