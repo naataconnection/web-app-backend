@@ -20,7 +20,7 @@ module.exports.updateLiveLocation = async (req, res) => {
                     location["status"] = "true";
                     location["latitude"] = loc.body.latitude;
                     location["longitutde"] = loc.body.longitutde;
-                    result.push(location);
+                    // result.push(location);
                 }else {
                     location["status"] = "false";
                     location["message"] = "User have ended his day";
@@ -29,6 +29,7 @@ module.exports.updateLiveLocation = async (req, res) => {
                 location["status"] = "false";
                 location["message"] = "User is not present";
             }
+            result.push(location);
         }
         return res.status(200).json({status: "true", data: result});
        
