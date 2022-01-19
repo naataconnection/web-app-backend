@@ -97,7 +97,7 @@ exports.generateAndSendOTPForUser = async (req, res) => {
                 const newOTP = new OTP({otp: otp(), user: user});
                 const data = await newOTP.save();
                 await sms.sendOtp(newOTP.otp, emailIdOrContact);
-                return res.status(200).json({message: `OTP generated and sent to the entered email ID.`});
+                return res.status(200).json({message: `OTP generated and sent to the entered mobile number.`});
             }   
             return res.status(404).json({message: "User doesn't exist"});
         }catch(error){
@@ -128,7 +128,7 @@ exports.generateAndSendOTPForSuperUser = async (req, res) => {
                 );
                 return res.status(200).json({message: `OTP generated and sent to the entered email ID.`});
             }   
-            return res.status(404).json({message: "Unable to generate OTP for required user.",});
+            return res.status(404).json({message: "Unable to generate OTP for required super user.",});
         }catch(error){
             return res.status(404).json({error: `${error}`});
         }
@@ -139,9 +139,9 @@ exports.generateAndSendOTPForSuperUser = async (req, res) => {
                 const newOTP = new OTP({otp: otp(), superUser: superUser});
                 const data = await newOTP.save();
                 await sms.sendOtp(newOTP.otp, emailIdOrContact);
-                return res.status(200).json({message: `OTP generated and sent to the entered email ID.`});
+                return res.status(200).json({message: `OTP generated and sent to the entered mobile number.`});
             }   
-            return res.status(404).json({message: "User doesn't exist"});
+            return res.status(404).json({message: "Super user doesn't exist"});
         }catch(error){
             return res.status(404).json({error: `${error}`});
         }
