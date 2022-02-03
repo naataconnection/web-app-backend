@@ -189,7 +189,7 @@ module.exports.users = async (req, res) => {
 		}
 		res.status(200).json({success: "true", message: "No User exists"});
 	}catch(error){
-		consle.log(error);
+		console.log(error);
 		return res.status(400).json({ success: "false", error: `${error}`});
 	}
 }
