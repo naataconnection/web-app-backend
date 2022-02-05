@@ -108,7 +108,7 @@ exports.createRequestByCustomer = async (req, res) => {
     customer,
     isRecurring,
     frequency,
-    status: 1,
+    status: 0,
   });
 
   try {
