@@ -21,8 +21,10 @@ module.exports.create = async (req, res) => {
             });
         }
 
-        const { kmOfVehicle, pump, liter, totalAmount, vehicleNumber, userCode, paymentMode, remarks} = req.body;
+        var { kmOfVehicle, pump, liter, totalAmount, vehicleNumber, userCode, paymentMode, remarks} = req.body;
         var date = dateTime()[0];
+        totalAmount = parseInt(totalAmount);
+        liter = parseInt(liter);
         var dieselRate = totalAmount/liter;
         var kmOfVehicleImg = kmUrl;
         var billImage = billUrl;
