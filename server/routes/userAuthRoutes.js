@@ -18,6 +18,6 @@ router.post("/register", userRegistrationControllers.registerUser);
 router.post("/registerDriver", imageUpload.array('images'), userRegistrationControllers.registerDriver);
 router.post("/registerManager", imageUpload.single('image'), userRegistrationControllers.registerManager);
 router.post("/registerDeliveryBoy", imageUpload.array('images'), userRegistrationControllers.registerDeliveryBoy);
-router.post("/registerCustomer", userRegistrationControllers.registerCustomer);
+router.post("/registerCustomer", imageUpload.single('image'), userRegistrationControllers.registerCustomer);
 
 module.exports = router;
