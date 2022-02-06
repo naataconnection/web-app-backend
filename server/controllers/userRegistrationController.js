@@ -149,34 +149,26 @@ module.exports.registerDriver = async (req, res) => {
 
 	try{
 		var i = 0;
-		var drivingLicense, idCard1, idCard2, profileImage;
+		var drivingLicense = null, idCard1 = null, idCard2 = null, profileImage = null;
 
-		if(req.body.isDrivingLicense == 1){
+		if(req.body.isDrivingLicense == "1"){
 			drivingLicense = await gCloudUrl(req.files[i].path, "driver/");
 			i++;
-		}else{
-			drivingLicense = req.body.drivingLicense;
 		}
 
-		if(req.body.isIdCard1 == 1){
+		if(req.body.isIdCard1 == "1"){
 			idCard1 = await gCloudUrl(req.files[i].path, "driver/");
 			i++;
-		}else{
-			idCard1 = req.body.idCard1;
 		}
 
-		if(req.body.isIdCard2 == 1){
+		if(req.body.isIdCard2 == "1"){
 			idCard2 = await gCloudUrl(req.files[i].path, "driver/");
 			i++;
-		}else{
-			idCard2 = req.body.idCard2;
 		}
 
-		if(req.body.isProfileImage == 1){
+		if(req.body.isProfileImage == "1"){
 			profileImage = await gCloudUrl(req.files[i].path, "driver/");
 			i++;
-		}else{
-			profileImage = req.body.profileImage;
 		}
 
 		var {
@@ -233,22 +225,17 @@ module.exports.registerManager = async (req, res) => {
 		var i = 0;
 		var idCard, profileImage;
 
-		if(req.body.isIdCard == 1){
+		if(req.body.isIdCard == "1"){
 			idCard = await gCloudUrl(req.files[i].path, "manager/");
 			i++;
-		}else{
-			idCard = req.body.idCard;
 		}
 
-		if(req.body.isProfileImage == 1){
+		if(req.body.isProfileImage == "1"){
 			profileImage = await gCloudUrl(req.files[i].path, "manager/");
 			i++;
-		}else{
-			profileImage = req.body.profileImage;
 		}
 
-		var { userCode, dateOfJoining, secondaryContact, emergencyContact, bloodGroup } =
-		req.body;
+		var { userCode, dateOfJoining, secondaryContact, emergencyContact, bloodGroup } = req.body;
 
 		const manager = await Manager.updateOne(
 			{ userCode },
@@ -283,27 +270,21 @@ module.exports.registerDeliveryBoy = async (req, res) => {
 
 	try{
 		var i = 0;
-		var idCard1, idCard2, profileImage;
+		var idCard1 = null, idCard2 = null, profileImage = null;
 
-		if(req.body.isIdCard1 == 1){
+		if(req.body.isIdCard1 == "1"){
 			idCard1 = await gCloudUrl(req.files[i].path, "deliveryBoy/");
 			i++;
-		}else{
-			idCard1 = req.body.idCard1;
 		}
 
-		if(req.body.isIdCard2 == 1){
+		if(req.body.isIdCard2 == "1"){
 			idCard2 = await gCloudUrl(req.files[i].path, "deliveryBoy/");
 			i++;
-		}else{
-			idCard2 = req.body.idCard2;
 		}
 
-		if(req.body.isProfileImage == 1){
+		if(req.body.isProfileImage == "1"){
 			profileImage = await gCloudUrl(req.files[i].path, "deliveryBoy/");
 			i++;
-		}else{
-			profileImage = req.body.profileImage;
 		}
 
 		var {
@@ -353,11 +334,9 @@ module.exports.registerDeliveryBoy = async (req, res) => {
 module.exports.registerCustomer = async (req, res) => {
 
 	try{
-		var profileImage;
-		if(req.body.isProfileImage == 1){
+		var profileImage = null;
+		if(req.body.isProfileImage == "1"){
 			profileImage = await gCloudUrl(req.file.path, "customer/");
-		}else{
-			profileImage = req.body.profileImage;
 		}
 
 		var {
