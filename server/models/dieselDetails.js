@@ -6,6 +6,7 @@ const dieselSchema = new mongoose.Schema({
   },
   kmOfVehicleImg:{
     type: String, 
+    required: true
   },
   pump: {
     type: String,
@@ -37,6 +38,7 @@ const dieselSchema = new mongoose.Schema({
   },
   billImage:{
       type: String,
+      required: true
   }
 });
 
