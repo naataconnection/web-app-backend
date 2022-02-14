@@ -62,8 +62,9 @@ exports.loginSuperUser_checkSuperUser = (req,res,next) => {
 exports.loginSuperUser_verifyOtp = (req, res,next) => {
   passport.authenticate("superUser-local", (err,superUser,info)=>{
     if(err){
+		console.log(err);
 		return res.status(400).json({
-        message: info.message,
+        message: info,
         error: `${err}`,
         });
 	}
@@ -76,7 +77,7 @@ exports.loginSuperUser_verifyOtp = (req, res,next) => {
 		const token = jsonwebtoken.sign({ user: userCode, maxAge: parseInt(process.env.MAX_AGE) }, process.env.SECRET);
 		res.cookie('token', token, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
 		res.cookie('userCode', userCode, { httpOnly: true, maxAge: parseInt(process.env.MAX_AGE), secure: true });
-		return res.status(200).json({message:info.message});
+		return res.status(200).json({message:info.message, superUser:superUser});
 	}
   })(req, res,next);
 };
@@ -87,15 +88,15 @@ exports.logoutSuperUser = (req,res,next) => {
 	if(token){
 		jsonwebtoken.verify(token,process.env.SECRET,(err,code)=>{
 			if(err){
-			   return  res.status(400).json({message:"Invalid Token!!!Pls login with correct credentials"});
+			   return res.status(400).json({message:"Invalid Token!!!Pls login with correct credentials"});
 		   } else {
 			  res.clearCookie('token');
 			  res.clearCookie('userCode');
 			  const message = "Super User with user code "+code.user+" is logged out successfullly";
-			  res.status(200).json({message:message});
+			  return res.status(200).json({message:message});
 		   }	
 		});
 	}else {
-		res.status(400).json({message:"Token Not Found...Pls Login First!!!"});
+		return res.status(400).json({message:"Token Not Found...Pls Login First!!!"});
 	}
 };

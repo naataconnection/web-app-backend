@@ -37,7 +37,7 @@ exports.registerUser = async (req, res) => {
 		await user.save();
 	}
 	catch (err) {
-		res.status(400).json({
+		return res.status(400).json({
 			error: `${err}`
 		})
 	}
@@ -57,7 +57,7 @@ exports.registerUser = async (req, res) => {
 			await manager.save();
 		}
 		catch (err) {
-			res.status(400).json({
+			return res.status(400).json({
 				error: `${err}`
 			})
 		}
@@ -76,7 +76,7 @@ exports.registerUser = async (req, res) => {
 			await driver.save();
 		}
 		catch (err) {
-			res.status(400).json({
+			return res.status(400).json({
 				error: `${err}`
 			})
 		}
@@ -95,7 +95,7 @@ exports.registerUser = async (req, res) => {
 			await deliveryBoy.save();
 		}
 		catch (err) {
-			res.status(400).json({
+			return res.status(400).json({
 				error: `${err}`
 			})
 		}
@@ -114,7 +114,7 @@ exports.registerUser = async (req, res) => {
 			await customer.save();
 		}
 		catch (err) {
-			res.status(400).json({
+			return res.status(400).json({
 				error: `${err}`
 			})
 		}
@@ -126,7 +126,7 @@ exports.registerUser = async (req, res) => {
 		await user.save();
 	}
 	catch (err) {
-		res.status(400).json({
+		return res.status(400).json({
 			error: `${err}`
 		})
 	}
@@ -149,34 +149,26 @@ module.exports.registerDriver = async (req, res) => {
 
 	try{
 		var i = 0;
-		var drivingLicense, idCard1, idCard2, profileImage;
+		var drivingLicense = null, idCard1 = null, idCard2 = null, profileImage = null;
 
-		if(req.body.isDrivingLicense == 1){
+		if(req.body.isDrivingLicense == "1"){
 			drivingLicense = await gCloudUrl(req.files[i].path, "driver/");
 			i++;
-		}else{
-			drivingLicense = req.body.drivingLicense;
 		}
 
-		if(req.body.isIdCard1 == 1){
+		if(req.body.isIdCard1 == "1"){
 			idCard1 = await gCloudUrl(req.files[i].path, "driver/");
 			i++;
-		}else{
-			idCard1 = req.body.idCard1;
 		}
 
-		if(req.body.isIdCard2 == 1){
+		if(req.body.isIdCard2 == "1"){
 			idCard2 = await gCloudUrl(req.files[i].path, "driver/");
 			i++;
-		}else{
-			idCard2 = req.body.idCard2;
 		}
 
-		if(req.body.isProfileImage == 1){
+		if(req.body.isProfileImage == "1"){
 			profileImage = await gCloudUrl(req.files[i].path, "driver/");
 			i++;
-		}else{
-			profileImage = req.body.profileImage;
 		}
 
 		var {
@@ -210,17 +202,17 @@ module.exports.registerDriver = async (req, res) => {
 		)
 
 		if(driver.matchedCount){
-			res.status(200).json({
+			return res.status(200).json({
 				message: "Fields Updated for driver profile",
 			});
 		}else{
-			res.status(404).json({
+			return res.status(404).json({
 				message: "No driver profile found with this userCode",
 			});
 		}
 
 	}catch(error){
-		res.status(500).json({
+		return res.status(500).json({
 			error: `${error}`,
 		});
 	}
@@ -233,22 +225,17 @@ module.exports.registerManager = async (req, res) => {
 		var i = 0;
 		var idCard, profileImage;
 
-		if(req.body.isIdCard == 1){
+		if(req.body.isIdCard == "1"){
 			idCard = await gCloudUrl(req.files[i].path, "manager/");
 			i++;
-		}else{
-			idCard = req.body.idCard;
 		}
 
-		if(req.body.isProfileImage == 1){
+		if(req.body.isProfileImage == "1"){
 			profileImage = await gCloudUrl(req.files[i].path, "manager/");
 			i++;
-		}else{
-			profileImage = req.body.profileImage;
 		}
 
-		var { userCode, dateOfJoining, secondaryContact, emergencyContact, bloodGroup } =
-		req.body;
+		var { userCode, dateOfJoining, secondaryContact, emergencyContact, bloodGroup } = req.body;
 
 		const manager = await Manager.updateOne(
 			{ userCode },
@@ -263,17 +250,17 @@ module.exports.registerManager = async (req, res) => {
 		)
 
 		if(manager.matchedCount){
-			res.status(200).json({
+			return res.status(200).json({
 				message: "Fields Updated for manager profile",
 			});
 		}else{
-			res.status(404).json({
+			return res.status(404).json({
 				message: "No driver profile found with this userCode",
 			});
 		}
 
 	}catch(error){
-		res.status(500).json({
+		return res.status(500).json({
 			error: `${error}`,
 		});
 	}
@@ -283,27 +270,21 @@ module.exports.registerDeliveryBoy = async (req, res) => {
 
 	try{
 		var i = 0;
-		var idCard1, idCard2, profileImage;
+		var idCard1 = null, idCard2 = null, profileImage = null;
 
-		if(req.body.isIdCard1 == 1){
+		if(req.body.isIdCard1 == "1"){
 			idCard1 = await gCloudUrl(req.files[i].path, "deliveryBoy/");
 			i++;
-		}else{
-			idCard1 = req.body.idCard1;
 		}
 
-		if(req.body.isIdCard2 == 1){
+		if(req.body.isIdCard2 == "1"){
 			idCard2 = await gCloudUrl(req.files[i].path, "deliveryBoy/");
 			i++;
-		}else{
-			idCard2 = req.body.idCard2;
 		}
 
-		if(req.body.isProfileImage == 1){
+		if(req.body.isProfileImage == "1"){
 			profileImage = await gCloudUrl(req.files[i].path, "deliveryBoy/");
 			i++;
-		}else{
-			profileImage = req.body.profileImage;
 		}
 
 		var {
@@ -334,17 +315,17 @@ module.exports.registerDeliveryBoy = async (req, res) => {
 		);
 
 		if(deliveryBoy.matchedCount){
-			res.status(200).json({
+			return res.status(200).json({
 				message: "Fields Updated for delivery boy profile",
 			});
 		}else{
-			res.status(404).json({
+			return res.status(404).json({
 				message: "No delivery profile found with this userCode",
 			});
 		}
 
 	}catch(error){
-		res.status(500).json({
+		return res.status(500).json({
 			error: `${error}`,
 		});
 	}
@@ -353,11 +334,9 @@ module.exports.registerDeliveryBoy = async (req, res) => {
 module.exports.registerCustomer = async (req, res) => {
 
 	try{
-		var profileImage;
-		if(req.body.isProfileImage == 1){
+		var profileImage = null;
+		if(req.body.isProfileImage == "1"){
 			profileImage = await gCloudUrl(req.file.path, "customer/");
-		}else{
-			profileImage = req.body.profileImage;
 		}
 
 		var {
@@ -386,18 +365,18 @@ module.exports.registerCustomer = async (req, res) => {
 		)
 
 		if(customer.matchedCount){
-			res.status(200).json({
+			return res.status(200).json({
 				message: "Fields Updated for customer profile",
 			});
 		}else{
-			res.status(404).json({
+			return res.status(404).json({
 				message: "No customer profile found with this userCode",
 			});
 		}
 
 
 	}catch(error){
-		res.status(500).json({
+		return res.status(500).json({
 			error: `${error}`,
 		});
 	}

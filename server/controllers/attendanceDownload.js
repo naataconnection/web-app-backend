@@ -136,13 +136,13 @@ module.exports.createUserXls = async (req, res) => {
         publicUrl = await Promise.all([publicUrl])
         fs.unlinkSync(loc);
 
-        res.status(200).json({
+        return res.status(200).json({
             status: 'success',
             link: publicUrl[0],
         });
     } catch (error) {
         console.log(error);
-        res.status(400).json({ success: "false", error: `${error}` });
+        return res.status(400).json({ success: "false", error: `${error}` });
     }
 
 }

@@ -24,9 +24,9 @@ exports.createOne = async (req, res) => {
       contactNumber,
       message,
     });
-    res.status(200).send(newEntry);
+    return res.status(200).send(newEntry);
   } catch (error) {
     console.log(error);
-    res.status(404).send(error);
+    return res.status(404).send(error);
   }
 };

@@ -55,10 +55,10 @@ module.exports.addEmployes = async (req, res) => {
                 })
             }
         }
-        res.status(200).send({success: "true", message: `All users added in the attendance list`});
+        return res.status(200).send({success: "true", message: `All users added in the attendance list`});
     }catch(error){
         console.log(error);
-        res.status(400).json({success: "false", error:`${error}`});
+        return res.status(400).json({success: "false", error:`${error}`});
     }
 }
 
@@ -81,16 +81,16 @@ module.exports.markAttendance = async(req, res) => {
                     attendance_status: 1},
                     {new: true}
                 );
-                res.status(200).send({success: "true", message: `Mark the user Present`});
+                return res.status(200).send({success: "true", message: `Mark the user Present`});
             }else{
-                res.status(500).send({success: "false", message: `You had already mark the attendance.`})
+                return res.status(500).send({success: "false", message: `You had already mark the attendance.`})
             }
         }else{
-            res.status(500).send({success: "false", message: `User doesn't exist`})
+            return res.status(500).send({success: "false", message: `User doesn't exist`})
         }
     }catch(error){
         console.log(error);
-        res.status(400).send({success: "false", error:`${error}`})
+        return res.status(400).send({success: "false", error:`${error}`})
     }
 }
 
@@ -107,15 +107,15 @@ module.exports.endDay = async(req, res) => {
                     {endTime: time},
                     {new: true}
                 );
-                res.status(200).send({success: "true", message: `Update the end time`});
+                return res.status(200).send({success: "true", message: `Update the end time`});
             }else{
-                res.status(400).send({success: "false", message: `You haven't started the day. So, you can't end the day!!`});
+                return res.status(400).send({success: "false", message: `You haven't started the day. So, you can't end the day!!`});
             }
         }else{
-            res.status(400).send({success: "false", message: `User doesn't exist`})
+            return res.status(400).send({success: "false", message: `User doesn't exist`})
         }
     }catch(error){
         console.log(error);
-        res.status(400).send({success: "false", error:`${error}`})
+        return res.status(400).send({success: "false", error:`${error}`})
     }
 }

@@ -17,11 +17,10 @@ module.exports.create = async (req, res) => {
         const notification = await Notification.create({
             userCode, content, image, title, entryDate, expiryDate,
         });
-        console.log(notification);
-        res.status(200).send({success: "true", message: `Notification added in the database`});
+        return res.status(200).send({success: "true", message: `Notification added in the database`});
     }catch(error){
         console.log(error);
-        res.status(400).json({success: "false", error:`${error}`});
+        return res.status(400).json({success: "false", error:`${error}`});
     }
 }
 
@@ -33,9 +32,9 @@ module.exports.getNotification = async (req, res) => {
                 $gt: currDate,
             },
         })
-        res.status(200).send({success: "true", message: result});
+        return res.status(200).send({success: "true", message: result});
     }catch(error){
         console.log(error);
-        res.status(400).json({success: "false", error:`${error}`});
+        return res.status(400).json({success: "false", error:`${error}`});
     }
 }

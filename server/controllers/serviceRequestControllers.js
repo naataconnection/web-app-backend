@@ -15,9 +15,9 @@ const getName = require("../helpers/getUserCodeforServicerequest").getName;
 exports.getServiceRequest = async (req, res) => {
   ServiceRequest.find({}, (err, requests) => {
     if (err) {
-      res.status(400).json({ success: "false", error: `${err}` });
+      return res.status(400).json({ success: "false", error: `${err}` });
     } else {
-      res.status(200).send({ success: "true", data: requests });
+      return res.status(200).send({ success: "true", data: requests });
     }
   });
 };
@@ -31,12 +31,12 @@ exports.createRequestBySuperUser = async (req, res) => {
     customer = await Customer.findOne({ userCode: customerCode });
 
     if (customer == null) {
-      res.status(404).json({
+      return res.status(404).json({
         message: "No Customer found for this customer code.",
       });
     }
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -46,12 +46,12 @@ exports.createRequestBySuperUser = async (req, res) => {
     superUser = await SuperUser.findOne({ userCode: superUserCode });
 
     if (superUser == null) {
-      res.status(404).json({
+      return res.status(404).json({
         message: "No Super User found for this superuser code",
       });
     }
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -71,13 +71,13 @@ exports.createRequestBySuperUser = async (req, res) => {
   try {
     await serviceRequest.save();
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       message: "Wrong Details Provided",
       error: `${err}`,
     });
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     message: "Service Request Created Successfully",
   });
 }
@@ -90,12 +90,12 @@ exports.createRequestByCustomer = async (req, res) => {
     customer = await Customer.findOne({ userCode: customerCode });
 
     if (customer == null) {
-      res.status(404).json({
+      return res.status(404).json({
         message: "No Customer found for this customer code.",
       });
     }
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -108,19 +108,19 @@ exports.createRequestByCustomer = async (req, res) => {
     customer,
     isRecurring,
     frequency,
-    status: 1,
+    status: 0,
   });
 
   try {
     await serviceRequest.save();
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       message: "Wrong Details Provided",
       error: `${err}`,
     });
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     message: "Service Request Created Successfully",
   });
 };
@@ -133,18 +133,18 @@ exports.approveRequest = async (req, res) => {
     serviceRequest = await ServiceRequest.findOne({ requestCode });
 
     if (serviceRequest == null) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "No Service Request found for this request code",
       });
     }
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
 
   if (serviceRequest.status >= 2) {
-    res.status(200).json({
+    return res.status(200).json({
       message: "Request is already approved",
     });
   }
@@ -154,12 +154,12 @@ exports.approveRequest = async (req, res) => {
     superUser = await SuperUser.findOne({ userCode: superUserCode });
 
     if (superUser == null) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "No Super User found for this code",
       });
     }
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -168,7 +168,7 @@ exports.approveRequest = async (req, res) => {
   console.log("Super User from request", superUser._id);
 
   if (!serviceRequest.superUser.equals(superUser._id)) {
-    res.status(400).json({
+    return res.status(400).json({
       message: `Given super user has not created this request`,
     });
   }
@@ -178,12 +178,12 @@ exports.approveRequest = async (req, res) => {
   try {
     await serviceRequest.save();
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     message: "Service Request approved",
   });
 };
@@ -197,18 +197,18 @@ exports.assignManager = async (req, res) => {
     serviceRequest = await ServiceRequest.findOne({ requestCode });
 
     if (serviceRequest == null) {
-      res.status(404).json({
+      return res.status(404).json({
         message: "No Service Request found for this request code",
       });
     }
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
 
   if (serviceRequest.status == 0 || serviceRequest.status == 1) {
-    res.status(400).json({
+    return res.status(400).json({
       message: "Service Reuqest is unapporved or pending",
     });
   }
@@ -219,18 +219,18 @@ exports.assignManager = async (req, res) => {
     superUser = await SuperUser.findOne({ userCode: superUserCode });
 
     if (superUser == null) {
-      res.status(400).json({
+      return res.status(400).json({
         message: `No SuperUser found for this superuser code`,
       });
     }
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
 
   if (!serviceRequest.superUser.equals(superUser._id)) {
-    res.status(401).json({
+    return res.status(401).json({
       message: `Given superUser is not authorized for this service request`,
     });
   }
@@ -241,12 +241,12 @@ exports.assignManager = async (req, res) => {
     manager = await Manager.findOne({ userCode: managerCode });
 
     if (manager == null) {
-      res.status(404).json({
+      return res.status(404).json({
         message: "No Manager found for this manager code",
       });
     }
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -257,12 +257,12 @@ exports.assignManager = async (req, res) => {
   try {
     await serviceRequest.save();
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     message: "Manager has been assigned to service request",
   });
 };
@@ -276,12 +276,12 @@ exports.assignDriversAndDB = async (req, res) => {
     serviceRequest = await ServiceRequest.findOne({ requestCode });
 
     if (serviceRequest == null) {
-      res.status(400).json({
+      return res.status(400).json({
         message: `No service request found for this request code`,
       });
     }
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -298,12 +298,12 @@ exports.assignDriversAndDB = async (req, res) => {
       driver = await Driver.findOne({ userCode: driverCodes[i] });
 
       if (driver == null) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `No driver found for this drivercode - ${driverCodes[i]} `,
         });
       }
     } catch (err) {
-      res.status(400).json({
+      return res.status(400).json({
         error: `${err}`,
       });
     }
@@ -314,12 +314,12 @@ exports.assignDriversAndDB = async (req, res) => {
       vehicle = await Vehicle.findOne({ vehicleCode: vehicleCodes[i] });
 
       if (vehicle == null) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `No vehicle found for this vehiclecode - ${vehicleCodes[i]}`,
         });
       }
     } catch (err) {
-      res.status(400).json({
+      return res.status(400).json({
         error: `${err}`,
       });
     }
@@ -348,18 +348,18 @@ exports.assignDriversAndDB = async (req, res) => {
 	// 	deliverySheetImage = await gCloudUrl(req.files[0].path, `${orderCode}/`);
 	// 	startingKMProof = await gCloudUrl(req.files[1].path, `${orderCode}/`);
 	// }else{
-	// 	res.status(404).json({
+	// 	return res.status(404).json({
 	// 		message: "File doesn't exist",
 	// 	});
 	// }
 
       if (deliveryBoy == null) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `No delivery boy found for this delivery boy code - ${deliveryBoyCodes[i]}`,
         });
       }
     } catch (err) {
-      res.status(400).json({
+      return res.status(400).json({
         error: `${err}`,
       });
     }
@@ -370,7 +370,7 @@ exports.assignDriversAndDB = async (req, res) => {
     try {
       await driver.save();
     } catch (err) {
-      res.status(400).json({
+      return res.status(400).json({
         error: `${err}`,
       });
     }
@@ -387,12 +387,12 @@ exports.assignDriversAndDB = async (req, res) => {
   try {
     await serviceRequest.save();
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     message: "Drivers, Delivery Boys and Vehicles assigned to Service Request",
   });
 };
@@ -405,12 +405,12 @@ exports.createOrder = async (req, res) => {
     serviceRequest = await ServiceRequest.findOne({ requestCode });
 
     if (serviceRequest == null) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "No Service Request found for this request code",
       });
     }
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -420,12 +420,12 @@ exports.createOrder = async (req, res) => {
     driver = await Driver.findOne({ userCode: driverCode });
 
     if (driver == null) {
-      res.status(400).json({
+      return res.status(400).json({
         message: `No driver found wih this driver code`,
       });
     }
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -450,7 +450,7 @@ exports.createOrder = async (req, res) => {
   try {
     await order.save();
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -460,12 +460,12 @@ exports.createOrder = async (req, res) => {
   try {
     await serviceRequest.save();
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     message: `Order created for requestCode - ${requestCode}`,
   });
 };
@@ -485,12 +485,12 @@ exports.createInvoice = async (req, res) => {
     order = await Order.findOne({ orderCode });
 
     if (order == null) {
-      res.status(400).json({
+      return res.status(400).json({
         message: `No Order found for this orderCode`,
       });
     }
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -519,7 +519,7 @@ exports.createInvoice = async (req, res) => {
   try {
     await invoice.save();
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -529,12 +529,12 @@ exports.createInvoice = async (req, res) => {
   try {
     await order.save();
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     message: `Invoice Created for orderCode - ${orderCode}`,
   });
 };
@@ -546,7 +546,7 @@ exports.dispatchedDriver = async (req, res) => {
   try {
     order = await Order.findOne({ orderCode: orderCode });
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -556,18 +556,18 @@ exports.dispatchedDriver = async (req, res) => {
     driver = await Driver.findOne({ userCode: driverCode });
 
     if (driver == null) {
-      res.status(400).json({
+      return res.status(400).json({
         message: `No driver found wih this driver code`,
       });
     }
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
 
   if (!order.driver.equals(driver._id)) {
-    res.status(400).json({
+    return res.status(400).json({
       message: `Driver who intiated the request is not same as given driver`,
     });
   }
@@ -576,7 +576,7 @@ exports.dispatchedDriver = async (req, res) => {
   try {
     serviceRequest = await ServiceRequest.findOne({ requestCode: requestCode });
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -586,7 +586,7 @@ exports.dispatchedDriver = async (req, res) => {
   try {
     await order.save();
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -609,12 +609,12 @@ exports.dispatchedDriver = async (req, res) => {
   try {
     await serviceRequest.save();
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     message: `Order updated to dispatch`,
   });
 };
@@ -626,7 +626,7 @@ exports.deliverDriver = async (req, res) => {
   try {
     order = await Order.findOne({ orderCode: orderCode });
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -636,18 +636,18 @@ exports.deliverDriver = async (req, res) => {
     driver = await Driver.findOne({ userCode: driverCode });
 
     if (driver == null) {
-      res.status(400).json({
+      return res.status(400).json({
         message: `No driver found wih this driver code`,
       });
     }
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
 
   if (!order.driver.equals(driver._id)) {
-    res.status(400).json({
+    return res.status(400).json({
       message: `Driver who intiated the request is not same as given driver`,
     });
   }
@@ -656,7 +656,7 @@ exports.deliverDriver = async (req, res) => {
   try {
     serviceRequest = await ServiceRequest.findOne({ requestCode: requestCode });
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -666,7 +666,7 @@ exports.deliverDriver = async (req, res) => {
   try {
     await order.save();
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -689,12 +689,12 @@ exports.deliverDriver = async (req, res) => {
   try {
     await serviceRequest.save();
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     message: `Order updated to delivered`,
   });
 };
@@ -707,12 +707,12 @@ exports.closeRequest = async (req, res) => {
     manager = Manager.findOne({ userCode: managerCode });
 
     if (manager == null) {
-      res.status(400).json({
+      return res.status(400).json({
         message: `No manager found for this manager code`,
       });
     }
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -722,18 +722,18 @@ exports.closeRequest = async (req, res) => {
     serviceRequest = ServiceRequest.findOne({ requestCode: requestCode });
 
     if (serviceRequest == null) {
-      res.status(400).json({
+      return res.status(400).json({
         message: `No service request found for this requestCode`,
       });
     }
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
 
   if (serviceRequest.manager != manager) {
-    res.status(400).json({
+    return res.status(400).json({
       message: `Given managerCode is not corresponding to manager of service request`,
     });
   }
@@ -743,7 +743,7 @@ exports.closeRequest = async (req, res) => {
   try {
     await serviceRequest.save();
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       error: `${err}`,
     });
   }
@@ -760,7 +760,7 @@ module.exports.getPendingServiceRequest = async (req, res) => {
     next();
   }catch (error) {
     console.log(error);
-    res.status(400).json({ success: "false", error: `${error}` });
+    return res.status(400).json({ success: "false", error: `${error}` });
   }
 }
 
@@ -775,7 +775,7 @@ module.exports.getCompletedServiceRequest = async (req, res) => {
     next();
   }catch (error) {
     console.log(error);
-    res.status(400).json({ success: "false", error: `${error}` });
+    return res.status(400).json({ success: "false", error: `${error}` });
   }
 }
 
@@ -790,7 +790,7 @@ module.exports.getActiveServiceRequest = async (req, res, next) => {
     next();
   }catch (error) {
     console.log(error);
-    res.status(400).json({ success: "false", error: `${error}` });
+    return res.status(400).json({ success: "false", error: `${error}` });
   }
 }
 
@@ -804,10 +804,10 @@ module.exports.getwithName = async (req, res) => {
       deliveryBoys.push(ans[i].updatedDeliveryBoys);
       drivers.push(ans[i].updatedDrivers);
     }
-    res.status(200).send({success: "true", deliveryBoys: deliveryBoys, drivers: drivers, data: ans});
+    return res.status(200).send({success: "true", deliveryBoys: deliveryBoys, drivers: drivers, data: ans});
   }catch(error){
     console.log(error);
-    res.status(400).json({ success: "false", error: `${error}` });
+    return res.status(400).json({ success: "false", error: `${error}` });
   }
 }
 
@@ -818,9 +818,9 @@ module.exports.getAllActiveServiceRequest = async (req, res) => {
     if(!result[0]){
       return res.status(200).send({success: "true", message: "No active Service request"});
     }
-    res.status(200).send({success: "true", message: result});
+    return res.status(200).send({success: "true", message: result});
   }catch(error){
-    res.status(400).json({ success: "false", error: `${error}` });
+    return res.status(400).json({ success: "false", error: `${error}` });
   }
 }
 
@@ -831,9 +831,9 @@ module.exports.getAllPendingServiceRequest = async (req, res) => {
     if(!result[0]){
       return res.status(200).send({success: "true", message: "No pending Service request"});
     }
-    res.status(200).send({success: "true", message: result});
+    return res.status(200).send({success: "true", message: result});
   }catch (error) {
-    res.status(400).json({ success: "false", error: `${error}` });
+    return res.status(400).json({ success: "false", error: `${error}` });
   }
 }
 
@@ -844,8 +844,8 @@ module.exports.getAllCompletedServiceRequest = async (req, res) => {
     if(!result[0]){
       return res.status(200).send({success: "true", message: "No completed Service request"});
     }
-    res.status(200).send({success: "true", message: result});
+    return res.status(200).send({success: "true", message: result});
   }catch (error) {
-    res.status(400).json({ success: "false", error: `${error}` });
+    return res.status(400).json({ success: "false", error: `${error}` });
   }
 }

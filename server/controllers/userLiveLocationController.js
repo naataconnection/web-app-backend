@@ -13,27 +13,34 @@ module.exports.updateLiveLocation = async (req, res) => {
             const user = await attendance.findOne({ date: currDate, userCode: userCodes[i]});
             var location = {};
             location["userCode"] = userCodes[i];
-            if (user.startTime !== null) {
-                if (user.endTime === null) {
-                    const ipAddress = await User.findOne({userCode: userCodes[i]}.select({"ipAddress": 1}));
-                    const loc = await geolocation.location({ ip: ipAddress});
-                    location["status"] = "true";
-                    location["latitude"] = loc.body.latitude;
-                    location["longitutde"] = loc.body.longitutde;
-                    result.push(location);
+            try{
+                if (user.startTime !== null) {
+                    if (user.endTime === null) {
+                        const ipAddress = await User.findOne({userCode: userCodes[i]}.select({"ipAddress": 1}));
+                        const loc = await geolocation.location({ ip: ipAddress});
+                        location["status"] = "true";
+                        location["latitude"] = loc.body.latitude;
+                        location["longitutde"] = loc.body.longitutde;
+                        // result.push(location);
+                    }else {
+                        location["status"] = "false";
+                        location["message"] = "User have ended his day";
+                    }
                 }else {
                     location["status"] = "false";
-                    location["message"] = "User have ended his day";
+                    location["message"] = "User is not present";
                 }
-            }else {
+                // result.push(location);
+            }catch{
                 location["status"] = "false";
-                location["message"] = "User is not present";
+                location["message"] = "Unable to track user's live location !!";
             }
+            result.push(location);
         }
         return res.status(200).json({status: "true", data: result});
        
     }catch(error){
         console.log(error);
-        res.status(400).json({ success: "false", error: `${error}` });
+        return res.status(400).json({ success: "false", error: `${error}` });
     }
 }

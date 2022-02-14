@@ -5,7 +5,7 @@ const User = require("../models/user");
 const Otp = require("../models/otp");
 
 // Controller to update email id.
-exports.updateEmailIdOrContact = (req,res,next) => {
+exports.updateEmailIdOrContact = async (req,res,next) => {
 	const emailIdOrContact = req.body.emailIdOrContact;
 	const userCode = req.cookies.userCode;
 	
@@ -14,36 +14,22 @@ exports.updateEmailIdOrContact = (req,res,next) => {
 
 	// If user entered the email id
 	if(emailIdOrContact.match(emailId_regex)){
-		User.findOne({
-		  userCode: userCode,
-		})
-		.then((user) => {
-			  user.emailId = emailIdOrContact;
-			  user.save();
-              return res.status(200).json({
-          			message: "EmailId successfully updated",
-        		}); 
-		})
-		.catch((err)=>{
-			 return res.status(500).json({
-          			message: "An error caught while finding the user",
-        		});
-		});
+		try{
+			const user = await User.findOne({userCode: userCode});
+			user.emailId = emailIdOrContact;
+			await user.save();
+			return res.status(200).json({message: "EmailId successfully updated"});
+		}catch(error){
+			return res.status(500).json({message: "An error caught while finding the user"});
+		}
 	}else{
-		User.findOne({
-		  contact: emailIdOrContact,
-		})
-		.then((user) => {
-			  user.contact = emailIdOrContact;
-			  user.save();
-              return res.status(200).json({
-          			message: "Contact number successfully updated",
-        		}); 
-		})
-		.catch((err)=>{
-			  return res.status(500).json({
-          			message: "An error caught while finding the user",
-        		});
-		});
+		try{
+			const user = await User.findOne({contact: emailIdOrContact});
+			user.contact = emailIdOrContact;
+			await user.save();
+			return res.status(200).json({message: "Contact number successfully updated"});
+		}catch(error){
+			return res.status(500).json({message: "An error caught while finding the user"});
+		}
 	}
 };

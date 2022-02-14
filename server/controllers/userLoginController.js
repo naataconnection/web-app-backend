@@ -107,10 +107,10 @@ exports.logoutUser = (req,res,next) => {
 			  res.clearCookie('token');
 			  res.clearCookie('userCode');
 			  const message = "User with user code "+code.user+" is logged out successfullly";
-			  res.status(200).json({message:message});
+			  return res.status(200).json({message:message});
 		   }	
 		});
 	}else {
-		res.status(400).json({message:"Token Not Found...Pls Login First!!!"});
+		return res.status(400).json({message:"Token Not Found...Pls Login First!!!"});
 	}
 };

@@ -73,14 +73,14 @@ exports.sendVerificationEmail = (req, res) => {
           `Hello,<br> Please Click on the link to verify your email.<br><a href="${link}">Click here to verify</a>`
         )
         .then((result) => {
-          res
+          return res
           .status(200)
           .json({
               message: `Verification Mail Sent`
           })
         })
         .catch((err) => {
-          res
+          return res
           .status(500)
           .json({
               message: `Error in NodeMailer API`,
@@ -89,7 +89,7 @@ exports.sendVerificationEmail = (req, res) => {
         });
     })
     .catch((err) => {
-        res
+        return res
         .status(404)
         .json({
             message : 'No User found with this emailId',
@@ -119,14 +119,14 @@ exports.verifyVerificationEmail = (req, res) => {
                 user.emailVerified = true;
                 user.save();
 
-                res
+                return res
                 .status(200)
                 .json({
                     message: `Email Verification Successful`
                 })
             }
             else{
-                res
+                return res
                 .status(400)
                 .json({
                     message: `Wrong OTP`
@@ -134,7 +134,7 @@ exports.verifyVerificationEmail = (req, res) => {
             }
         })
         .catch((err) => {
-            res
+            return res
             .status(400)
             .json({
                 message: `No OTP found for User`
@@ -142,7 +142,7 @@ exports.verifyVerificationEmail = (req, res) => {
         });
     })
     .catch((err) => {
-        res
+        return res
         .status(404)
         .json({
             message : 'No User found with this emailId',
