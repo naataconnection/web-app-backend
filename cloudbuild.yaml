@@ -1,0 +1,9 @@
+steps:
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: Update server
+    entrypoint: /bin/sh
+    args:
+      - "-c"
+      - |
+        set -x && \
+        gcloud compute ssh instance-1 --zone=asia-south1-c --command='/bin/sh /home/server_naataconnection/pull.sh'
