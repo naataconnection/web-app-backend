@@ -4,5 +4,6 @@ const router = express.Router();
 
 // Main path - "/genericContact"
 router.post("/create", genericContactCnt.createOne);
+router.get("/all", genericContactCnt.getAll);
 
 module.exports = router;
