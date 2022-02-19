@@ -1,4 +1,5 @@
 const vendorContact = require("../models/vendorContact");
+const mailer = require("../helpers/mailer");
 
 var globalId = 0;
 
@@ -24,9 +25,23 @@ exports.createOne = async (req, res) => {
       contactNumber,
       message,
     });
-    return res.status(200).send(newEntry);
+
+    await mailer.send(
+      `${process.env.EMAIL_SMTP_USERNAME}`,
+      email,
+      "Vendor Registered",
+      `<p>
+        Company Name ${companyName} PerosnName ${personName} has been requested for vendor contact on website with email - ${email}, phone number - ${contactNumber} and unique token Id - ${vendorId}  
+      <p>`
+    );
+
+    return res.status(200).json({
+      message: "vendor Contact Successfully created!"
+    });
   } catch (error) {
     console.log(error);
-    return res.status(404).send(error);
+    return res.status(404).json({
+      error:`${error}`
+  })
   }
 };

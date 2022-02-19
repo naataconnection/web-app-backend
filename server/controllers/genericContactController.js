@@ -1,4 +1,5 @@
 const genericContact = require("../models/genericContact");
+const mailer = require("../helpers/mailer");
 
 var globalId = 0;
 
@@ -21,10 +22,24 @@ exports.createOne = async (req, res) => {
       email,
       message,
     });
-    return res.status(200).send(newEntry);
+
+    await mailer.send(
+      `${process.env.EMAIL_SMTP_USERNAME}`,
+      email,
+      "Generic Contact Registered",
+      `<p>
+        Name ${name} has been requested for generic contact on website with email - ${email}, message - ${message} and unique token Id - ${genericId}  
+      <p>`
+    );
+
+    return res.status(200).json({
+      message: "Generic Contact Successfully created!"
+    });
   } catch (error) {
     console.log(error);
-    return res.status(404).send(error);
+    return res.status(404).json({
+        error:`${error}`
+    })
   }
 };
 
