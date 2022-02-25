@@ -22,7 +22,7 @@ const otpFormat = (name, otp) => {
     Hi <b>${name}</b>,
     <br>
     <p>Welcome to Naata Connection!</p>
-    <p>Use ${otp} as One Time Password (OTP) to log in to your Naata Connection account. This OTP is valid for 10 minutes.</p>
+    <p>Use <b>${otp}</b> as One Time Password (OTP) to log in to your Naata Connection account. This OTP is valid for 10 minutes.</p>
     <p>Please do not share this OTP with anyone for security reasons.</p>
     
     Best Wishes,<br>
