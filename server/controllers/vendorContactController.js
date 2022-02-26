@@ -1,4 +1,6 @@
 const vendorContact = require("../models/vendorContact");
+const mailer = require("../helpers/mailer");
+const {vendororGenericEmailFormat} = require("../helpers/mailFormat");
 
 var globalId = 0;
 
@@ -24,9 +26,20 @@ exports.createOne = async (req, res) => {
       contactNumber,
       message,
     });
-    return res.status(200).send(newEntry);
+
+    const [subject, body] = vendororGenericEmailFormat(personName, vendorId);
+
+    await mailer.send(
+      `${process.env.EMAIL_SMTP_USERNAME}`, email, subject, body
+    );
+
+    return res.status(200).json({
+      message: "vendor Contact Successfully created!"
+    });
   } catch (error) {
     console.log(error);
-    return res.status(404).send(error);
+    return res.status(404).json({
+      error:`${error}`
+  })
   }
 };

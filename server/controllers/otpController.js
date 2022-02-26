@@ -5,6 +5,7 @@ const otp = require("../helpers/otp");
 const OTP = require("../models/otp");
 const mailer = require("../helpers/mailer");
 const sms = require("../helpers/sms");
+const { otpFormat, smsFormat } = require("../helpers/mailFormat");
 
 // Controller to generate a new OTP for a particular user.
 exports.generateOTP = async (req, res) => {
@@ -35,11 +36,16 @@ exports.generateAndSendOTPForUser_ToNewEmailIdOrContact = async (req, res) => {
             if(user){
                 const newOTP = new OTP({otp: otp(), user: user});
                 const data = await newOTP.save();
+                var name = user.firstName;
+                if(user.middleName){
+                    name += " " + user.middleName;
+                }
+                if(user.lastName){
+                    name += " " + user.lastName;
+                }
+                const [subject, body] = otpFormat(name, newOTP.otp);
                 await mailer.send(
-                    `${process.env.EMAIL_SMTP_USERNAME}`,
-                    emailIdOrContact,
-                    "Test Mail",
-                    `<h1>Your OTP to login is `+newOTP.otp+` . This expires in 10 minutes.</h1>`
+                    `${process.env.EMAIL_SMTP_USERNAME}`, emailIdOrContact, subject, body
                 );
                 return res.status(200).json({message: `OTP generated and sent to the entered email ID.`});
             }   
@@ -53,7 +59,15 @@ exports.generateAndSendOTPForUser_ToNewEmailIdOrContact = async (req, res) => {
             if(user){
                 const newOTP = new OTP({otp: otp(), user: user});
                 const data = await newOTP.save();
-                await sms.sendOtp(newOTP.otp, emailIdOrContact);
+                var name = user.firstName;
+                if(user.middleName){
+                    name += " " + user.middleName;
+                }
+                if(user.lastName){
+                    name += " " + user.lastName;
+                }
+                const message = smsFormat(name, newOTP.otp);
+                await sms.sendOtp(message, emailIdOrContact);
                 return res.status(200).json({message: `OTP generated and sent to the entered email ID.`});
             }   
             return res.status(404).json({message: "User doesn't exist"});
@@ -78,11 +92,16 @@ exports.generateAndSendOTPForUser = async (req, res) => {
             if(user){
                 const newOTP = new OTP({otp: otp(), user: user});
                 const data = await newOTP.save();
+                var name = user.firstName;
+                if(user.middleName){
+                    name += " " + user.middleName;
+                }
+                if(user.lastName){
+                    name += " " + user.lastName;
+                }
+                const [subject, body] = otpFormat(name, newOTP.otp);
                 await mailer.send(
-                    `${process.env.EMAIL_SMTP_USERNAME}`,
-                    emailIdOrContact,
-                    "Test Mail",
-                    `<h1>Your OTP to login is `+newOTP.otp+` . This expires in 10 minutes.</h1>`
+                    `${process.env.EMAIL_SMTP_USERNAME}`, emailIdOrContact, subject, body
                 );
                 return res.status(200).json({message: `OTP generated and sent to the entered email ID.`});
             }   
@@ -96,7 +115,15 @@ exports.generateAndSendOTPForUser = async (req, res) => {
             if(user){
                 const newOTP = new OTP({otp: otp(), user: user});
                 const data = await newOTP.save();
-                await sms.sendOtp(newOTP.otp, emailIdOrContact);
+                var name = user.firstName;
+                if(user.middleName){
+                    name += " " + user.middleName;
+                }
+                if(user.lastName){
+                    name += " " + user.lastName;
+                }
+                const message = smsFormat(newOTP.otp);
+                await sms.sendOtp(message, emailIdOrContact);
                 return res.status(200).json({message: `OTP generated and sent to the entered mobile number.`});
             }   
             return res.status(404).json({message: "User doesn't exist"});
@@ -120,11 +147,16 @@ exports.generateAndSendOTPForSuperUser = async (req, res) => {
             if(superUser){
                 const newOTP = new OTP({otp: otp(), superUser: superUser});
                 const data = await newOTP.save();
+                var name = superUser.firstName;
+                if(superUser.middleName){
+                    name += " " + superUser.middleName;
+                }
+                if(superUser.lastName){
+                    name += " " + superUser.lastName;
+                }
+                const [subject, body] = otpFormat(name, newOTP.otp);
                 await mailer.send(
-                    `${process.env.EMAIL_SMTP_USERNAME}`,
-                    emailIdOrContact,
-                    "Test Mail",
-                    `<h1>Your OTP to login is `+newOTP.otp+` . This expires in 10 minutes.</h1>`
+                    `${process.env.EMAIL_SMTP_USERNAME}`,emailIdOrContact, subject, body
                 );
                 return res.status(200).json({message: `OTP generated and sent to the entered email ID.`});
             }   
@@ -138,7 +170,15 @@ exports.generateAndSendOTPForSuperUser = async (req, res) => {
             if(superUser){
                 const newOTP = new OTP({otp: otp(), superUser: superUser});
                 const data = await newOTP.save();
-                await sms.sendOtp(newOTP.otp, emailIdOrContact);
+                var name = superUser.firstName;
+                if(superUser.middleName){
+                    name += " " + superUser.middleName;
+                }
+                if(superUser.lastName){
+                    name += " " + superUser.lastName;
+                }
+                const message = smsFormat(name, newOTP.otp);
+                await sms.sendOtp(message, emailIdOrContact);
                 return res.status(200).json({message: `OTP generated and sent to the entered mobile number.`});
             }   
             return res.status(404).json({message: "Super user doesn't exist"});

@@ -8,6 +8,8 @@ const mailer = require("../helpers/mailer");
 const { paddingZero } = require("../helpers/paddingZeros");
 const dateTime = require("../utils/dateTimeFormat").dateDayTime;
 const gCloudUrl = require("../helpers/gCloud").gCloudUrl;
+const {registrationFormat, registrationSmsFormat} = require("../helpers/mailFormat");
+const sms = require("../helpers/sms");
 
 // Controller to register a user.
 exports.registerUser = async (req, res) => {
@@ -131,14 +133,21 @@ exports.registerUser = async (req, res) => {
 		})
 	}
 
-	mailer.send(
-		`${process.env.EMAIL_SMTP_USERNAME}`,
-		emailId,
-		"User Registered",
-		`<p>
-      ${user.firstName} ${user.lastName} has been registered on website with email - ${user.emailId}, phone number - ${user.contact} and UserCode - ${user.userCode}  
-    <p>`
+	var name = user.firstName;
+	if(user.middleName){
+		name += " " + user.middleName;
+	}
+	if(user.lastName){
+		name += " " + user.lastName;
+	}
+	const [subject, body] = registrationFormat(user.userCode, name, contact, emailId);
+
+	await mailer.send(
+		`${process.env.EMAIL_SMTP_USERNAME}`, emailId, subject, body
 	);
+
+	const message = registrationSmsFormat(user.userCode, name, contact, emailId);
+	await sms.sendOtp(message, user.contact);
 
 	return res.status(200).json({
 		message: `User Registraion Successful`,
