@@ -177,7 +177,7 @@ exports.generateAndSendOTPForSuperUser = async (req, res) => {
                 if(superUser.lastName){
                     name += " " + superUser.lastName;
                 }
-                const message = smsFormat(name, newOTP.otp);
+                const message = smsFormat(newOTP.otp);
                 await sms.sendOtp(message, emailIdOrContact);
                 return res.status(200).json({message: `OTP generated and sent to the entered mobile number.`});
             }   
